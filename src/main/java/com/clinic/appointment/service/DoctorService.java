@@ -3,7 +3,6 @@ package com.clinic.appointment.service;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.repository.DoctorRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,5 +33,7 @@ public class DoctorService {
     }
 
 
-
+    public List<Doctor> findAll() {
+        return this.doctorRepository.findAll();
+    }
 }
