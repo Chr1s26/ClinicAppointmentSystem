@@ -6,10 +6,7 @@ import com.clinic.appointment.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/doctors")
@@ -35,4 +32,24 @@ public class DoctorController {
         doctorService.createDoctor(doctor);
         return  "redirect:/doctors";
     }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model){
+        Doctor doctor= this.doctorService.getDoctorById(id);
+        model.addAttribute("doctor",doctor);
+        return "doctors/edit";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") Doctor doctor){
+        this.doctorService.updateDoctor(id,doctor);
+        return "redirect:/doctors";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteDoctor(@PathVariable("id") Long id){
+        this.doctorService.destory(id);
+        return "redirect:/doctors";
+    }
+
 }
