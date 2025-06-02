@@ -7,7 +7,7 @@
 </head>
 
 <body class="container mt-4">
-
+<!--<div th:replace="fragments/navbar :: navbar"></div>-->
 <h2>Create Patient</h2>
 
 <form th:action="@{/patients/create}" th:object="${patient}" method="post" class="needs-validation">
@@ -15,25 +15,33 @@
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input type="text" th:field="*{name}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        <div class="text-danger" th:if="${nameError}" th:text="${nameError}"></div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Email</label>
         <input type="text" th:field="*{email}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        <div class="text-danger" th:if="${emailError}" th:text="${emailError}"></div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Address</label>
         <input type="text" th:field="*{address}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+        <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Date Of Birth</label>
         <input type="date" th:field="*{dateOfBirth}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Patient Type</label>
+        <select class="form-select" th:field="*{patientType}">
+            <option th:each="t : ${patientType}" th:value="${t}" th:text="${t.name()}">Select Type</option>
+        </select>
+<!--        <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>-->
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

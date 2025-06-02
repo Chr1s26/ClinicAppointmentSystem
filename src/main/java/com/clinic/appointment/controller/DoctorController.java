@@ -3,6 +3,7 @@ package com.clinic.appointment.controller;
 
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.service.DoctorService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +29,9 @@ public class DoctorController {
     }
 
     @PostMapping("/create")
-    public String createDoctor(@ModelAttribute Doctor doctor){
-        doctorService.createDoctor(doctor);
+    public String createDoctor(@ModelAttribute Doctor doctor,Model model){
+        model.addAttribute("doctor",doctor);
+        doctorService.createDoctor(doctor,model);
         return  "redirect:/doctors";
     }
 
@@ -41,8 +43,9 @@ public class DoctorController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") Doctor doctor){
-        this.doctorService.updateDoctor(id,doctor);
+    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") Doctor doctor,Model model){
+        model.addAttribute("doctor",doctor);
+        this.doctorService.updateDoctor(id,doctor,model);
         return "redirect:/doctors";
     }
 

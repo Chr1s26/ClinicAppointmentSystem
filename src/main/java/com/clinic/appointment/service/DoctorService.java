@@ -1,10 +1,15 @@
 package com.clinic.appointment.service;
 
+import com.clinic.appointment.exception.CommonException;
+import com.clinic.appointment.exception.ErrorMessage;
+import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.repository.DoctorRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +19,28 @@ public class DoctorService {
 
     private final DoctorRepository doctorRepository;
 
-    public Doctor createDoctor(Doctor doctor){
+    public Doctor createDoctor(Doctor doctor, Model model) {
+        List<ErrorMessage> errorMessages = new ArrayList<>();
+        validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
+        validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
+        validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        if(!errorMessages.isEmpty()) {
+            model.addAttribute("doctor", doctor);
+            throw new CommonException(errorMessages,"doctors/create",model);
+        }
         doctor =this.doctorRepository.save(doctor);
         return doctor;
     }
 
-    public Doctor updateDoctor(Long id,Doctor doctor){
+    public Doctor updateDoctor(Long id,Doctor doctor,Model model) {
+        List<ErrorMessage> errorMessages = new ArrayList<>();
+        validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
+        validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
+        validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        if(!errorMessages.isEmpty()) {
+            model.addAttribute("doctor", doctor);
+            throw new CommonException(errorMessages,"doctors/edit",model);
+        }
         Optional<Doctor> updatedDoctorOp = this.doctorRepository.findById(id);
         if(updatedDoctorOp.isPresent()){
             Doctor updatedDoctor = updatedDoctorOp.get();
@@ -49,5 +70,14 @@ public class DoctorService {
     public void destory(Long id) {
         Optional<Doctor> doctorOp = this.doctorRepository.findById(id);
         doctorOp.ifPresent(this.doctorRepository::delete);
+    }
+
+    private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
+        if(StringUtil.isEmpty(value)) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.setFieldName(fieldName);
+            errorMessage.setMessage(message);
+            errorMessages.add(errorMessage);
+        }
     }
 }
