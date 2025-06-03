@@ -24,6 +24,7 @@ public class PatientService {
         validateField(patient.getName(),"nameError","Patient Name can't be empty",errorMessages);
         validateField(patient.getAddress(),"addressError","Patient address can't be empty",errorMessages);
         validateField(patient.getEmail(),"emailError","Patient email can't be empty",errorMessages);
+
         if(!errorMessages.isEmpty()) {
             model.addAttribute("patient", patient);
             throw new CommonException(errorMessages,"patients/create",model);
@@ -31,30 +32,23 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
-        if(StringUtil.isEmpty(value)) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.setFieldName(fieldName);
-            errorMessage.setMessage(message);
-            errorMessages.add(errorMessage);
-        }
-    }
-
     public Patient update(Long id,Patient patient,Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validateField(patient.getName(),"nameError","Patient Name can't be empty",errorMessages);
         validateField(patient.getAddress(),"addressError","Patient address can't be empty",errorMessages);
         validateField(patient.getEmail(),"emailError","Patient email can't be empty",errorMessages);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         if(!errorMessages.isEmpty()) {
             model.addAttribute("patient",patient);
             throw new CommonException(errorMessages,"patients/edit",model);
         }
+
         Patient updatePatient = patientRepository.findById(id).orElse(null);
         updatePatient.setName(patient.getName());
         updatePatient.setEmail(patient.getEmail());
         updatePatient.setAddress(patient.getAddress());
         updatePatient.setDateOfBirth(patient.getDateOfBirth());
+        updatePatient.setPatientType(patient.getPatientType());
         return patientRepository.save(updatePatient);
     }
 
@@ -69,5 +63,14 @@ public class PatientService {
     public void deleteById(Long id) {
         Patient patient = this.patientRepository.findById(id).orElseThrow();
         patientRepository.delete(patient);
+    }
+
+    private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
+        if(StringUtil.isEmpty(value)) {
+            ErrorMessage errorMessage = new ErrorMessage();
+            errorMessage.setFieldName(fieldName);
+            errorMessage.setMessage(message);
+            errorMessages.add(errorMessage);
+        }
     }
 }

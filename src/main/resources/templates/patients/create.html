@@ -39,9 +39,10 @@
     <div class="mb-3">
         <label class="form-label">Patient Type</label>
         <select class="form-select" th:field="*{patientType}">
-            <option th:each="t : ${patientType}" th:value="${t}" th:text="${t.name()}">Select Type</option>
+            <option value="">Select Type</option>
+            <option th:each="t : ${patientType}" th:value="${t}" th:text="${t.name()}"></option>
         </select>
-<!--        <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>-->
+        <div class="text-danger" th:if="${patientTypeError}" th:text="${patientTypeError}"></div>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

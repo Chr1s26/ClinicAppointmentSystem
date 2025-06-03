@@ -1,5 +1,6 @@
 package com.clinic.appointment.exception;
 
+import com.clinic.appointment.model.PatientType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +28,9 @@ public class GlobalExceptionHandler {
                 modelAndView.addObject(entry.getKey(), entry.getValue());
             }
         }
+
+        modelAndView.addObject("patientType", PatientType.values());
+
         for(ErrorMessage errorMessage : e.getErrorMessageList()){
             modelAndView.addObject(errorMessage.getFieldName(), errorMessage.getMessage());
         }
