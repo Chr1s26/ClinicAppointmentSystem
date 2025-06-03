@@ -40,6 +40,7 @@ public class PatientController {
         Patient patient = this.patientService.findById(id);
         if(patient == null) return "redirect:/patients";
         model.addAttribute("patient",patient);
+        model.addAttribute("patientType", PatientType.values());
         return "patients/edit";
     }
 

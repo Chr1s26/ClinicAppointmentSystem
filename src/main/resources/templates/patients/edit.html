@@ -34,6 +34,14 @@
         <input type="date" th:field="*{dateOfBirth}" class="form-control"/>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Patient Type</label>
+        <select class="form-select" th:field="*{patientType}">
+            <option th:each="t : ${patientType}" th:value="${t}" th:text="${t.name()}">Select Type</option>
+        </select>
+        <div class="text-danger" th:if="${patientTypeError}" th:text="${patientTypeError}"></div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Update Patient</button>
     <a class="btn btn-secondary" th:href="@{/patients}">Cancel</a>
 </form>

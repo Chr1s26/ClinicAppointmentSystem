@@ -16,6 +16,7 @@
         <th>Email</th>
         <th>Address</th>
         <th>Date Of Birth</th>
+        <th>Patient Type</th>
     </tr> </thead> <tbody>
 <tr th:each="patient : ${patients}">
     <td th:text="${patient.id}"></td>
@@ -23,6 +24,7 @@
     <td th:text="${patient.email}"></td>
     <td th:text="${patient.address}"></td>
     <td th:text="${patient.dateOfBirth}"></td>
+    <td th:text="${patient.patientType}"></td>
     <td>
         <a class="btn btn-sm btn-warning" th:href="@{'/patients/edit/' + ${patient.id}}">Edit</a>
         <a class="btn btn-sm btn-danger" th:href="@{'/patients/delete/' + ${patient.id}}">Delete</a>
