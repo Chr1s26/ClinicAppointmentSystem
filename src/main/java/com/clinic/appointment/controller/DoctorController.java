@@ -2,6 +2,8 @@ package com.clinic.appointment.controller;
 
 
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.GenderType;
+import com.clinic.appointment.model.PatientType;
 import com.clinic.appointment.service.DoctorService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class DoctorController {
     @GetMapping("/new")
     public String showCreateForm(Model model){
         model.addAttribute("doctor",new Doctor());
+        model.addAttribute("genderType",GenderType.values());
         return "doctors/create";
     }
 
@@ -38,6 +41,7 @@ public class DoctorController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model){
         Doctor doctor= this.doctorService.getDoctorById(id);
+        model.addAttribute("genderType", GenderType.values());
         model.addAttribute("doctor",doctor);
         return "doctors/edit";
     }
@@ -51,7 +55,7 @@ public class DoctorController {
 
     @GetMapping("/delete/{id}")
     public String deleteDoctor(@PathVariable("id") Long id){
-        this.doctorService.destory(id);
+        this.doctorService.deleteById(id);
         return "redirect:/doctors";
     }
 

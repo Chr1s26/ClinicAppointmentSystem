@@ -8,7 +8,6 @@ import com.clinic.appointment.repository.DoctorRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,32 +20,33 @@ public class DoctorService {
 
     public Doctor createDoctor(Doctor doctor, Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
-        validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
-        validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
-        validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        validate(doctor,errorMessages);
+
         if(!errorMessages.isEmpty()) {
             model.addAttribute("doctor", doctor);
             throw new CommonException(errorMessages,"doctors/create",model);
         }
+
         doctor =this.doctorRepository.save(doctor);
         return doctor;
     }
 
     public Doctor updateDoctor(Long id,Doctor doctor,Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
-        validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
-        validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
-        validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        validate(doctor,errorMessages);
+
         if(!errorMessages.isEmpty()) {
             model.addAttribute("doctor", doctor);
             throw new CommonException(errorMessages,"doctors/edit",model);
         }
+
         Optional<Doctor> updatedDoctorOp = this.doctorRepository.findById(id);
         if(updatedDoctorOp.isPresent()){
             Doctor updatedDoctor = updatedDoctorOp.get();
             updatedDoctor.setName(doctor.getName());
             updatedDoctor.setAddress(doctor.getAddress());
             updatedDoctor.setPhone(doctor.getPhone());
+            updatedDoctor.setGenderType(doctor.getGenderType());
             doctor =this.doctorRepository.save(updatedDoctor);
             return doctor;
         }
@@ -62,22 +62,61 @@ public class DoctorService {
         return this.doctorRepository.findById(id).orElseThrow();
     }
 
-
     public List<Doctor> findAll() {
         return this.doctorRepository.findAll();
     }
 
-    public void destory(Long id) {
+    public void deleteById(Long id) {
         Optional<Doctor> doctorOp = this.doctorRepository.findById(id);
         doctorOp.ifPresent(this.doctorRepository::delete);
     }
 
+
+
+    //validation
+    //ValidationMethod
+    private void validate(Doctor doctor,List<ErrorMessage> errorMessages){
+        validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
+        validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
+        validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        checkDuplicateName(doctor, "nameError", "Doctor name already exists", errorMessages);
+        checkDuplicatePhone(doctor, "phoneError", "Phone number already exists", errorMessages);
+    }
+
+    //Not Null Method
     private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
         if(StringUtil.isEmpty(value)) {
-            ErrorMessage errorMessage = new ErrorMessage();
-            errorMessage.setFieldName(fieldName);
-            errorMessage.setMessage(message);
-            errorMessages.add(errorMessage);
+            addError(fieldName,message,errorMessages);
         }
+    }
+
+    //Duplicate Method
+    private void checkDuplicateName(Doctor doctor, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        Optional<Doctor> existingDoctor;
+
+        if (doctor.getId() == null) {
+            existingDoctor = doctorRepository.findDoctorByNameIgnoreCase(doctor.getName());
+        } else {
+            existingDoctor = doctorRepository.findDoctorByName(doctor.getId(), doctor.getName());
+        }
+
+        existingDoctor.ifPresent(d -> addError(fieldName, message, errorMessages));
+    }
+
+    private void checkDuplicatePhone(Doctor doctor, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        Optional<Doctor> existingDoctor;
+
+        if (doctor.getId() == null) {
+            existingDoctor = doctorRepository.findByPhone(doctor.getPhone());
+        } else {
+            existingDoctor = doctorRepository.findDoctorByPhone(doctor.getId(), doctor.getPhone());
+        }
+
+        existingDoctor.ifPresent(d -> addError(fieldName, message, errorMessages));
+    }
+
+    //adding Error
+    private void addError(String field, String msg, List<ErrorMessage> list) {
+        list.add(new ErrorMessage(field, msg));
     }
 }
