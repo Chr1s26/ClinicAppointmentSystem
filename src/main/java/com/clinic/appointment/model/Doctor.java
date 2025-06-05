@@ -21,4 +21,6 @@ public class Doctor {
     @Column
     private String address;
 
+    private GenderType genderType;
+
 }

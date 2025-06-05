@@ -29,4 +29,5 @@ public class Patient {
 
 //    @Enumerated(EnumType.ORDINAL)
     private PatientType patientType;
+
 }

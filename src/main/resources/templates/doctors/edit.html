@@ -28,6 +28,15 @@
         <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Gender Type</label>
+        <select class="form-select" th:field="*{genderType}">
+            <option value="">Select Type</option>
+            <option th:each="g : ${genderType}" th:value="${g}" th:text="${g.name()}"></option>
+        </select>
+        <div class="text-danger" th:if="${genderTypeError}" th:text="${genderTypeError}"></div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Update Doctor</button>
     <a class="btn btn-secondary" th:href="@{/doctors}">Cancel</a>
 </form>
