@@ -18,6 +18,7 @@
         <th>Phone</th>
         <th>Address</th>
         <th>Gender Type</th>
+        <th>Department</th>
     </tr> </thead> <tbody>
 <tr th:each="doc : ${doctors}">
     <td th:text="${doc.id}"></td>
@@ -25,6 +26,7 @@
     <td th:text="${doc.phone}"></td>
     <td th:text="${doc.address}"></td>
     <td th:text="${doc.genderType}"></td>
+    <td th:text="${doc.department.departmentName}"></td>
     <td>
         <a class="btn btn-sm btn-warning" th:href="@{'/doctors/edit/' + ${doc.id}}">Edit</a>
         <a class="btn btn-sm btn-danger" th:href="@{'/doctors/delete/' + ${doc.id}}">Delete</a>

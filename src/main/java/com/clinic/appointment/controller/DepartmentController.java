@@ -1,0 +1,52 @@
+package com.clinic.appointment.controller;
+
+import com.clinic.appointment.model.Department;
+import com.clinic.appointment.service.DepartmentService;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@AllArgsConstructor
+@RequestMapping("/departments")
+public class DepartmentController {
+
+    private final DepartmentService departmentService;
+
+    @GetMapping
+    public String getAllDepartments(Model model){
+        model.addAttribute("departments",departmentService.getAllDepartments());
+        return "index";
+    }
+
+    @GetMapping("/new")
+    public String showCreateForm(Model model){
+        model.addAttribute("department",new Department());
+        return "departments/create";
+    }
+
+    @PostMapping("/create")
+    public String createDepartment(@ModelAttribute Department department){
+        departmentService.createDepartment(department);
+        return "redirect:/departments";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(Model model,@PathVariable Long id){
+        model.addAttribute("department",departmentService.findDepartmentById(id));
+        return "departments/edit";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateDepartment(@PathVariable Long id, @ModelAttribute Department department){
+        departmentService.updateDepartment(id, department);
+        return "redirect:/departments";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteDepartment(@PathVariable Long id){
+        departmentService.deleteDepartment(id);
+        return "redirect:/departments";
+    }
+}

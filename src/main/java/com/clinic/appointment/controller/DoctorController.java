@@ -4,6 +4,7 @@ package com.clinic.appointment.controller;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.model.PatientType;
+import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final DepartmentService departmentService;
 
     @GetMapping("/new")
     public String showCreateForm(Model model){
         model.addAttribute("doctor",new Doctor());
+        model.addAttribute("departments",departmentService.getAllDepartments());
         model.addAttribute("genderType",GenderType.values());
         return "doctors/create";
     }
@@ -42,6 +45,7 @@ public class DoctorController {
     public String showEditForm(@PathVariable("id") Long id, Model model){
         Doctor doctor= this.doctorService.getDoctorById(id);
         model.addAttribute("genderType", GenderType.values());
+        model.addAttribute("departments",departmentService.getAllDepartments());
         model.addAttribute("doctor",doctor);
         return "doctors/edit";
     }
