@@ -47,6 +47,7 @@ public class DoctorService {
             updatedDoctor.setAddress(doctor.getAddress());
             updatedDoctor.setPhone(doctor.getPhone());
             updatedDoctor.setGenderType(doctor.getGenderType());
+            updatedDoctor.setDepartment(doctor.getDepartment());
             doctor =this.doctorRepository.save(updatedDoctor);
             return doctor;
         }

@@ -21,6 +21,10 @@ public class Doctor {
     @Column
     private String address;
 
+    @Column
     private GenderType genderType;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 }
