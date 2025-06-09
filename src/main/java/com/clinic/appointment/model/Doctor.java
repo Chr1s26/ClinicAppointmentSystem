@@ -3,6 +3,9 @@ package com.clinic.appointment.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Data
 @Table(name = "doctors")
@@ -24,7 +27,6 @@ public class Doctor {
     @Column
     private GenderType genderType;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
+    @ManyToMany(mappedBy = "doctors")
+    private Set<Department> departments = new HashSet<>();
 }

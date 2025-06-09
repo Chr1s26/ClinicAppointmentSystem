@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,8 +31,11 @@ public class Department {
     @Column
     private LocalDate updatedAt;
 
-    @OneToMany(mappedBy = "department")
-    private List<Doctor> doctors;
+    @ManyToMany
+    @JoinTable(name = "doctor_department",
+        joinColumns = @JoinColumn(name = "dept_id"),
+        inverseJoinColumns = @JoinColumn(name = "doctor_id"))
+    private Set<Doctor> doctors = new HashSet<>();
 
     @Override
     public String toString() {

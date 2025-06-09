@@ -2,11 +2,12 @@ package com.clinic.appointment.exception;
 
 import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.model.PatientType;
+import com.clinic.appointment.service.DepartmentService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
@@ -18,6 +19,8 @@ public class GlobalExceptionHandler {
 //    public String requestURL(HttpServletRequest request) {
 //        return request.getRequestURI();
 //    }
+    @Autowired
+    private DepartmentService departmentService;
 
     @ExceptionHandler(CommonException.class)
     public ModelAndView handleErrorMessage(CommonException e, HttpServletRequest request) {
@@ -29,6 +32,7 @@ public class GlobalExceptionHandler {
                 modelAndView.addObject(entry.getKey(), entry.getValue());
             }
         }
+
         modelAndView.addObject("genderType", GenderType.values());
         modelAndView.addObject("patientType", PatientType.values());
 

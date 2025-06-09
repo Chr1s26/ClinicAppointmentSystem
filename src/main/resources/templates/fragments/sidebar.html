@@ -112,8 +112,7 @@
            <span class="kt-menu-icon items-start text-lg text-secondary-foreground kt-menu-item-active:text-mono kt-menu-item-here:text-mono">
             <i class="ki-filled ki-home-3">
             </i>
-           </span>
-                            <span class="kt-menu-title text-sm text-foreground font-medium kt-menu-item-here:text-mono kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
+           </span><span class="kt-menu-title text-sm text-foreground font-medium kt-menu-item-here:text-mono kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
             Overview
            </span>
                         </a>
@@ -126,7 +125,7 @@
             </i>
            </span>
                             <span class="kt-menu-title font-medium text-sm text-secondary-foreground kt-menu-item-here:text-mono kt-menu-item-show:text-mono kt-menu-link-hover:text-mono">
-            Public Profile
+            Management
            </span>
                             <span class="kt-menu-arrow text-muted-foreground kt-menu-item-here:text-muted-foreground kt-menu-item-show:text-foreground kt-menu-link-hover:text-foreground">
             <span class="inline-flex kt-menu-item-show:hidden">
@@ -139,12 +138,12 @@
             </span>
            </span>
                         </div>
-                        <div class="kt-menu-accordion gap-px ps-7">
+                            <div class="kt-menu-accordion gap-px ps-7">
                             <div class="kt-menu-item" data-kt-menu-item-toggle="accordion"
                                  data-kt-menu-item-trigger="click">
                                 <div class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent !menu-item-here:bg-transparent">
              <span class="kt-menu-title text-sm text-foreground kt-menu-item-here:text-mono kt-menu-item-show:text-mono kt-menu-link-hover:text-mono">
-              Profiles
+              Doctor Management
              </span>
                                     <span class="kt-menu-arrow text-muted-foreground kt-menu-item-here:text-muted-foreground kt-menu-item-show:text-foreground kt-menu-link-hover:text-foreground">
               <span class="inline-flex kt-menu-item-show:hidden">
@@ -160,17 +159,17 @@
                                 <div class="kt-menu-accordion gap-px ps-2.5">
                                     <div class="kt-menu-item">
                                         <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
-                                           href="html/demo10/public-profile/profiles/default.html">
+                                           href="/doctors">
                <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
-                Default
+                Doctor Listing
                </span>
                                         </a>
                                     </div>
                                     <div class="kt-menu-item">
                                         <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
-                                           href="html/demo10/public-profile/profiles/creator.html">
+                                           href="/doctors/new">
                <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
-                Creator
+                Create Doctor
                </span>
                                         </a>
                                     </div>
@@ -269,7 +268,7 @@
                                  data-kt-menu-item-trigger="click">
                                 <div class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent !menu-item-here:bg-transparent">
              <span class="kt-menu-title text-sm text-foreground kt-menu-item-here:text-mono kt-menu-item-show:text-mono kt-menu-link-hover:text-mono">
-              Projects
+              Department Management
              </span>
                                     <span class="kt-menu-arrow text-muted-foreground kt-menu-item-here:text-muted-foreground kt-menu-item-show:text-foreground kt-menu-link-hover:text-foreground">
               <span class="inline-flex kt-menu-item-show:hidden">
@@ -285,22 +284,58 @@
                                 <div class="kt-menu-accordion gap-px ps-2.5">
                                     <div class="kt-menu-item">
                                         <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
-                                           href="html/demo10/public-profile/projects/3-columns.html">
+                                           href="/departments">
                <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
-                3 Columns
+                Department Listing
                </span>
                                         </a>
                                     </div>
                                     <div class="kt-menu-item">
                                         <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
-                                           href="html/demo10/public-profile/projects/2-columns.html">
+                                           href="/departments/new">
                <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
-                2 Columns
+                Create Department
                </span>
                                         </a>
                                     </div>
                                 </div>
                             </div>
+                                <div class="kt-menu-item" data-kt-menu-item-toggle="accordion"
+                                     data-kt-menu-item-trigger="click">
+                                    <div class="kt-menu-link py-2 px-2.5 rounded-md border border-transparent !menu-item-here:bg-transparent">
+             <span class="kt-menu-title text-sm text-foreground kt-menu-item-here:text-mono kt-menu-item-show:text-mono kt-menu-link-hover:text-mono">
+              Patient Management
+             </span>
+                                        <span class="kt-menu-arrow text-muted-foreground kt-menu-item-here:text-muted-foreground kt-menu-item-show:text-foreground kt-menu-link-hover:text-foreground">
+              <span class="inline-flex kt-menu-item-show:hidden">
+               <i class="ki-filled ki-down text-xs">
+               </i>
+              </span>
+              <span class="hidden kt-menu-item-show:inline-flex">
+               <i class="ki-filled ki-up text-xs">
+               </i>
+              </span>
+             </span>
+                                    </div>
+                                    <div class="kt-menu-accordion gap-px ps-2.5">
+                                        <div class="kt-menu-item">
+                                            <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
+                                               href="/patients">
+               <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
+                Patient List
+               </span>
+                                            </a>
+                                        </div>
+                                        <div class="kt-menu-item">
+                                            <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
+                                               href="/patients/new">
+               <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
+                Create Patient
+               </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             <div class="kt-menu-item">
                                 <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
                                    href="html/demo10/public-profile/works.html">

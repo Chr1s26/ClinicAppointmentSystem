@@ -1,11 +1,22 @@
 package com.clinic.appointment.service;
 
+import com.clinic.appointment.dto.DepartmentDTO;
+import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.dto.DoctorDTO;
+import com.clinic.appointment.dto.DoctorResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
+import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.repository.DoctorRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import java.util.ArrayList;
@@ -17,6 +28,8 @@ import java.util.Optional;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public Doctor createDoctor(Doctor doctor, Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
@@ -47,7 +60,6 @@ public class DoctorService {
             updatedDoctor.setAddress(doctor.getAddress());
             updatedDoctor.setPhone(doctor.getPhone());
             updatedDoctor.setGenderType(doctor.getGenderType());
-            updatedDoctor.setDepartment(doctor.getDepartment());
             doctor =this.doctorRepository.save(updatedDoctor);
             return doctor;
         }
@@ -57,6 +69,22 @@ public class DoctorService {
     public List<Doctor> getDoctors(){
         List<Doctor> doctors =this.doctorRepository.findAll();
         return doctors;
+    }
+
+    public DoctorResponse getAllDoctors(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder){
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
+        List<Doctor> doctors = doctorPage.getContent();
+        List<DoctorDTO> doctorDTOS = doctors.stream().map(doctor -> modelMapper.map(doctor,DoctorDTO.class)).toList();
+        DoctorResponse doctorResponse = new DoctorResponse();
+        doctorResponse.setDoctors(doctorDTOS);
+        doctorResponse.setTotalElements(doctorPage.getTotalElements());
+        doctorResponse.setTotalPages(doctorPage.getTotalPages());
+        doctorResponse.setPageNumber(doctorPage.getNumber());
+        doctorResponse.setPageSize(doctorPage.getSize());
+        doctorResponse.setLastPage(doctorPage.isLast());
+        return doctorResponse;
     }
 
     public Doctor getDoctorById(Long id){
