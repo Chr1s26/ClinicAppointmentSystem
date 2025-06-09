@@ -1,12 +1,11 @@
 package com.clinic.appointment.controller;
 
 
+import com.clinic.appointment.dto.DoctorResponse;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.GenderType;
-import com.clinic.appointment.model.PatientType;
 import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,18 +19,31 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final DepartmentService departmentService;
 
+//    @GetMapping
+//    public String getDoctors(Model model){
+//        model.addAttribute("doctors",doctorService.findAll());
+//        return "doctors/listing";
+//    }
+
+    @GetMapping
+    public String getAllDoctors(Model model,
+                                    @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
+                                    @RequestParam(defaultValue = "9",required = false) Integer pageSize,
+                                    @RequestParam(defaultValue = "name",required = false) String sortBy,
+                                    @RequestParam(defaultValue = "asc",required = false)String sortOrder){
+        DoctorResponse doctorResponse = doctorService.getAllDoctors(pageNumber,pageSize,sortBy,sortOrder);
+        model.addAttribute("doctors",doctorResponse.getDoctors());
+        model.addAttribute("response",doctorResponse);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortOrder", sortOrder);
+        return "doctors/listing";
+    }
+
     @GetMapping("/new")
     public String showCreateForm(Model model){
         model.addAttribute("doctor",new Doctor());
-        model.addAttribute("departments",departmentService.getAllDepartments());
         model.addAttribute("genderType",GenderType.values());
         return "doctors/create";
-    }
-
-    @GetMapping
-    public String getDoctors(Model model){
-        model.addAttribute("doctors",doctorService.findAll());
-        return "doctors/listing";
     }
 
     @PostMapping("/create")
@@ -45,7 +57,6 @@ public class DoctorController {
     public String showEditForm(@PathVariable("id") Long id, Model model){
         Doctor doctor= this.doctorService.getDoctorById(id);
         model.addAttribute("genderType", GenderType.values());
-        model.addAttribute("departments",departmentService.getAllDepartments());
         model.addAttribute("doctor",doctor);
         return "doctors/edit";
     }
@@ -61,6 +72,12 @@ public class DoctorController {
     public String deleteDoctor(@PathVariable("id") Long id){
         this.doctorService.deleteById(id);
         return "redirect:/doctors";
+    }
+
+    @GetMapping("/view")
+    public String viewDoctor(Model model){
+        model.addAttribute("doctors",doctorService.findAll());
+        return "doctors/listing";
     }
 
 }
