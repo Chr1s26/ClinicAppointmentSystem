@@ -90,7 +90,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
     <!-- Wrapper -->
     <div class="flex flex-col lg:flex-row grow pt-(--header-height) lg:pt-0">
         <!-- Sidebar -->
-        <div th:replace="fragments/sidebar :: sidebar"></div>
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         <!-- End of Sidebar -->
         <!-- Main -->
         <div class="flex flex-col grow lg:rounded-l-xl bg-background border border-input lg:ms-(--sidebar-width)">
@@ -400,6 +400,14 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </tr>
                                                 <tr>
                                                     <td class="text-sm text-secondary-foreground pb-3.5 pe-3">
+                                                        Age
+                                                    </td>
+                                                    <td th:text="${doctor.age}" class="text-sm text-mono pb-3.5">
+                                                        -
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-sm text-secondary-foreground pb-3.5 pe-3">
                                                         Gender Type
                                                     </td>
                                                     <td th:text="${doctor.genderType}"  class="text-sm text-mono pb-3.5">
@@ -451,7 +459,11 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 <input type="text" th:field="*{address}" placeholder="Please Write Doctor Address" class="border border-red-300 shadow p-3 w-full rounded mb-">
                                                 <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>
                                             </div>
-
+                                            <div class="mb-3">
+                                                <label class="block mb-2 font-bold text-gray-600">Date Of Birth</label>
+                                                <input type="date" th:field="*{dateOfBirth}" class="form-control"/>
+                                                <div class="text-danger" th:if="${dateOfBirthError}" th:text="${dateOfBirthError}"></div>
+                                            </div>
                                             <div class="mb-5">
                                                 <label  class="block mb-2 font-bold text-gray-600">Gender Type</label>
                                                 <select class="form-select" th:field="*{genderType}">

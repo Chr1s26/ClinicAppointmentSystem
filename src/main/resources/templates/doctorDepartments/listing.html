@@ -90,7 +90,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
     <!-- Wrapper -->
     <div class="flex flex-col lg:flex-row grow pt-(--header-height) lg:pt-0">
         <!-- Sidebar -->
-        <div th:replace="fragments/sidebar :: sidebar"></div>
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         <!-- End of Sidebar -->
         <!-- Main -->
         <div class="flex flex-col grow lg:rounded-l-xl bg-background border border-input lg:ms-(--sidebar-width)">
@@ -326,7 +326,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                         <div class="flex flex-col items-stretch gap-5 lg:gap-7.5">
                             <!-- begin: toolbar -->
                             <div class="flex flex-wrap items-center gap-5 justify-between">
-                                <h3 class="text-lg text-foreground font-semibold">
+                                <h3 th:text="${response.getTotalElements()}+' Departments'" class="text-lg text-foreground font-semibold">
                                     9 Teams
                                 </h3>
                                 <div class="kt-toggle-group" data-kt-tabs="true">
@@ -344,7 +344,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                             <!-- begin: cards -->
                             <div id="teams_cards">
                                 <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-7.5">
-                                    <div class="kt-card">
+                                    <div th:each="department : ${departments}" class="kt-card">
                                         <div class="kt-card-content grid gap-7 py-7.5">
                                             <div class="grid place-items-center gap-4">
                                                 <div class="flex justify-center items-center size-14 rounded-full ring-1 ring-input bg-accent/60">
@@ -353,24 +353,20 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </div>
                                                 <div class="grid place-items-center">
                                                     <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Pixel Crafters
+                                                        <span th:text="${department.departmentName}">Department Name</span>
                                                     </a>
-                                                    <span class="text-sm text-secondary-foreground text-center">
-                Crafting digital experiences for the world
-               </span>
+                                                    <span class="text-sm text-secondary-foreground text-center" th:text="${department.departmentDescription}">
+                            Description
+                        </span>
                                                 </div>
                                             </div>
                                             <div class="grid">
                                                 <div class="flex items-center justify-between flex-wrap mb-3.5 gap-2">
                <span class="text-xs text-secondary-foreground uppercase">
-                skills
+                Department Id
                </span>
                                                     <div class="flex flex-wrap gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Ul
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 DevOps
+                <span th:text="${department.id}" class="kt-badge kt-badge-outline">
                 </span>
                                                     </div>
                                                 </div>
@@ -378,46 +374,25 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </div>
                                                 <div class="flex items-center justify-between flex-wrap my-2.5 gap-2">
                <span class="text-xs text-secondary-foreground uppercase">
-                rating
+                Created At
                </span>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
+                                                    <div class="flex flex-wrap gap-1.5">
+                <span th:text="${department.createdAt}" class="kt-badge kt-badge-outline">
+                </span>
                                                     </div>
                                                 </div>
-                                                <div class="border-t border-input border-dashed mb-3.5">
+                                                <div class="flex items-center justify-between flex-wrap my-2.5 gap-2">
+               <span class="text-xs text-secondary-foreground uppercase">
+                Updated At
+               </span>
+                                                    <div class="flex flex-wrap gap-1.5">
+                <span th:text="${department.updatedAt}" class="kt-badge kt-badge-outline">-
+                </span>
+                                                    </div>
                                                 </div>
                                                 <div class="flex items-center justify-between flex-wrap gap-2">
                <span class="text-xs text-secondary-foreground uppercase">
-                memebers
+                Doctors
                </span>
                                                     <div class="flex -space-x-2">
                                                         <div class="flex">
@@ -438,900 +413,85 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="kt-card-footer justify-center">
-                                            <a class="kt-btn kt-btn-outline">
-                                                <i class="ki-filled ki-check-circle">
-                                                </i>
-                                                Joined
-                                            </a>
+
+                                        <form th:if="${!department.isJoined()}"
+                                              th:action="@{/doctor/{doctorId}/department/{departmentId}/join(doctorId=${doctor.id}, departmentId=${department.id})}"
+                                              method="post"
+                                              class="kt-card-footer justify-center">
+                                            <button type="submit" class="kt-btn kt-btn-outline">
+                                                <i class="ki-filled ki-check-circle"></i>
+                                                Join Department
+                                            </button>
+                                        </form>
+
+                                        <div th:if="${department.isJoined()}" class="kt-card-footer justify-center">
+                                            <button type="button" class="kt-btn kt-btn-outline" disabled>
+                                                <i class="ki-filled ki-check-circle"></i>
+                                                Already Joined
+                                            </button>
                                         </div>
+
                                     </div>
                                 </div>
-                                <div class="flex grow justify-center pt-5 lg:pt-7.5">
-                                    <a class="kt-link kt-link-underlined kt-link-dashed" href="html/demo10/account/members/teams.html">
-                                        Show more Teams
-                                    </a>
-                                </div>
+                                <form th:action="@{/doctorDepartment/{id}(id=${doctor.id})}" method="get"
+                                      class="flex-col md:flex-row gap-5 text-secondary-foreground text-sm font-medium kt-card-footer justify-center md:justify-between flex">
+
+                                    <!-- Page size selector -->
+                                    <div class="flex items-center gap-2 order-2 md:order-1">
+                                        Show
+                                        <select class="kt-select w-16" name="pageSize" onchange="this.form.submit()">
+                                            <option th:value="3" th:selected="${response.pageSize == 3}">3</option>
+                                            <option th:value="6" th:selected="${response.pageSize == 6}">6</option>
+                                            <option th:value="9" th:selected="${response.pageSize == 9}">9</option>
+                                        </select>
+                                        per page
+
+                                        <!-- Hidden inputs to retain state -->
+                                        <input type="hidden" name="pageNumber" th:value="${response.pageNumber}" />
+                                        <input type="hidden" name="sortBy" th:value="${sortBy}" />
+                                        <input type="hidden" name="sortOrder" th:value="${sortOrder}" />
+                                    </div>
+
+                                    <!-- Pagination controls -->
+                                    <div class="flex items-center gap-4 order-1 md:order-2">
+        <span>
+            Page <span th:text="${response.pageNumber + 1}">1</span> of
+            <span th:text="${response.totalPages}">X</span> —
+            Total: <span th:text="${response.totalElements}">Y</span> departments
+        </span>
+
+                                        <div class="kt-datatable-pagination">
+                                            <ul class="flex gap-2">
+
+                                                <!-- Previous -->
+                                                <li th:if="${response.pageNumber > 0}">
+                                                    <a th:href="@{/doctorDepartment/{id}(id=${doctor.id}, pageNumber=${response.pageNumber - 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                       class="text-blue-500">Previous</a>
+                                                </li>
+
+                                                <!-- Page numbers -->
+                                                <li th:each="i : ${#numbers.sequence(0, response.totalPages - 1)}"
+                                                    th:classappend="${i == response.pageNumber} ? 'font-bold underline' : ''">
+                                                    <a th:href="@{/doctorDepartment/{id}(id=${doctor.id},pageNumber=${i}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                       th:text="${i + 1}" class="text-blue-500 hover:underline">1</a>
+                                                </li>
+
+                                                <!-- Next -->
+                                                <li th:if="${response.pageNumber + 1 < response.totalPages}">
+                                                    <a th:href="@{/doctorDepartment/{id}(id=${doctor.id},pageNumber=${response.pageNumber + 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                       class="text-blue-500">Next</a>
+                                                </li>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </form>
+
+
                             </div>
                             <!-- end: cards -->
                             <!-- begin: list -->
-                            <div class="hidden" id="teams_list">
-                                <div class="flex flex-col gap-5 lg:gap-7.5">
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-ghost text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Pixel Crafters
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Crafting digital experiences for the world
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Ul
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 DevOps
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-4.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-1.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-2.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                 <span class="relative inline-flex items-center justify-center shrink-0 rounded-full ring-1 font-semibold leading-none text-2xs size-7 text-white ring-background bg-green-500">
-                  +10
-                 </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-outline">
-                                                        <i class="ki-filled ki-check-circle">
-                                                        </i>
-                                                        Joined
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-abstract-22 text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Code Masters
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Coding the future, one line at a time
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Dev
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Al
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Cloud
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-5.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-7.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-11.png"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-outline">
-                                                        <i class="ki-filled ki-check-circle">
-                                                        </i>
-                                                        Joined
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-abstract-39 text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Market Mavericks
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Navigating markets with strategic solutions
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Marketing
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Brand
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label indeterminate">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none" style="width: 50.0%">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-4.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-1.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-2.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                 <span class="hover:z-5 relative inline-flex items-center justify-center shrink-0 rounded-full ring-1 font-semibold leading-none text-2xs size-7 text-primary-foreground ring-background bg-primary">
-                  S
-                 </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-primary">
-                                                        <i class="ki-filled ki-people">
-                                                        </i>
-                                                        Join
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-shield-slash text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Data Dynamo
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Transforming data into actionable insights
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Analytics
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Data
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label indeterminate">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none" style="width: 50.0%">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2 lg:justify-end">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-23.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-31.png"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-outline">
-                                                        <i class="ki-filled ki-check-circle">
-                                                        </i>
-                                                        Joined
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-chart-line-star text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Market Mavericks
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Navigating markets with strategic solutions
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Marketing
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Brand
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-4.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-1.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-2.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                 <span class="hover:z-5 relative inline-flex items-center justify-center shrink-0 rounded-full ring-1 font-semibold leading-none text-2xs size-7 text-primary-foreground ring-background bg-primary">
-                  S
-                 </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-primary">
-                                                        <i class="ki-filled ki-people">
-                                                        </i>
-                                                        Join
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-message-programming text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Code Masters
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Coding the future, one line at a time
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Dev
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Al
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Cloud
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-5.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-6.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-7.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-11.png"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-outline">
-                                                        <i class="ki-filled ki-check-circle">
-                                                        </i>
-                                                        Joined
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-nexo text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Fusion Thinkers
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Merging strategy for impactful results
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Creative
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Strat
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-2.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-17.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-12.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                 <span class="relative inline-flex items-center justify-center shrink-0 rounded-full ring-1 font-semibold leading-none text-2xs size-7 text-white ring-background bg-green-500 size-7">
-                  +23
-                 </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-primary">
-                                                        <i class="ki-filled ki-people">
-                                                        </i>
-                                                        Join
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-abstract-44 text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Spark Surge
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Igniting ideas into powerful solutions
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Innovation
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Tech
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label indeterminate">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none" style="width: 50.0%">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-14.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-3.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-19.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-9.png"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-outline">
-                                                        <i class="ki-filled ki-check-circle">
-                                                        </i>
-                                                        Joined
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="kt-card p-7.5">
-                                        <div class="flex flex-wrap justify-between items-center gap-7">
-                                            <div class="flex items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 shrink-0 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-abstract-25 text-2xl text-muted-foreground">
-                                                    </i>
-                                                </div>
-                                                <div class="grid grid-col gap-1">
-                                                    <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        Quantum Craft
-                                                    </a>
-                                                    <span class="text-sm text-secondary-foreground">
-                Infusing concepts into cutting-edge tech
-               </span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-6 lg:gap-12">
-                                                <div class="grid gap-5 justify-end lg:text-end">
-               <span class="text-xs text-secondary-foreground uppercase">
-                skills
-               </span>
-                                                    <div class="flex gap-1.5">
-                <span class="kt-badge kt-badge-outline">
-                 Marketing
-                </span>
-                                                        <span class="kt-badge kt-badge-outline">
-                 Brand
-                </span>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-6 lg:text-end">
-                                                    <div class="text-xs text-secondary-foreground uppercase">
-                                                        rating
-                                                    </div>
-                                                    <div class="kt-rating">
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label checked">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                        <div class="kt-rating-label">
-                                                            <i class="kt-rating-on ki-solid ki-star text-base leading-none">
-                                                            </i>
-                                                            <i class="kt-rating-off ki-outline ki-star text-base leading-none">
-                                                            </i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end gap-3.5 lg:text-end lg:min-w-24 shrink-0 max-w-auto">
-               <span class="text-xs text-secondary-foreground uppercase">
-                memebers
-               </span>
-                                                    <div class="flex -space-x-2">
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-1.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                                                            <img class="hover:z-5 relative shrink-0 rounded-full ring-1 ring-background size-7" src="assets/media/avatars/300-16.png"/>
-                                                        </div>
-                                                        <div class="flex">
-                 <span class="hover:z-5 relative inline-flex items-center justify-center shrink-0 rounded-full ring-1 font-semibold leading-none text-2xs size-7 text-white ring-background bg-violet-500">
-                  S
-                 </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="grid justify-end min-w-20">
-                                                    <a class="kt-btn kt-btn-primary">
-                                                        <i class="ki-filled ki-people">
-                                                        </i>
-                                                        Join
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex grow justify-center pt-5 lg:pt-7.5">
-                                    <a class="kt-link kt-link-underlined kt-link-dashed" href="html/demo10/account/members/teams.html">
-                                        Show more Teams
-                                    </a>
-                                </div>
-                            </div>
+
                             <!-- end: list -->
                         </div>
                         <!-- end: works -->

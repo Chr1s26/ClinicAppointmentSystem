@@ -1,12 +1,18 @@
 package com.clinic.appointment.controller;
 
+import com.clinic.appointment.dto.PatientDTO;
+import com.clinic.appointment.dto.PatientResponse;
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.model.PatientType;
 import com.clinic.appointment.service.PatientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/patients")
@@ -30,8 +36,17 @@ public class PatientController {
     }
 
     @GetMapping
-    public String getPatients(Model model) {
-        model.addAttribute("patients",patientService.getAll());
+    public String getPatients(Model model,
+                              @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
+                              @RequestParam(defaultValue = "9",required = false) Integer pageSize,
+                              @RequestParam(defaultValue = "name",required = false) String sortBy,
+                              @RequestParam(defaultValue = "asc",required = false) String sortOrder, Sort sort) {
+        PatientResponse patientResponse = patientService.getAllPatients(pageNumber,pageSize,sortBy,sortOrder);
+        List<PatientDTO> patientDTOList = new ArrayList<>(patientResponse.getPatients());
+        model.addAttribute("patients",patientDTOList);
+        model.addAttribute("response",patientResponse);
+        model.addAttribute("sortBy",sortBy);
+        model.addAttribute("sortOrder",sortOrder);
         return "patients/listing";
     }
 

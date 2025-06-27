@@ -1,15 +1,12 @@
 package com.clinic.appointment.service;
-
-import com.clinic.appointment.dto.DepartmentDTO;
-import com.clinic.appointment.dto.DepartmentResponse;
 import com.clinic.appointment.dto.DoctorDTO;
 import com.clinic.appointment.dto.DoctorResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
-import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.repository.DoctorRepository;
+import com.clinic.appointment.util.AgeCalculator;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +42,7 @@ public class DoctorService {
         return doctor;
     }
 
-    public Doctor updateDoctor(Long id,Doctor doctor,Model model) {
+    public Doctor updateDoctor(Long id,Doctor doctor, Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validate(doctor,errorMessages);
 
@@ -60,6 +58,22 @@ public class DoctorService {
             updatedDoctor.setAddress(doctor.getAddress());
             updatedDoctor.setPhone(doctor.getPhone());
             updatedDoctor.setGenderType(doctor.getGenderType());
+            updatedDoctor.setDateOfBirth(doctor.getDateOfBirth());
+            doctor =this.doctorRepository.save(updatedDoctor);
+            return doctor;
+        }
+        return null;
+    }
+
+    public Doctor updateDoctor(Long id,Doctor doctor) {
+        Optional<Doctor> updatedDoctorOp = this.doctorRepository.findById(id);
+        if(updatedDoctorOp.isPresent()){
+            Doctor updatedDoctor = updatedDoctorOp.get();
+            updatedDoctor.setName(doctor.getName());
+            updatedDoctor.setAddress(doctor.getAddress());
+            updatedDoctor.setPhone(doctor.getPhone());
+            updatedDoctor.setGenderType(doctor.getGenderType());
+            updatedDoctor.setDateOfBirth(doctor.getDateOfBirth());
             doctor =this.doctorRepository.save(updatedDoctor);
             return doctor;
         }
@@ -76,7 +90,10 @@ public class DoctorService {
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
         Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
         List<Doctor> doctors = doctorPage.getContent();
-        List<DoctorDTO> doctorDTOS = doctors.stream().map(doctor -> modelMapper.map(doctor,DoctorDTO.class)).toList();
+        List<DoctorDTO> doctorDTOS = new ArrayList<>();
+        for(Doctor doctor : doctors){
+            doctorDTOS.add(convertToDTO(doctor));
+        }
         DoctorResponse doctorResponse = new DoctorResponse();
         doctorResponse.setDoctors(doctorDTOS);
         doctorResponse.setTotalElements(doctorPage.getTotalElements());
@@ -87,8 +104,15 @@ public class DoctorService {
         return doctorResponse;
     }
 
-    public Doctor getDoctorById(Long id){
-        return this.doctorRepository.findById(id).orElseThrow();
+    public DoctorDTO getDoctorById(Long id){
+         Doctor doctor = this.doctorRepository.findById(id).orElseThrow();
+         DoctorDTO doctorDTO = this.convertToDTO(doctor);
+         return doctorDTO;
+    }
+
+    public Doctor findDoctorById(Long id){
+        Doctor doctor = this.doctorRepository.findById(id).orElseThrow();
+        return doctor;
     }
 
     public List<Doctor> findAll() {
@@ -101,6 +125,20 @@ public class DoctorService {
     }
 
 
+    //Converter
+    public DoctorDTO convertToDTO(Doctor doctor) {
+        DoctorDTO doctorDTO = new DoctorDTO();
+        doctorDTO.setId(doctor.getId());
+        doctorDTO.setName(doctor.getName());
+        doctorDTO.setAddress(doctor.getAddress());
+        doctorDTO.setPhone(doctor.getPhone());
+        doctorDTO.setGenderType(doctor.getGenderType());
+        doctorDTO.setDateOfBirth(doctor.getDateOfBirth());
+        doctorDTO.setAge(AgeCalculator.calculateAge(doctor.getDateOfBirth()));
+        return doctorDTO;
+    }
+
+
 
     //validation
     //ValidationMethod
@@ -110,6 +148,7 @@ public class DoctorService {
         validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
         checkDuplicateName(doctor, "nameError", "Doctor name already exists", errorMessages);
         checkDuplicatePhone(doctor, "phoneError", "Phone number already exists", errorMessages);
+        validateDateOfBirth(doctor.getDateOfBirth(),"dateOfBirthError","Doctor date of birth can't be empty",errorMessages);
     }
 
     //Not Null Method
@@ -142,6 +181,13 @@ public class DoctorService {
         }
 
         existingDoctor.ifPresent(d -> addError(fieldName, message, errorMessages));
+    }
+
+    private void validateDateOfBirth(LocalDate dateOfBirth, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        LocalDate today = LocalDate.now();
+        if (dateOfBirth.isAfter(today)) {
+            addError(fieldName,message,errorMessages);
+        }
     }
 
     //adding Error

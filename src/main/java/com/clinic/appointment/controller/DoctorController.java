@@ -1,6 +1,7 @@
 package com.clinic.appointment.controller;
 
 
+import com.clinic.appointment.dto.DoctorDTO;
 import com.clinic.appointment.dto.DoctorResponse;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.GenderType;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/doctors")
@@ -32,7 +36,8 @@ public class DoctorController {
                                     @RequestParam(defaultValue = "name",required = false) String sortBy,
                                     @RequestParam(defaultValue = "asc",required = false)String sortOrder){
         DoctorResponse doctorResponse = doctorService.getAllDoctors(pageNumber,pageSize,sortBy,sortOrder);
-        model.addAttribute("doctors",doctorResponse.getDoctors());
+        List<DoctorDTO> safeDoctorsList = new ArrayList<>(doctorResponse.getDoctors());
+        model.addAttribute("doctors",safeDoctorsList);
         model.addAttribute("response",doctorResponse);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("sortOrder", sortOrder);
@@ -55,7 +60,7 @@ public class DoctorController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model){
-        Doctor doctor= this.doctorService.getDoctorById(id);
+        DoctorDTO doctor= this.doctorService.getDoctorById(id);
         model.addAttribute("genderType", GenderType.values());
         model.addAttribute("doctor",doctor);
         return "doctors/edit";
