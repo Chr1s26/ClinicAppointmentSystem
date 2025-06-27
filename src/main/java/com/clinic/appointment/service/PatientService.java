@@ -1,5 +1,7 @@
 package com.clinic.appointment.service;
 
+import com.clinic.appointment.dto.PatientDTO;
+import com.clinic.appointment.dto.PatientResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
@@ -7,6 +9,10 @@ import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -60,12 +66,42 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
+    public PatientResponse getAllPatients(Integer pageNumber, Integer pageSize,String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<Patient> page = patientRepository.findAll(pageable);
+        List<Patient> patients = page.getContent();
+        List<PatientDTO> patientDTOs = new ArrayList<>();
+        for(Patient patient : patients){
+            patientDTOs.add(convertToDTO(patient));
+        }
+        PatientResponse patientResponse = new PatientResponse();
+        patientResponse.setPatients(patientDTOs);
+        patientResponse.setPageNumber(page.getNumber());
+        patientResponse.setPageSize(page.getSize());
+        patientResponse.setTotalPages(page.getTotalPages());
+        patientResponse.setTotalElements(page.getTotalElements());
+        patientResponse.setLastPage(page.isLast());
+        return patientResponse;
+    }
+
     public void deleteById(Long id) {
         Patient patient = this.patientRepository.findById(id).orElseThrow();
         patientRepository.delete(patient);
     }
 
 
+    //Converter
+    public PatientDTO convertToDTO(Patient patient){
+        PatientDTO patientDTO = new PatientDTO();
+        patientDTO.setId(patient.getId());
+        patientDTO.setName(patient.getName());
+        patientDTO.setEmail(patient.getEmail());
+        patientDTO.setAddress(patient.getAddress());
+        patientDTO.setDateOfBirth(patient.getDateOfBirth());
+        patientDTO.setPatientType(patient.getPatientType());
+        return patientDTO;
+    }
 
     //validation
     //validateMethod

@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -31,14 +34,24 @@ public class Department {
     @Column
     private LocalDate updatedAt;
 
-    @ManyToMany
-    @JoinTable(name = "doctor_department",
-        joinColumns = @JoinColumn(name = "dept_id"),
-        inverseJoinColumns = @JoinColumn(name = "doctor_id"))
+    @ManyToMany(mappedBy = "departments")
     private Set<Doctor> doctors = new HashSet<>();
 
     @Override
     public String toString() {
         return departmentName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Department that = (Department) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

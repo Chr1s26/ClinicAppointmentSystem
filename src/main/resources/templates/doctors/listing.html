@@ -90,7 +90,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
     <!-- Wrapper -->
     <div class="flex flex-col lg:flex-row grow pt-(--header-height) lg:pt-0">
         <!-- Sidebar -->
-        <div th:replace="fragments/sidebar :: sidebar"></div>
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         <!-- End of Sidebar -->
         <!-- Main -->
         <div class="flex flex-col grow lg:rounded-l-xl bg-background border border-input lg:ms-(--sidebar-width)">
@@ -466,7 +466,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </div>
                                                 <div class="grid place-items-center">
                                                     <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">
-                                                        <span th:text="${doctor.name}">Department Name</span>
+                                                        <span th:text="${doctor.name}">Doctor Name</span>
                                                     </a>
                                                     <span class="text-sm text-secondary-foreground text-center" th:text="${doctor.address}">
                         </span>
@@ -483,6 +483,15 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                     </div>
                                                 </div>
                                                 <div class="border-t border-input border-dashed">
+                                                </div>
+                                                <div class="flex items-center justify-between flex-wrap my-2.5 gap-2">
+               <span class="text-xs text-secondary-foreground uppercase">
+                Age
+               </span>
+                                                    <div class="flex flex-wrap gap-1.5">
+                <span th:text="${doctor.age}" class="kt-badge kt-badge-outline">-
+                </span>
+                                                    </div>
                                                 </div>
                                                 <div class="flex items-center justify-between flex-wrap my-2.5 gap-2">
                <span class="text-xs text-secondary-foreground uppercase">
@@ -545,20 +554,20 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
 
                                                 <!-- Previous -->
                                                 <li th:if="${response.pageNumber > 0}">
-                                                    <a th:href="@{/departments(pageNumber=${response.pageNumber - 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                    <a th:href="@{/doctors(pageNumber=${response.pageNumber - 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
                                                        class="text-blue-500">Previous</a>
                                                 </li>
 
                                                 <!-- Page numbers -->
                                                 <li th:each="i : ${#numbers.sequence(0, response.totalPages - 1)}"
                                                     th:classappend="${i == response.pageNumber} ? 'font-bold underline' : ''">
-                                                    <a th:href="@{/departments(pageNumber=${i}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                    <a th:href="@{/doctors(pageNumber=${i}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
                                                        th:text="${i + 1}" class="text-blue-500 hover:underline">1</a>
                                                 </li>
 
                                                 <!-- Next -->
                                                 <li th:if="${response.pageNumber + 1 < response.totalPages}">
-                                                    <a th:href="@{/departments(pageNumber=${response.pageNumber + 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                                                    <a th:href="@{/doctors(pageNumber=${response.pageNumber + 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
                                                        class="text-blue-500">Next</a>
                                                 </li>
 
