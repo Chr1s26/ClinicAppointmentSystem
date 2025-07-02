@@ -2,7 +2,7 @@ package com.clinic.appointment.test.service;
 
 import com.clinic.appointment.dto.PatientResponse;
 import com.clinic.appointment.model.Patient;
-import com.clinic.appointment.model.PatientType;
+import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.repository.PatientRepository;
 import com.clinic.appointment.service.PatientService;
 import org.assertj.core.api.Assertions;

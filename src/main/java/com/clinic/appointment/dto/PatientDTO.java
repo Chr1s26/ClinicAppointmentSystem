@@ -1,10 +1,6 @@
 package com.clinic.appointment.dto;
 
-import com.clinic.appointment.model.PatientType;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.clinic.appointment.model.constant.PatientType;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 

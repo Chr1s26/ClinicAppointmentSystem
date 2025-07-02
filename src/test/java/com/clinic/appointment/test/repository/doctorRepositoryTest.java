@@ -1,7 +1,7 @@
 //package com.clinic.appointment.test.repository;
 //
 //import com.clinic.appointment.model.Doctor;
-//import com.clinic.appointment.model.GenderType;
+//import com.clinic.appointment.model.constant.GenderType;
 //import com.clinic.appointment.repository.DoctorRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;

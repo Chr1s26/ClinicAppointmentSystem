@@ -1,7 +1,7 @@
 package com.clinic.appointment.exception;
 
-import com.clinic.appointment.model.GenderType;
-import com.clinic.appointment.model.PatientType;
+import com.clinic.appointment.model.constant.GenderType;
+import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.service.DepartmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

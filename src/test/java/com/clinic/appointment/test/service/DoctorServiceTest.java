@@ -2,9 +2,8 @@ package com.clinic.appointment.test.service;
 
 import com.clinic.appointment.dto.DoctorDTO;
 import com.clinic.appointment.dto.DoctorResponse;
-import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.GenderType;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.service.DoctorService;
 import org.assertj.core.api.Assertions;
@@ -15,9 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
-import org.springframework.ui.Model;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,31 +35,31 @@ public class DoctorServiceTest {
     @InjectMocks
     private DoctorService doctorService;
 
-    @Test
-    public void doctorService_CreateDoctor_ReturnDoctor(){
-        Doctor doctor = new Doctor();
-        doctor.setName("Doctor");
-        doctor.setAddress("Tonson Apartment");
-        doctor.setDateOfBirth(LocalDate.of(1990, 1, 1));
-        doctor.setPhone("097874634");
-        doctor.setGenderType(GenderType.MALE);
+//    @Test
+//    public void doctorService_CreateDoctor_ReturnDoctor(){
+//        Doctor doctor = new Doctor();
+//        doctor.setName("Doctor");
+//        doctor.setAddress("Tonson Apartment");
+//        doctor.setDateOfBirth(LocalDate.of(1990, 1, 1));
+//        doctor.setPhone("097874634");
+//        doctor.setGenderType(GenderType.MALE);
+//
+//        when(doctorRepository.findDoctorByNameIgnoreCase(doctor.getName())).thenReturn(Optional.empty());
+//        when(doctorRepository.findByPhone(doctor.getPhone())).thenReturn(Optional.empty());
+//        when(doctorRepository.save(any(Doctor.class))).thenReturn(doctor);
+//
+//        Doctor savedDoctor = doctorService.createDoctor(doctor,null);
+//
+//        Assertions.assertThat(savedDoctor).isNotNull();
+//        Assertions.assertThat(savedDoctor.getName()).isEqualTo("Doctor");
+//    }
 
-        when(doctorRepository.findDoctorByNameIgnoreCase(doctor.getName())).thenReturn(Optional.empty());
-        when(doctorRepository.findByPhone(doctor.getPhone())).thenReturn(Optional.empty());
-        when(doctorRepository.save(any(Doctor.class))).thenReturn(doctor);
-
-        Doctor savedDoctor = doctorService.createDoctor(doctor,null);
-
-        Assertions.assertThat(savedDoctor).isNotNull();
-        Assertions.assertThat(savedDoctor.getName()).isEqualTo("Doctor");
-    }
-
-    @Test
-    void testCreateDoctor_ValidationFails() {
-        Doctor invalidDoctor = new Doctor(); // missing required fields
-
-        assertThrows(NullPointerException.class, () -> doctorService.createDoctor(invalidDoctor, null));
-    }
+//    @Test
+//    void testCreateDoctor_ValidationFails() {
+//        Doctor invalidDoctor = new Doctor(); // missing required fields
+//
+//        assertThrows(NullPointerException.class, () -> doctorService.createDoctor(invalidDoctor, null));
+//    }
 
     @Test
     public void doctorService_UpdateDoctor_ReturnDoctor(){

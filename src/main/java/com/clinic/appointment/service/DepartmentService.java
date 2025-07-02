@@ -6,8 +6,6 @@ import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Department;
-import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.repository.DepartmentRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,7 +21,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
