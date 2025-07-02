@@ -1,10 +1,10 @@
 package com.clinic.appointment.controller;
 
 
+import com.clinic.appointment.dto.DoctorCreateDto;
 import com.clinic.appointment.dto.DoctorDTO;
 import com.clinic.appointment.dto.DoctorResponse;
-import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.GenderType;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +46,13 @@ public class DoctorController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model){
-        model.addAttribute("doctor",new Doctor());
+        model.addAttribute("doctor",new DoctorCreateDto());
         model.addAttribute("genderType",GenderType.values());
         return "doctors/create";
     }
 
     @PostMapping("/create")
-    public String createDoctor(@ModelAttribute Doctor doctor,Model model){
+    public String createDoctor(@ModelAttribute DoctorCreateDto doctor,Model model){
         model.addAttribute("doctor",doctor);
         doctorService.createDoctor(doctor,model);
         return  "redirect:/doctors";

@@ -1,12 +1,12 @@
 package com.clinic.appointment.model;
 
+import com.clinic.appointment.model.constant.GenderType;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity

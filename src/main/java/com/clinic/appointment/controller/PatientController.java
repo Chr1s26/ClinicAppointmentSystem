@@ -3,7 +3,7 @@ package com.clinic.appointment.controller;
 import com.clinic.appointment.dto.PatientDTO;
 import com.clinic.appointment.dto.PatientResponse;
 import com.clinic.appointment.model.Patient;
-import com.clinic.appointment.model.PatientType;
+import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

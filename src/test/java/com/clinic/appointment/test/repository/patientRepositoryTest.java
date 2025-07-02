@@ -1,7 +1,7 @@
 //package com.clinic.appointment.test.repository;
 //
 //import com.clinic.appointment.model.Patient;
-//import com.clinic.appointment.model.PatientType;
+//import com.clinic.appointment.model.constant.PatientType;
 //import com.clinic.appointment.repository.PatientRepository;
 //import org.assertj.core.api.Assertions;
 //import org.junit.jupiter.api.Test;

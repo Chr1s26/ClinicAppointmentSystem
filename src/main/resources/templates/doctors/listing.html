@@ -460,9 +460,9 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                     <div th:each="doctor : ${doctors}" class="kt-card">
                                         <div class="kt-card-content grid gap-7 py-7.5">
                                             <div class="grid place-items-center gap-4">
-                                                <div class="flex justify-center items-center size-14 rounded-full ring-1 ring-input bg-accent/60">
-                                                    <i class="ki-filled ki-ghost text-2xl text-muted-foreground">
-                                                    </i>
+                                                <div class="flex justify-center items-center size-14 rounded-full ring-1 ring-input bg-accent/60 overflow-hidden">
+                                                    <img th:src="@{${doctor.profileUrl}}" alt="Profile"
+                                                         class="w-full h-full object-cover rounded-full"/>
                                                 </div>
                                                 <div class="grid place-items-center">
                                                     <a class="text-base font-medium text-mono hover:text-primary mb-px" href="#">

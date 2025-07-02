@@ -1,16 +1,17 @@
 package com.clinic.appointment.service;
+import com.clinic.appointment.dto.DoctorCreateDto;
 import com.clinic.appointment.dto.DoctorDTO;
 import com.clinic.appointment.dto.DoctorResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.GenderType;
+import com.clinic.appointment.model.constant.FileType;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.util.AgeCalculator;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +30,18 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     private final ModelMapper modelMapper;
+    private final FileService fileService;
 
-    public Doctor createDoctor(Doctor doctor, Model model) {
+
+    public Doctor createDoctor(DoctorCreateDto createDoctor, Model model) {
+
+        Doctor doctor = new Doctor();
+        doctor.setName(createDoctor.getName());
+        doctor.setGenderType(createDoctor.getGenderType());
+        doctor.setAddress(createDoctor.getAddress());
+        doctor.setPhone(createDoctor.getPhone());
+        doctor.setDateOfBirth(createDoctor.getDateOfBirth());
+
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validate(doctor,errorMessages);
 
@@ -40,6 +51,9 @@ public class DoctorService {
         }
 
         doctor =this.doctorRepository.save(doctor);
+
+        fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "Local");
+
         return doctor;
     }
 
@@ -140,6 +154,7 @@ public class DoctorService {
         doctorDTO.setGenderType(doctor.getGenderType());
         doctorDTO.setDateOfBirth(doctor.getDateOfBirth());
         doctorDTO.setAge(AgeCalculator.calculateAge(doctor.getDateOfBirth()));
+        doctorDTO.setProfileUrl(this.fileService.getFileName(FileType.DOCTOR, doctor.getId()));
         return doctorDTO;
     }
 

@@ -252,7 +252,7 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                             <div class="w-full">
                                 <h2 class="text-center text-blue-400 font-bold text-2xl uppercase mb-10">Create Doctor</h2>
                                 <div class="bg-white p-10 rounded-lg shadow md:w-3/4 mx-auto lg:w-1/2">
-                                    <form th:action="@{/doctors/create}" th:object="${doctor}" method="post" class="needs-validation">
+                                    <form th:action="@{/doctors/create}" th:object="${doctor}" method="post" class="needs-validation" enctype="multipart/form-data">
                                         <div class="mb-5">
                                             <label  class="block mb-2 font-bold text-gray-600">Doctor Name</label>
                                             <input type="text" th:field="*{name}" placeholder="Please Write Doctor Name" class="border border-gray-300 shadow p-3 w-full rounded mb-">
@@ -281,6 +281,10 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 <option th:each="g : ${genderType}" th:value="${g}" th:text="${g.name()}"></option>
                                             </select>
                                             <div class="text-red-600" th:if="${genderTypeError}" th:text="${genderTypeError}"></div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">File Upload</label>
+                                            <input type="file" th:field="*{file}">
                                         </div>
 
                                         <button type="submit" class="block w-full bg-gray-700 text-white font-bold p-4 rounded-lg">Submit</button>
