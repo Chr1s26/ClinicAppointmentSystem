@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department,Long> {
@@ -39,4 +40,9 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
             nativeQuery = true)
     Page<DepartmentProjection> findAllWithDoctorJoinedStatus(@Param("doctorId") Long doctorId, Pageable pageable);
 
+    @Query("SELECT d FROM Department d WHERE LOWER(d.departmentName) = LOWER(:departmentName)")
+    Optional<Department> findDepartmentByNameIgnoreCase(String departmentName);
+
+    @Query("SELECT d FROM Department d WHERE d.id <> :id AND LOWER(d.departmentName) = LOWER(:departmentName)")
+    Optional<Department> findDepartmentByName(Long id, String departmentName);
 }

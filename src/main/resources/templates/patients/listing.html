@@ -524,9 +524,16 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                         </div>
                                         <div class="kt-card-footer justify-center">
                                             <a class="kt-btn kt-btn-outline" th:href="@{'/patients/edit/' + ${patient.id}}">
-                                                <i class="ki-filled ki-check-circle">
-                                                </i>
+                                                <i class="ki-filled ki-check-circle"></i>
                                                 View Patient
+                                            </a>
+
+
+                                            <a class="kt-btn kt-btn-outline kt-btn-danger"
+                                               th:href="@{'/patients/delete/' + ${patient.id}}"
+                                               onclick="return confirm('Are you sure you want to delete this patient?');">
+                                                <i class="ki-filled ki-trash"></i>
+                                                Delete Patient
                                             </a>
                                         </div>
                                     </div>

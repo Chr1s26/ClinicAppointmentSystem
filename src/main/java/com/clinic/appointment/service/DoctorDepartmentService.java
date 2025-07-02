@@ -28,7 +28,7 @@ public class DoctorDepartmentService {
         Doctor doctor = doctorService.findDoctorById(doctorId);
         Department department = departmentService.findDepartmentById(departmentId);
         doctor.addDepartment(department);
-        return doctorService.updateDoctor(doctorId,doctor);
+        return doctorService.updateDoctorDepartment(doctorId,doctor);
     }
 
     public DepartmentResponse getAllDepartmentsByDoctorId(Long doctorId, int pageNumber, int pageSize, String sortBy, String sortOrder) {

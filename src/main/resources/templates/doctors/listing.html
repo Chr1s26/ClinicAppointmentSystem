@@ -519,6 +519,12 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </i>
                                                 View Doctor
                                             </a>
+                                            <a class="kt-btn kt-btn-outline kt-btn-danger"
+                                               th:href="@{'/doctors/delete/' + ${doctor.id}}"
+                                               onclick="return confirm('Are you sure you want to delete this doctor?');">
+                                                <i class="ki-filled ki-trash"></i>
+                                                Delete Doctor
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

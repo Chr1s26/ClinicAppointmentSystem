@@ -532,6 +532,12 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                                 </i>
                                                 View Department
                                             </a>
+                                            <a class="kt-btn kt-btn-outline kt-btn-danger"
+                                               th:href="@{'/departments/delete/' + ${department.id}}"
+                                               onclick="return confirm('Are you sure you want to delete this department?');">
+                                                <i class="ki-filled ki-trash"></i>
+                                                Delete Department
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
