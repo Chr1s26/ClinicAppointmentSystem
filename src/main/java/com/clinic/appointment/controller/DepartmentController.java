@@ -36,8 +36,8 @@ public class DepartmentController {
     }
 
     @PostMapping("/create")
-    public String createDepartment(@ModelAttribute Department department){
-        departmentService.createDepartment(department);
+    public String createDepartment(@ModelAttribute Department department, Model model){
+        departmentService.createDepartment(department,model);
         return "redirect:/departments";
     }
 
@@ -48,8 +48,8 @@ public class DepartmentController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateDepartment(@PathVariable Long id, @ModelAttribute Department department){
-        departmentService.updateDepartment(id, department);
+    public String updateDepartment(@PathVariable Long id, @ModelAttribute Department department, Model model){
+        departmentService.updateDepartment(id, department,model);
         return "redirect:/departments";
     }
 

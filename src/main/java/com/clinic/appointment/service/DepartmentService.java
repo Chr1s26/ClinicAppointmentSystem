@@ -2,7 +2,12 @@ package com.clinic.appointment.service;
 
 import com.clinic.appointment.dto.DepartmentDTO;
 import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.exception.CommonException;
+import com.clinic.appointment.exception.ErrorMessage;
+import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Department;
+import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.repository.DepartmentRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -12,8 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,12 +55,27 @@ public class DepartmentService {
         return departments;
     }
 
-    public Department createDepartment(Department department){
+    public Department createDepartment(Department department, Model model){
+        List<ErrorMessage> errorMessages = new ArrayList<>();
+        validate(department,errorMessages);
+
+        if(!errorMessages.isEmpty()) {
+            model.addAttribute("department", department);
+            throw new CommonException(errorMessages,"departments/create",model);
+        }
         department.setCreatedAt(LocalDate.now());
         return this.departmentRepository.save(department);
     }
 
-    public Department updateDepartment(Long id, Department department){
+    public Department updateDepartment(Long id, Department department,Model model){
+        List<ErrorMessage> errorMessages = new ArrayList<>();
+        validate(department,errorMessages);
+
+        if(!errorMessages.isEmpty()) {
+            model.addAttribute("department", department);
+            throw new CommonException(errorMessages,"departments/edit",model);
+        }
+
         Optional<Department> departmentOptional = this.departmentRepository.findById(id);
         if(departmentOptional.isPresent()){
             Department newDepartment = departmentOptional.get();
@@ -76,4 +98,39 @@ public class DepartmentService {
         Optional<Department> departmentOptional = this.departmentRepository.findById(id);
         return departmentOptional.orElse(null);
     }
+
+    //validation
+    private void validate(Department department, List<ErrorMessage> errorMessages){
+        validateField(department.getDepartmentName(),"departmentNameError","Department Name can't be empty",errorMessages);
+        validateField(department.getDepartmentDescription(),"departmentDescriptionError","Department description can't be empty",errorMessages);
+        checkDuplicateName(department, "departmentNameError", "Department name already exists", errorMessages);
+    }
+
+    //Not Null Method
+    private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
+        if(StringUtil.isEmpty(value)) {
+            addError(fieldName,message,errorMessages);
+        }
+    }
+
+    //Duplicate Method
+    private void checkDuplicateName(Department department, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        Optional<Department> existingDepartment;
+        if(department.getDepartmentName() == null){
+            return;
+        }
+        if (department.getId() == null) {
+            existingDepartment = departmentRepository.findDepartmentByNameIgnoreCase(department.getDepartmentName());
+        } else {
+            existingDepartment = departmentRepository.findDepartmentByName(department.getId(), department.getDepartmentName());
+        }
+
+        existingDepartment.ifPresent(d -> addError(fieldName, message, errorMessages));
+    }
+
+    //adding Error
+    private void addError(String field, String msg, List<ErrorMessage> list) {
+        list.add(new ErrorMessage(field, msg));
+    }
+
 }

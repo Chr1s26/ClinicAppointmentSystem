@@ -67,8 +67,7 @@ public class DoctorController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") Doctor doctor,Model model){
-        model.addAttribute("doctor",doctor);
+    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") DoctorDTO doctor,Model model){
         this.doctorService.updateDoctor(id,doctor,model);
         return "redirect:/doctors";
     }

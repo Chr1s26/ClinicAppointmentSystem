@@ -5,6 +5,7 @@ import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.util.AgeCalculator;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,8 @@ import java.util.Optional;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+
+    private final ModelMapper modelMapper;
 
     public Doctor createDoctor(Doctor doctor, Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
@@ -42,12 +43,15 @@ public class DoctorService {
         return doctor;
     }
 
-    public Doctor updateDoctor(Long id,Doctor doctor, Model model) {
+    public Doctor updateDoctor(Long id,DoctorDTO doctorDTO, Model model) {
+
+        Doctor doctor = this.convertToEntity(doctorDTO);
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validate(doctor,errorMessages);
 
         if(!errorMessages.isEmpty()) {
-            model.addAttribute("doctor", doctor);
+            DoctorDTO doctorDTO1 = convertToDTO(doctor);
+            model.addAttribute("doctor", doctorDTO1);
             throw new CommonException(errorMessages,"doctors/edit",model);
         }
 
@@ -65,7 +69,7 @@ public class DoctorService {
         return null;
     }
 
-    public Doctor updateDoctor(Long id,Doctor doctor) {
+    public Doctor updateDoctorDepartment(Long id,Doctor doctor) {
         Optional<Doctor> updatedDoctorOp = this.doctorRepository.findById(id);
         if(updatedDoctorOp.isPresent()){
             Doctor updatedDoctor = updatedDoctorOp.get();
@@ -79,6 +83,7 @@ public class DoctorService {
         }
         return null;
     }
+
 
     public List<Doctor> getDoctors(){
         List<Doctor> doctors =this.doctorRepository.findAll();
@@ -138,6 +143,16 @@ public class DoctorService {
         return doctorDTO;
     }
 
+    public Doctor convertToEntity(DoctorDTO doctorDTO) {
+        Doctor doctor = new Doctor();
+        doctor.setName(doctorDTO.getName());
+        doctor.setAddress(doctorDTO.getAddress());
+        doctor.setPhone(doctorDTO.getPhone());
+        doctor.setGenderType(doctorDTO.getGenderType());
+        doctor.setDateOfBirth(doctorDTO.getDateOfBirth());
+        doctor.setId(doctorDTO.getId());
+        return doctor;
+    }
 
 
     //validation
@@ -146,14 +161,28 @@ public class DoctorService {
         validateField(doctor.getName(),"nameError","Doctor Name can't be empty",errorMessages);
         validateField(doctor.getPhone(),"phoneError","Doctor phone can't be empty",errorMessages);
         validateField(doctor.getAddress(),"addressError","Doctor address can't be empty",errorMessages);
+        validateField(doctor.getDateOfBirth(),"dateOfBirthError","Doctor date of birth can't be empty",errorMessages);
+        validateField(doctor.getGenderType(),"genderTypeError","Doctor gender type can't be empty",errorMessages);
         checkDuplicateName(doctor, "nameError", "Doctor name already exists", errorMessages);
         checkDuplicatePhone(doctor, "phoneError", "Phone number already exists", errorMessages);
-        validateDateOfBirth(doctor.getDateOfBirth(),"dateOfBirthError","Doctor date of birth can't be empty",errorMessages);
+        validateDateOfBirth(doctor.getDateOfBirth(),"dateOfBirthError","Invalid Date of birth",errorMessages);
     }
 
     //Not Null Method
     private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
         if(StringUtil.isEmpty(value)) {
+            addError(fieldName,message,errorMessages);
+        }
+    }
+
+    private void validateField(LocalDate value,String fieldName,String message,List<ErrorMessage> errorMessages) {
+        if(value == null) {
+            addError(fieldName,message,errorMessages);
+        }
+    }
+
+    private void validateField(GenderType value, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        if(value == null) {
             addError(fieldName,message,errorMessages);
         }
     }
@@ -185,6 +214,11 @@ public class DoctorService {
 
     private void validateDateOfBirth(LocalDate dateOfBirth, String fieldName, String message, List<ErrorMessage> errorMessages) {
         LocalDate today = LocalDate.now();
+
+        if (dateOfBirth == null) {
+            return;
+        }
+
         if (dateOfBirth.isAfter(today)) {
             addError(fieldName,message,errorMessages);
         }

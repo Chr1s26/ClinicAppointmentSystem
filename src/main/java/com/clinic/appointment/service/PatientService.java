@@ -6,7 +6,9 @@ import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.GenderType;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.PatientType;
 import com.clinic.appointment.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -111,6 +113,8 @@ public class PatientService {
         validateField(patient.getName(),"nameError","Patient Name can't be empty",errorMessages);
         validateField(patient.getAddress(),"addressError","Patient address can't be empty",errorMessages);
         validateField(patient.getEmail(),"emailError","Patient email can't be empty",errorMessages);
+        validateField(patient.getDateOfBirth(),"dateOfBirthError","Patient date of birth can't be empty",errorMessages);
+        validateField(patient.getPatientType(),"patientTypeError","Patient type can't be empty",errorMessages);
 
         if (patient.getDateOfBirth() == null) {
             addError("dateOfBirthError", "Patient Date of Birth can't be empty", errorMessages);
@@ -122,6 +126,18 @@ public class PatientService {
     //Not Null Method
     private void validateField(String value,String fieldName,String message,List<ErrorMessage> errorMessages) {
         if(StringUtil.isEmpty(value)) {
+            addError(fieldName,message,errorMessages);
+        }
+    }
+
+    private void validateField(LocalDate value,String fieldName,String message,List<ErrorMessage> errorMessages) {
+        if(value == null) {
+            addError(fieldName,message,errorMessages);
+        }
+    }
+
+    private void validateField(PatientType value, String fieldName, String message, List<ErrorMessage> errorMessages) {
+        if(value == null) {
             addError(fieldName,message,errorMessages);
         }
     }

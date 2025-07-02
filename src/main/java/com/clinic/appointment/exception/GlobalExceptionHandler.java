@@ -24,8 +24,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CommonException.class)
     public ModelAndView handleErrorMessage(CommonException e, HttpServletRequest request) {
+
         ModelAndView modelAndView = new ModelAndView(e.getReturnRoute());
         Model model = e.getModel();
+
         if(model != null) {
             Map<String, Object> attrs = e.getModel().asMap();
             for(Map.Entry<String, Object> entry : attrs.entrySet()) {
@@ -39,9 +41,9 @@ public class GlobalExceptionHandler {
         for(ErrorMessage errorMessage : e.getErrorMessageList()){
             modelAndView.addObject(errorMessage.getFieldName(), errorMessage.getMessage());
         }
+
         modelAndView.addObject("requestURI", request.getRequestURI());
-//        model.addAttribute("requestURI",request.getRequestURI());
-//        globalModel.addAttribute("requestURI",request.getRequestURI());
+
         return modelAndView;
     }
 
