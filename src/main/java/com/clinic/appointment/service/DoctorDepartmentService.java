@@ -1,8 +1,8 @@
 package com.clinic.appointment.service;
 
-import com.clinic.appointment.dto.DepartmentDTO;
-import com.clinic.appointment.dto.DepartmentProjection;
-import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.dto.department.DepartmentDTO;
+import com.clinic.appointment.dto.department.DepartmentProjection;
+import com.clinic.appointment.dto.department.DepartmentResponse;
 import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.repository.DepartmentRepository;

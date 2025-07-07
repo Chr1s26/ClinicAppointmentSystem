@@ -1,14 +1,17 @@
 package com.clinic.appointment.service;
 
-import com.clinic.appointment.dto.PatientDTO;
-import com.clinic.appointment.dto.PatientResponse;
+import com.clinic.appointment.dto.patient.PatientCreateDto;
+import com.clinic.appointment.dto.patient.PatientDTO;
+import com.clinic.appointment.dto.patient.PatientResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +30,11 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
 
-    public Patient create(Patient patient, Model model) {
+    @Autowired
+    private FileService fileService;
+
+    public Patient create(PatientCreateDto patientCreateDto, Model model) {
+        Patient patient = convertToEntity(patientCreateDto);
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validate(patient,errorMessages);
 
@@ -35,8 +42,10 @@ public class PatientService {
             model.addAttribute("patient", patient);
             throw new CommonException(errorMessages,"patients/create",model);
         }
+        Patient savedPatient = patientRepository.save(patient);
+        fileService.handleFileUpload(patientCreateDto.getFile(), FileType.PATIENT, savedPatient.getId(),"s3");
 
-        return patientRepository.save(patient);
+        return savedPatient;
     }
 
     public Patient update(Long id,Patient patient,Model model) {
@@ -59,6 +68,12 @@ public class PatientService {
 
     public Patient findById(Long id) {
         return patientRepository.findById(id).orElseThrow();
+    }
+
+    public PatientDTO getPatientById(Long id) {
+        Patient patient =findById(id);
+        PatientDTO patientDTO = convertToDTO(patient);
+        return patientDTO;
     }
 
     public List<Patient> getAll() {
@@ -99,7 +114,18 @@ public class PatientService {
         patientDTO.setAddress(patient.getAddress());
         patientDTO.setDateOfBirth(patient.getDateOfBirth());
         patientDTO.setPatientType(patient.getPatientType());
+        patientDTO.setProfileUrl(this.fileService.getFileName(FileType.PATIENT, patient.getId()));
         return patientDTO;
+    }
+
+    public Patient convertToEntity(PatientCreateDto patientCreateDto) {
+        Patient patient = new Patient();
+        patient.setName(patientCreateDto.getName());
+        patient.setEmail(patientCreateDto.getEmail());
+        patient.setAddress(patientCreateDto.getAddress());
+        patient.setDateOfBirth(patientCreateDto.getDateOfBirth());
+        patient.setPatientType(patientCreateDto.getPatientType());
+        return patient;
     }
 
     //validation

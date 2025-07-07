@@ -1,7 +1,6 @@
 package com.clinic.appointment.repository;
 
-import com.clinic.appointment.dto.DepartmentDTO;
-import com.clinic.appointment.dto.DepartmentProjection;
+import com.clinic.appointment.dto.department.DepartmentProjection;
 import com.clinic.appointment.model.Department;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

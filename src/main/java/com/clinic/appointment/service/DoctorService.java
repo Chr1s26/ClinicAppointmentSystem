@@ -1,7 +1,7 @@
 package com.clinic.appointment.service;
-import com.clinic.appointment.dto.DoctorCreateDto;
-import com.clinic.appointment.dto.DoctorDTO;
-import com.clinic.appointment.dto.DoctorResponse;
+import com.clinic.appointment.dto.doctor.DoctorCreateDto;
+import com.clinic.appointment.dto.doctor.DoctorDTO;
+import com.clinic.appointment.dto.doctor.DoctorResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
@@ -52,7 +52,7 @@ public class DoctorService {
 
         doctor =this.doctorRepository.save(doctor);
 
-        fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "Local");
+        fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
 
         return doctor;
     }
@@ -78,6 +78,7 @@ public class DoctorService {
             updatedDoctor.setGenderType(doctor.getGenderType());
             updatedDoctor.setDateOfBirth(doctor.getDateOfBirth());
             doctor =this.doctorRepository.save(updatedDoctor);
+
             return doctor;
         }
         return null;

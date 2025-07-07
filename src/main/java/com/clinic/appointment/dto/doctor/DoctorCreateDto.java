@@ -1,4 +1,4 @@
-package com.clinic.appointment.dto;
+package com.clinic.appointment.dto.doctor;
 
 import com.clinic.appointment.model.constant.GenderType;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.clinic.appointment.dto;
+package com.clinic.appointment.dto.doctor;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientResponse {
-    private List<PatientDTO> patients;
+public class DoctorResponse {
+    private List<DoctorDTO> doctors;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

@@ -1,7 +1,8 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.dto.PatientDTO;
-import com.clinic.appointment.dto.PatientResponse;
+import com.clinic.appointment.dto.patient.PatientCreateDto;
+import com.clinic.appointment.dto.patient.PatientDTO;
+import com.clinic.appointment.dto.patient.PatientResponse;
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.service.PatientService;
@@ -23,15 +24,15 @@ public class PatientController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("patient", new Patient());
+        model.addAttribute("patient", new PatientCreateDto());
         model.addAttribute("patientType", PatientType.values());
         return "patients/create";
     }
 
     @PostMapping("/create")
-    public String createPatient(@ModelAttribute Patient patient,Model model) {
-        model.addAttribute("patient", patient);
-        patientService.create(patient,model);
+    public String createPatient(@ModelAttribute PatientCreateDto patientCreateDto,Model model) {
+        model.addAttribute("patient", patientCreateDto);
+        patientService.create(patientCreateDto,model);
         return "redirect:/patients";
     }
 
@@ -52,7 +53,7 @@ public class PatientController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Patient patient = this.patientService.findById(id);
+        PatientDTO patient = this.patientService.getPatientById(id);
         if(patient == null) return "redirect:/patients";
         model.addAttribute("patient",patient);
         model.addAttribute("patientType", PatientType.values());

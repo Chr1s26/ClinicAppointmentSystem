@@ -1,6 +1,5 @@
-package com.clinic.appointment.dto;
+package com.clinic.appointment.dto.department;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

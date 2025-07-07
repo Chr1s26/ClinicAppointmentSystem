@@ -1,7 +1,6 @@
 package com.clinic.appointment.test.service;
 
-import com.clinic.appointment.dto.DepartmentDTO;
-import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.dto.department.DepartmentResponse;
 import com.clinic.appointment.model.Department;
 import com.clinic.appointment.repository.DepartmentRepository;
 import com.clinic.appointment.service.DepartmentService;

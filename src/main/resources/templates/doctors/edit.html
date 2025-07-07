@@ -251,16 +251,18 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                         <!-- Container -->
                         <div class="kt-container-fixed">
                             <div class="flex flex-col items-center gap-2 lg:gap-3.5 py-4 lg:pt-5 lg:pb-10">
+                                <!-- Show doctor's profile image if available -->
                                 <img th:if="${doctor.profileUrl != null}"
                                      th:src="@{${doctor.profileUrl}}"
                                      alt="Doctor Profile"
                                      class="rounded-full border-3 border-green-500 size-[100px] shrink-0 object-cover" />
 
-                                <!-- If doctor.profileUrl is null (fallback image) -->
-                                <img th:unless="${doctor.profileUrl != null}"
+                                <!-- Fallback image if no profile -->
+                                <img th:if="${doctor.profileUrl == null}"
                                      th:src="@{/images/default-profile.png}"
                                      alt="Default Profile"
                                      class="rounded-full border-3 border-green-500 size-[100px] shrink-0 object-cover" />
+
                                 <div class="flex items-center gap-1.5">
                                     <div class="text-lg leading-5 font-semibold text-mono" th:text="${doctor.name}">
                                     </div>

@@ -1,4 +1,4 @@
-package com.clinic.appointment.dto;
+package com.clinic.appointment.dto.department;
 
 import java.time.LocalDate;
 

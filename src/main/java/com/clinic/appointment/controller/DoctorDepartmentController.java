@@ -1,7 +1,7 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.dto.DepartmentResponse;
-import com.clinic.appointment.dto.DoctorDTO;
+import com.clinic.appointment.dto.department.DepartmentResponse;
+import com.clinic.appointment.dto.doctor.DoctorDTO;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorDepartmentService;

@@ -1,7 +1,7 @@
 package com.clinic.appointment.service;
 
-import com.clinic.appointment.dto.DepartmentDTO;
-import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.dto.department.DepartmentDTO;
+import com.clinic.appointment.dto.department.DepartmentResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;

@@ -1,6 +1,6 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.dto.DepartmentResponse;
+import com.clinic.appointment.dto.department.DepartmentResponse;
 import com.clinic.appointment.model.Department;
 import com.clinic.appointment.service.DepartmentService;
 import lombok.AllArgsConstructor;
