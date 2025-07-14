@@ -6,9 +6,13 @@ import com.clinic.appointment.dto.patient.PatientResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
+import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.PatientType;
+import com.clinic.appointment.model.constant.Status;
+import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +35,12 @@ public class PatientService {
     private final PatientRepository patientRepository;
 
     @Autowired
+    private AppUserRepository appUserRepository;
+
+    @Autowired
     private FileService fileService;
+    @Autowired
+    private AuthService authService;
 
     public Patient create(PatientCreateDto patientCreateDto, Model model) {
         Patient patient = convertToEntity(patientCreateDto);
@@ -43,26 +52,42 @@ public class PatientService {
             throw new CommonException(errorMessages,"patients/create",model);
         }
         Patient savedPatient = patientRepository.save(patient);
-        fileService.handleFileUpload(patientCreateDto.getFile(), FileType.PATIENT, savedPatient.getId(),"s3");
+
+        if(patientCreateDto.getFile() != null && !patientCreateDto.getFile().isEmpty()){
+            fileService.handleFileUpload(patientCreateDto.getFile(), FileType.PATIENT, savedPatient.getId(),"s3");
+        }
 
         return savedPatient;
     }
 
-    public Patient update(Long id,Patient patient,Model model) {
+    public Patient update(Long id,PatientDTO patientDTO,Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
-        validate(patient,errorMessages);
+        Patient checkPatient = convertToEntity(patientDTO);
+        validate(checkPatient,errorMessages);
 
         if(!errorMessages.isEmpty()) {
-            model.addAttribute("patient",patient);
+            model.addAttribute("patient",patientDTO);
             throw new CommonException(errorMessages,"patients/edit",model);
         }
 
         Patient updatePatient = patientRepository.findById(id).orElse(null);
-        updatePatient.setName(patient.getName());
-        updatePatient.setEmail(patient.getEmail());
-        updatePatient.setAddress(patient.getAddress());
-        updatePatient.setDateOfBirth(patient.getDateOfBirth());
-        updatePatient.setPatientType(patient.getPatientType());
+        updatePatient.setName(patientDTO.getName());
+        updatePatient.setAddress(patientDTO.getAddress());
+        updatePatient.setDateOfBirth(patientDTO.getDateOfBirth());
+        updatePatient.setPatientType(patientDTO.getPatientType());
+        updatePatient.setUpdatedAt(LocalDate.now());
+        updatePatient.setUpdatedBy(authService.getCurrentUser());
+        updatePatient.setStatus(Status.ACTIVE.name());
+        updatePatient.setPhone(patientDTO.getPhone());
+        if(patientDTO.getAppUserId() != null){
+            AppUser appUser = appUserRepository.findById(patientDTO.getAppUserId())
+                    .orElseThrow(() -> new RuntimeException("AppUser not found"));
+            updatePatient.setAppUser(appUser);
+            appUser.setPatient(updatePatient);
+        }
+        if(patientDTO.getFile() != null && !patientDTO.getFile().isEmpty()){
+            fileService.handleFileUpload(patientDTO.getFile(), FileType.PATIENT, updatePatient.getId(),"s3");
+        }
         return patientRepository.save(updatePatient);
     }
 
@@ -104,14 +129,14 @@ public class PatientService {
         patientRepository.delete(patient);
     }
 
-
     //Converter
     public PatientDTO convertToDTO(Patient patient){
         PatientDTO patientDTO = new PatientDTO();
         patientDTO.setId(patient.getId());
         patientDTO.setName(patient.getName());
-        patientDTO.setEmail(patient.getEmail());
         patientDTO.setAddress(patient.getAddress());
+        patientDTO.setPhone(patient.getPhone());
+        patientDTO.setGenderType(patient.getGenderType());
         patientDTO.setDateOfBirth(patient.getDateOfBirth());
         patientDTO.setPatientType(patient.getPatientType());
         patientDTO.setProfileUrl(this.fileService.getFileName(FileType.PATIENT, patient.getId()));
@@ -121,10 +146,37 @@ public class PatientService {
     public Patient convertToEntity(PatientCreateDto patientCreateDto) {
         Patient patient = new Patient();
         patient.setName(patientCreateDto.getName());
-        patient.setEmail(patientCreateDto.getEmail());
+        patient.setPhone(patientCreateDto.getPhone());
         patient.setAddress(patientCreateDto.getAddress());
         patient.setDateOfBirth(patientCreateDto.getDateOfBirth());
         patient.setPatientType(patientCreateDto.getPatientType());
+        patient.setStatus(Status.ACTIVE.name());
+        patient.setCreatedAt(LocalDate.now());
+        patient.setCreatedBy(authService.getCurrentUser());
+        if(patientCreateDto.getAppUserId() != null){
+            AppUser appUser = appUserRepository.findById(patientCreateDto.getAppUserId())
+                    .orElseThrow(() -> new RuntimeException("AppUser not found"));
+            patient.setAppUser(appUser);
+            appUser.setPatient(patient);
+        }
+        return patient;
+    }
+
+    public Patient convertToEntity(PatientDTO patientDTO) {
+        Patient patient = new Patient();
+        patient.setName(patientDTO.getName());
+        patient.setPhone(patientDTO.getPhone());
+        patient.setAddress(patientDTO.getAddress());
+        patient.setDateOfBirth(patientDTO.getDateOfBirth());
+        patient.setPatientType(patientDTO.getPatientType());
+        patient.setGenderType(patientDTO.getGenderType());
+        patient.setStatus(Status.ACTIVE.name());
+        patient.setCreatedAt(LocalDate.now());
+        patient.setCreatedBy(authService.getCurrentUser());
+        AppUser appUser = appUserRepository.findById(patientDTO.getAppUserId())
+                .orElseThrow(() -> new RuntimeException("AppUser not found"));
+        patient.setAppUser(appUser);
+        appUser.setPatient(patient);
         return patient;
     }
 
@@ -132,10 +184,8 @@ public class PatientService {
     //validateMethod
     private void validate(Patient patient,List<ErrorMessage> errorMessages){
         checkDuplicateName(patient, "nameError", "Patient name already exists", errorMessages);
-        checkDuplicateEmail(patient, "emailError", "Patient email already exists", errorMessages);
         validateField(patient.getName(),"nameError","Patient Name can't be empty",errorMessages);
         validateField(patient.getAddress(),"addressError","Patient address can't be empty",errorMessages);
-        validateField(patient.getEmail(),"emailError","Patient email can't be empty",errorMessages);
         validateField(patient.getDateOfBirth(),"dateOfBirthError","Patient date of birth can't be empty",errorMessages);
         validateField(patient.getPatientType(),"patientTypeError","Patient type can't be empty",errorMessages);
 
@@ -178,17 +228,17 @@ public class PatientService {
         existingPatient.ifPresent(p -> addError(fieldName, message, errorMessages));
     }
 
-    private void checkDuplicateEmail(Patient patient, String fieldName, String message, List<ErrorMessage> errorMessages) {
-        Optional<Patient> existingPatient;
-
-        if (patient.getId() == null) {
-            existingPatient = patientRepository.findByEmail(patient.getEmail());
-        } else {
-            existingPatient = patientRepository.findPatientByEmail(patient.getId(), patient.getEmail());
-        }
-
-        existingPatient.ifPresent(p -> addError(fieldName, message, errorMessages));
-    }
+//    private void checkDuplicateEmail(Patient patient, String fieldName, String message, List<ErrorMessage> errorMessages) {
+//        Optional<Patient> existingPatient;
+//
+//        if (patient.getId() == null) {
+//            existingPatient = patientRepository.findByEmail(patient.getEmail());
+//        } else {
+//            existingPatient = patientRepository.findPatientByEmail(patient.getId(), patient.getEmail());
+//        }
+//
+//        existingPatient.ifPresent(p -> addError(fieldName, message, errorMessages));
+//    }
 
     //Check Date of Birth Logical Error
     private void validateDateOfBirth(LocalDate dateOfBirth, String fieldName, String message, List<ErrorMessage> errorMessages) {

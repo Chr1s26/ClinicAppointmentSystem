@@ -5,16 +5,14 @@
     <div class="flex flex-col gap-2.5" id="sidebar_header">
         <div class="flex items-center gap-2.5 px-3.5 h-[70px]">
             <a href="html/demo10/index.html">
-                <img class="size-[34px]" src="assets/media/app/mini-logo-circle-success.svg"/>
+                <img class="size-[34px] rounded-full object-cover" th:src="@{${profileUrl}}" alt="Profile Picture"/>
             </a>
             <div class="kt-menu kt-menu-default grow" data-kt-menu="true">
                 <div class="kt-menu-item grow" data-kt-menu-item-offset="0, 15px"
                      data-kt-menu-item-placement="bottom-start" data-kt-menu-item-toggle="dropdown"
                      data-kt-menu-item-trigger="hover">
                     <div class="kt-menu-label cursor-pointer text-mono font-medium grow justify-between">
-          <span class="text-lg font-medium text-inverse grow">
-           Metronic
-          </span>
+                        <span th:text="${profileName}">Default Title</span>
                         <div class="flex flex-col text-mono font-medium">
            <span class="kt-menu-arrow">
             <i class="ki-filled ki-up">
@@ -157,6 +155,14 @@
              </span>
                                 </div>
                                 <div class="kt-menu-accordion gap-px ps-2.5">
+                                    <div class="kt-menu-item">
+                                        <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
+                                           th:href="@{/doctors/dashboard}">
+               <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
+                Doctor Dashboard
+               </span>
+                                        </a>
+                                    </div>
                                     <div class="kt-menu-item">
                                         <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
                                            th:href="@{/doctors}">
@@ -318,6 +324,14 @@
              </span>
                                     </div>
                                     <div class="kt-menu-accordion gap-px ps-2.5">
+                                        <div class="kt-menu-item">
+                                            <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
+                                               th:href="@{/patients/home}">
+               <span class="kt-menu-title text-sm text-foreground kt-menu-item-active:font-medium kt-menu-item-active:text-mono kt-menu-link-hover:text-mono">
+                Patient Dashboard
+               </span>
+                                            </a>
+                                        </div>
                                         <div class="kt-menu-item">
                                             <a class="kt-menu-link py-2 px-2.5 rounded-md kt-menu-item-active:bg-secondary kt-menu-link-hover:bg-secondary"
                                                href="/patients">

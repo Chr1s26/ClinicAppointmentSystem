@@ -2,7 +2,11 @@ package com.clinic.appointment.model;
 
 import com.clinic.appointment.model.constant.GenderType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -11,12 +15,12 @@ import java.util.Set;
 
 @Entity
 @Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "doctors")
-public class Doctor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Doctor extends UserMasterData {
 
     @Column
     private String name;
@@ -24,9 +28,6 @@ public class Doctor {
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-
-    @Column
-    private String phone;
 
     @Column
     private String address;
@@ -39,6 +40,10 @@ public class Doctor {
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "dept_id"))
     private Set<Department> departments = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "app_user_id")
+    private AppUser appUser;
 
     public void addDepartment(Department department) {
         this.departments.add(department);

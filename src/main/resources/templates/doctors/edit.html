@@ -452,37 +452,58 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                                 <div class="w-full">
                                     <h2 class="text-center text-blue-400 font-bold text-2xl uppercase mb-10">Update Doctor</h2>
                                     <div class="bg-white p-10 rounded-lg shadow md:w-3/4 mx-auto lg:w-1/2">
-                                        <form th:action="@{/doctors/update/{id}(id=${doctor.id})}" th:object="${doctor}" method="post">
+                                        <form th:action="@{/doctors/update/{id}(id=${doctor.id})}" th:object="${doctor}" method="post" enctype="multipart/form-data">
                                             <input type="hidden" th:field="*{id}" />
                                             <div class="mb-5">
-                                                <label  class="block mb-2 font-bold text-gray-600">Name</label>
-                                                <input type="text" th:field="*{name}" placeholder="Please Write Doctor Name" class="border border-gray-300 shadow p-3 w-full rounded mb-">
-                                                <div class="text-danger" th:if="${nameError}" th:text="${nameError}"></div>
+                                                <label class="block mb-2 font-bold text-gray-600">Doctor Name</label>
+                                                <input type="text" th:field="*{name}" placeholder="Please Write Name"
+                                                       class="border border-gray-300 shadow p-3 w-full rounded mb-2">
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                            </div>
+                                            <div class="mb-5">
+                                                <label class="block mb-2 font-bold text-gray-600">Doctor Phone</label>
+                                                <input type="text" th:field="*{phone}" placeholder="Please Write Phone"
+                                                       class="border border-gray-300 shadow p-3 w-full rounded mb-2">
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                            </div>
+                                            <!-- Address -->
+                                            <div class="mb-5">
+                                                <label class="block mb-2 font-bold text-gray-600">Doctor Address</label>
+                                                <input type="text" th:field="*{address}" placeholder="Please Write Address"
+                                                       class="border border-gray-300 shadow p-3 w-full rounded mb-2">
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
                                             </div>
 
-                                            <div class="mb-5">
-                                                <label  class="block mb-2 font-bold text-gray-600">Phone</label>
-                                                <input type="text" th:field="*{phone}" placeholder="Please Write Doctor Phone" class="border border-red-300 shadow p-3 w-full rounded mb-">
-                                                <div class="text-danger" th:if="${phoneError}" th:text="${phoneError}"></div>
-                                            </div>
-
-                                            <div class="mb-5">
-                                                <label  class="block mb-2 font-bold text-gray-600">Address</label>
-                                                <input type="text" th:field="*{address}" placeholder="Please Write Doctor Address" class="border border-red-300 shadow p-3 w-full rounded mb-">
-                                                <div class="text-danger" th:if="${addressError}" th:text="${addressError}"></div>
-                                            </div>
+                                            <!-- Date of Birth -->
                                             <div class="mb-3">
                                                 <label class="block mb-2 font-bold text-gray-600">Date Of Birth</label>
-                                                <input type="date" th:field="*{dateOfBirth}" class="form-control"/>
-                                                <div class="text-danger" th:if="${dateOfBirthError}" th:text="${dateOfBirthError}"></div>
+                                                <input type="date" th:field="*{dateOfBirth}" class="form-control">
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
                                             </div>
+
+                                            <!-- Gender Type -->
                                             <div class="mb-5">
-                                                <label  class="block mb-2 font-bold text-gray-600">Gender Type</label>
-                                                <select class="form-select" th:field="*{genderType}">
+                                                <label class="block mb-2 font-bold text-gray-600">Gender Type</label>
+                                                <select class="form-select border border-gray-300 p-2 rounded w-full" th:field="*{genderType}">
                                                     <option value="">Select Type</option>
                                                     <option th:each="g : ${genderType}" th:value="${g}" th:text="${g.name()}"></option>
                                                 </select>
-                                                <div class="text-danger" th:if="${genderTypeError}" th:text="${genderTypeError}"></div>
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('genderType')}" th:errors="*{genderType}"></div>
+                                            </div>
+                                            <div class="mb-5">
+                                                <label class="block mb-2 font-bold text-gray-600">App User</label>
+                                                <select class="form-select border border-gray-300 p-2 rounded w-full" th:field="*{appUserId}">
+                                                    <option value="">Select App User</option>
+                                                    <option th:each="user : ${appUsers}" th:value="${user.id}" th:text="${user.username}"></option>
+                                                </select>
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('appUserId')}" th:errors="*{appUserId}"></div>
+                                            </div>
+
+                                            <!-- File Upload -->
+                                            <div class="mb-3">
+                                                <label class="block mb-2 font-bold text-gray-600">Profile Image</label>
+                                                <input type="file" th:field="*{file}" class="form-control-file">
+                                                <div class="text-red-600" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"></div>
                                             </div>
 
                                             <button type="submit" class="block w-full bg-gray-700 text-white font-bold p-4 rounded-lg">Update Doctor</button>

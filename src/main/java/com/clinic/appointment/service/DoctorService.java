@@ -5,13 +5,17 @@ import com.clinic.appointment.dto.doctor.DoctorResponse;
 import com.clinic.appointment.exception.CommonException;
 import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
+import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.GenderType;
+import com.clinic.appointment.model.constant.Status;
+import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.util.AgeCalculator;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,17 +34,28 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     private final ModelMapper modelMapper;
-    private final FileService fileService;
 
+    @Autowired
+    private  FileService fileService;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private AppUserRepository appUserRepository;
 
     public Doctor createDoctor(DoctorCreateDto createDoctor, Model model) {
-
         Doctor doctor = new Doctor();
         doctor.setName(createDoctor.getName());
+        doctor.setPhone(createDoctor.getPhone());
         doctor.setGenderType(createDoctor.getGenderType());
         doctor.setAddress(createDoctor.getAddress());
-        doctor.setPhone(createDoctor.getPhone());
         doctor.setDateOfBirth(createDoctor.getDateOfBirth());
+        doctor.setCreatedAt(LocalDate.now());
+        doctor.setCreatedBy(authService.getCurrentUser());
+        doctor.setStatus(Status.ACTIVE.name());
+        AppUser appUser = appUserRepository.findById(createDoctor.getAppUserId())
+                .orElseThrow(() -> new RuntimeException("AppUser not found"));
+        doctor.setAppUser(appUser);
+        appUser.setDoctor(doctor);
 
         List<ErrorMessage> errorMessages = new ArrayList<>();
         validate(doctor,errorMessages);
@@ -52,7 +67,9 @@ public class DoctorService {
 
         doctor =this.doctorRepository.save(doctor);
 
-        fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+        if(createDoctor.getFile() != null && !createDoctor.getFile().isEmpty()){
+            fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+        }
 
         return doctor;
     }
@@ -77,6 +94,16 @@ public class DoctorService {
             updatedDoctor.setPhone(doctor.getPhone());
             updatedDoctor.setGenderType(doctor.getGenderType());
             updatedDoctor.setDateOfBirth(doctor.getDateOfBirth());
+            updatedDoctor.setStatus(Status.ACTIVE.name());
+            updatedDoctor.setUpdatedBy(authService.getCurrentUser());
+            updatedDoctor.setUpdatedAt(LocalDate.now());
+            AppUser appUser = appUserRepository.findById(doctorDTO.getAppUserId())
+                    .orElseThrow(() -> new RuntimeException("AppUser not found"));
+            updatedDoctor.setAppUser(appUser);
+            appUser.setDoctor(updatedDoctor);
+            if(doctorDTO.getFile() != null && !doctorDTO.getFile().isEmpty()){
+                fileService.handleFileUpload(doctorDTO.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+            }
             doctor =this.doctorRepository.save(updatedDoctor);
 
             return doctor;
@@ -140,10 +167,20 @@ public class DoctorService {
     }
 
     public void deleteById(Long id) {
-        Optional<Doctor> doctorOp = this.doctorRepository.findById(id);
-        doctorOp.ifPresent(this.doctorRepository::delete);
-    }
+        Optional<Doctor> doctorOp = doctorRepository.findById(id);
 
+        if (doctorOp.isPresent()) {
+            Doctor doctor = doctorOp.get();
+
+            AppUser appUser = doctor.getAppUser();
+            if (appUser != null) {
+                appUser.setDoctor(null);
+            }
+
+            doctor.setAppUser(null);
+            doctorRepository.delete(doctor);
+        }
+    }
 
     //Converter
     public DoctorDTO convertToDTO(Doctor doctor) {

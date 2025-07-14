@@ -1,10 +1,8 @@
 package com.clinic.appointment.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,25 +12,16 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "departments")
-public class Department {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Department extends MasterData {
     @Column
     private String departmentName;
 
     @Column
     private String departmentDescription;
-
-    @Column
-    private LocalDate createdAt;
-
-    @Column
-    private LocalDate updatedAt;
 
     @ManyToMany(mappedBy = "departments")
     private Set<Doctor> doctors = new HashSet<>();
@@ -45,13 +34,14 @@ public class Department {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Department that = (Department) o;
-        return id != null && Objects.equals(id, that.id);
+        if (!(o instanceof Department)) return false;
+        Department other = (Department) o;
+        return getId() != null && getId().equals(other.getId());
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }

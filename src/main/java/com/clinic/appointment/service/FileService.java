@@ -51,6 +51,7 @@ public class FileService {
         if("local".equalsIgnoreCase(serviceName)){
             return "/files/"+fileKey;
         }else{
+            String url = String.format(s3BaseUrl,s3BucketName,region,fileKey);
             return String.format(s3BaseUrl,s3BucketName,region,fileKey);
         }
     }

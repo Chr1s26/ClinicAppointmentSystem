@@ -1,6 +1,6 @@
 package com.clinic.appointment.model;
 
-import com.clinic.appointment.model.constant.FileType;
+import com.clinic.appointment.model.constant.GenderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,19 +8,17 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Table
+@Entity
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class FileStorage extends MasterData {
-    private FileType fileType;
-    private Long fileId;
-    private String fileName;
-    private String key;
-    private String contentType;
-    private long fileSize;
-    private String serviceName;
+@Table(name = "admins")
+public class Admin extends UserMasterData {
+    @OneToOne
+    @JoinColumn(name = "app_user_id")
+    private AppUser appUser;
+
+    private GenderType genderType;
 }
