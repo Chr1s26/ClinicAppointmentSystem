@@ -1,5 +1,6 @@
 package com.clinic.appointment.service;
 
+import com.clinic.appointment.dto.ProfileDTO;
 import com.clinic.appointment.model.Admin;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
@@ -24,29 +25,39 @@ public class ProfileService {
     private AdminRepository adminRepository;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private AuthService authService;
 
-    public String getProfileUrl(AppUser appUser,String activeRole){
+    public ProfileDTO getProfileUrl(String activeRole){
+        AppUser appUser = authService.getCurrentUser();
+        String username = null;
+        String profileUrl = null;
+        String email = appUser.getEmail();
 
         if("ROLE_DOCTOR".equals(activeRole)){
             Optional<Doctor> doctorOp = doctorRepository.findDoctorByAppUser(appUser);
             if(doctorOp.isPresent()){
                 Doctor doctor = doctorOp.get();
-                String url = this.fileService.getFileName(FileType.DOCTOR,doctor.getId());
-                return this.fileService.getFileName(FileType.DOCTOR,doctor.getId());
+                profileUrl = this.fileService.getFileName(FileType.DOCTOR,doctor.getId());
             }
+            username = doctorOp.get().getName();
         }else if("ROLE_PATIENT".equals(activeRole)){
             Optional<Patient> patientOp = patientRepository.findPatientByAppUser(appUser);
             if(patientOp.isPresent()){
                 Patient patient = patientOp.get();
-                return this.fileService.getFileName(FileType.PATIENT,patient.getId());
+                profileUrl = this.fileService.getFileName(FileType.PATIENT,patient.getId());
             }
+            username = patientOp.get().getName();
         }else if("ROLE_ADMIN".equals(activeRole)){
             Optional<Admin> adminOp = adminRepository.findAdminByAppUser(appUser);
             if(adminOp.isPresent()){
                 Admin admin = adminOp.get();
-                return this.fileService.getFileName(FileType.ADMIN,admin.getId());
+                profileUrl = this.fileService.getFileName(FileType.ADMIN,admin.getId());
             }
+            username = adminOp.get().getName();
         }
-        return null;
+
+        ProfileDTO profileDTO = new ProfileDTO(username,profileUrl,email);
+        return profileDTO;
     }
 }

@@ -12,8 +12,6 @@ public class AuthService {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpSession session = attr.getRequest().getSession(false);
         AppUser appUser = (AppUser) session.getAttribute("currentUser");
-        boolean isNotNull = session !=null;
         return session != null ? (AppUser) session.getAttribute("currentUser") : null;
     }
-
 }

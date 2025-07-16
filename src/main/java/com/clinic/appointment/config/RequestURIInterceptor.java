@@ -1,5 +1,6 @@
 package com.clinic.appointment.config;
 
+import com.clinic.appointment.dto.ProfileDTO;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.service.AuthService;
 import com.clinic.appointment.service.ProfileService;
@@ -18,9 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class RequestURIInterceptor implements HandlerInterceptor {
     private final ProfileService profileService;
 
-    @Autowired
-    private AuthService authService;
-
     public RequestURIInterceptor(ProfileService profileService) {
         this.profileService = profileService;
     }
@@ -33,10 +31,8 @@ public class RequestURIInterceptor implements HandlerInterceptor {
             if (session != null) {
                 String activeRole = (String) session.getAttribute("activeRole");
                 if (activeRole != null) {
-                    String profileUrl = profileService.getProfileUrl(authService.getCurrentUser(), activeRole);
-                    String name = authService.getCurrentUser().getUsername();
-                    modelAndView.addObject("profileName", authService.getCurrentUser().getUsername());
-                    modelAndView.addObject("profileUrl", profileUrl);
+                    ProfileDTO profileDTO = profileService.getProfileUrl(activeRole);
+                    modelAndView.addObject("profile", profileDTO);
                 }
             }
         }
