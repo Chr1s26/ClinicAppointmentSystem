@@ -54,4 +54,5 @@ public class AppUser extends MasterData {
     public String toString() {
         return username;
     }
+
 }

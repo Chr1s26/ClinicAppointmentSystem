@@ -5,6 +5,7 @@ import com.clinic.appointment.repository.AppUserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -29,15 +30,22 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         }
 
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        HttpSession session = request.getSession();
 
         if(roles.size() > 1){
             request.getSession().setAttribute("userRoles", new ArrayList<>(roles));
             response.sendRedirect("/select-role");
         }else if(roles.contains("ROLE_ADMIN")){
+            session.setAttribute("userRoles", new ArrayList<>(roles));
+            session.setAttribute("activeRole", "ROLE_ADMIN");
             response.sendRedirect("/admins/dashboard");
         }else if(roles.contains("ROLE_PATIENT")){
+            session.setAttribute("userRoles", new ArrayList<>(roles));
+            session.setAttribute("activeRole", "ROLE_PATIENT");
             response.sendRedirect("/patients/home");
         } else if(roles.contains("ROLE_DOCTOR")){
+            session.setAttribute("userRoles", new ArrayList<>(roles));
+            session.setAttribute("activeRole", "ROLE_DOCTOR");
             response.sendRedirect("/doctors/dashboard");
         } else {
             response.sendRedirect("/");

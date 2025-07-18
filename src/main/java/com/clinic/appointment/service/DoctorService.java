@@ -20,6 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import java.time.LocalDate;
@@ -34,6 +37,8 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     private final ModelMapper modelMapper;
+
+    private final MasterDataPolicy masterDataPolicy;
 
     @Autowired
     private  FileService fileService;
@@ -64,15 +69,18 @@ public class DoctorService {
             model.addAttribute("doctor", doctor);
             throw new CommonException(errorMessages,"doctors/create",model);
         }
-
-        doctor =this.doctorRepository.save(doctor);
-
-        if(createDoctor.getFile() != null && !createDoctor.getFile().isEmpty()){
-            fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+        if(masterDataPolicy.canCreate(doctor)) {
+            doctor =this.doctorRepository.save(doctor);
+            if(createDoctor.getFile() != null && !createDoctor.getFile().isEmpty()){
+                fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+                return doctor;
+            }
+        }else{
+            throw new AccessDeniedException("Access denied");
         }
-
-        return doctor;
+        return null;
     }
+
 
     public Doctor updateDoctor(Long id,DoctorDTO doctorDTO, Model model) {
 
@@ -97,16 +105,23 @@ public class DoctorService {
             updatedDoctor.setStatus(Status.ACTIVE.name());
             updatedDoctor.setUpdatedBy(authService.getCurrentUser());
             updatedDoctor.setUpdatedAt(LocalDate.now());
+            Long id1 = doctorDTO.getAppUserId();
+            System.out.println(appUserRepository.findById(doctorDTO.getAppUserId()));
             AppUser appUser = appUserRepository.findById(doctorDTO.getAppUserId())
                     .orElseThrow(() -> new RuntimeException("AppUser not found"));
             updatedDoctor.setAppUser(appUser);
             appUser.setDoctor(updatedDoctor);
-            if(doctorDTO.getFile() != null && !doctorDTO.getFile().isEmpty()){
-                fileService.handleFileUpload(doctorDTO.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
-            }
-            doctor =this.doctorRepository.save(updatedDoctor);
 
-            return doctor;
+            if(masterDataPolicy.canUpdate(updatedDoctor)){
+                if(doctorDTO.getFile() != null && !doctorDTO.getFile().isEmpty()){
+                    fileService.handleFileUpload(doctorDTO.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+                }
+                doctor =this.doctorRepository.save(updatedDoctor);
+
+                return doctor;
+            }else{
+                throw new AccessDeniedException("Access denied");
+            }
         }
         return null;
     }
@@ -132,23 +147,28 @@ public class DoctorService {
         return doctors;
     }
 
+    @PreAuthorize("@masterDataPolicy.canView(filterObject)")
     public DoctorResponse getAllDoctors(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder){
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
-        Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
-        List<Doctor> doctors = doctorPage.getContent();
-        List<DoctorDTO> doctorDTOS = new ArrayList<>();
-        for(Doctor doctor : doctors){
-            doctorDTOS.add(convertToDTO(doctor));
+        if(masterDataPolicy.isAdmin()){
+            Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+            Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
+            List<Doctor> doctors = doctorPage.getContent();
+            List<DoctorDTO> doctorDTOS = new ArrayList<>();
+            for(Doctor doctor : doctors){
+                doctorDTOS.add(convertToDTO(doctor));
+            }
+            DoctorResponse doctorResponse = new DoctorResponse();
+            doctorResponse.setDoctors(doctorDTOS);
+            doctorResponse.setTotalElements(doctorPage.getTotalElements());
+            doctorResponse.setTotalPages(doctorPage.getTotalPages());
+            doctorResponse.setPageNumber(doctorPage.getNumber());
+            doctorResponse.setPageSize(doctorPage.getSize());
+            doctorResponse.setLastPage(doctorPage.isLast());
+            return doctorResponse;
+        }else{
+            throw new AccessDeniedException("Access denied");
         }
-        DoctorResponse doctorResponse = new DoctorResponse();
-        doctorResponse.setDoctors(doctorDTOS);
-        doctorResponse.setTotalElements(doctorPage.getTotalElements());
-        doctorResponse.setTotalPages(doctorPage.getTotalPages());
-        doctorResponse.setPageNumber(doctorPage.getNumber());
-        doctorResponse.setPageSize(doctorPage.getSize());
-        doctorResponse.setLastPage(doctorPage.isLast());
-        return doctorResponse;
     }
 
     public DoctorDTO getDoctorById(Long id){
@@ -166,19 +186,24 @@ public class DoctorService {
         return this.doctorRepository.findAll();
     }
 
+
     public void deleteById(Long id) {
         Optional<Doctor> doctorOp = doctorRepository.findById(id);
 
         if (doctorOp.isPresent()) {
-            Doctor doctor = doctorOp.get();
+            if(masterDataPolicy.canDestroy(doctorOp.get())){
+                Doctor doctor = doctorOp.get();
 
-            AppUser appUser = doctor.getAppUser();
-            if (appUser != null) {
-                appUser.setDoctor(null);
+                AppUser appUser = doctor.getAppUser();
+                if (appUser != null) {
+                    appUser.setDoctor(null);
+                }
+
+                doctor.setAppUser(null);
+                doctorRepository.delete(doctor);
+            }else{
+                throw new AccessDeniedException("Access denied");
             }
-
-            doctor.setAppUser(null);
-            doctorRepository.delete(doctor);
         }
     }
 

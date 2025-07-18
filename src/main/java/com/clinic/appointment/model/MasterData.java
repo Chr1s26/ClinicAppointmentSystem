@@ -28,4 +28,34 @@ public abstract class MasterData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_id",referencedColumnName = "ID")
     private AppUser updatedBy;
+
+    public boolean isDeleted(){
+        if(this.status != null && this.status.equalsIgnoreCase(Status.DELETE.name())){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOwnRecord(Long id){
+        if(id != null && this.getCreatedBy().getId() != null && this.getCreatedBy().getId().equals(id) && this.getCreatedBy() != null){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isAdmin(){
+        return this instanceof Admin;
+    }
+
+    public boolean isPatient(){
+        return this instanceof Patient;
+    }
+
+    public boolean isDoctor(){
+        return this instanceof Doctor;
+    }
+
+    public boolean isAppUser(){
+        return this instanceof AppUser;
+    }
 }

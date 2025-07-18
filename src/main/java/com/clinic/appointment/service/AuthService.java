@@ -14,4 +14,15 @@ public class AuthService {
         AppUser appUser = (AppUser) session.getAttribute("currentUser");
         return session != null ? (AppUser) session.getAttribute("currentUser") : null;
     }
+
+    public String getActiveRole() {
+        ServletRequestAttributes attr  = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+        String activeRole = null;
+        if(session != null){
+            activeRole =(String) session.getAttribute("activeRole");
+        }
+        return activeRole;
+    }
+
 }

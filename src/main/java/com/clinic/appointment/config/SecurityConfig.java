@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -100,7 +102,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/confirm-account/otp**","/confirm-account/verify-otp", "/static/assets/**").permitAll()
                         .requestMatchers("/select-role", "/set-active-role").authenticated()
-                        .requestMatchers("/admins/**","/doctors/create","/doctors/new","/doctors/delete/","/doctors/edit/","/doctors/update/","/doctors","/departments/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_ADMIN') and @activeRoleService.hasActiveRole('ROLE_ADMIN')", currentExpressionHandler))
+                        .requestMatchers("/admins/**","/doctors/delete/","/doctors/edit/","/doctors/update/","/departments/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_ADMIN') and @activeRoleService.hasActiveRole('ROLE_ADMIN')", currentExpressionHandler))
                         .requestMatchers("/doctors/dashboard/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_DOCTOR') and @activeRoleService.hasActiveRole('ROLE_DOCTOR')", currentExpressionHandler))
                         .requestMatchers("/patients/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_PATIENT') and @activeRoleService.hasActiveRole('ROLE_PATIENT')", currentExpressionHandler))
                         .anyRequest().authenticated()
