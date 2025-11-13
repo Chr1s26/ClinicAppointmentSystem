@@ -18,5 +18,5 @@ public class DoctorCreateDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private Long appUserId;
-    private MultipartFile file;
+//    private MultipartFile file;
 }

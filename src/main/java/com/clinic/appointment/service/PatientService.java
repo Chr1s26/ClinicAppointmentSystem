@@ -9,11 +9,14 @@ import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.Role;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.model.constant.Status;
 import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.PatientRepository;
+import com.clinic.appointment.repository.RoleRepository;
+import com.clinic.appointment.util.AgeCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,8 @@ public class PatientService {
 
     @Autowired
     private AppUserRepository appUserRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private FileService fileService;
@@ -45,7 +50,7 @@ public class PatientService {
     public Patient create(PatientCreateDto patientCreateDto, Model model) {
         Patient patient = convertToEntity(patientCreateDto);
         List<ErrorMessage> errorMessages = new ArrayList<>();
-        validate(patient,errorMessages);
+//        validate(patient,errorMessages);
 
         if(!errorMessages.isEmpty()) {
             model.addAttribute("patient", patient);
@@ -53,9 +58,9 @@ public class PatientService {
         }
         Patient savedPatient = patientRepository.save(patient);
 
-        if(patientCreateDto.getFile() != null && !patientCreateDto.getFile().isEmpty()){
-            fileService.handleFileUpload(patientCreateDto.getFile(), FileType.PATIENT, savedPatient.getId(),"s3");
-        }
+//        if(patientCreateDto.getFile() != null && !patientCreateDto.getFile().isEmpty()){
+//            fileService.handleFileUpload(patientCreateDto.getFile(), FileType.PATIENT, savedPatient.getId(),"s3");
+//        }
 
         return savedPatient;
     }
@@ -63,7 +68,7 @@ public class PatientService {
     public Patient update(Long id,PatientDTO patientDTO,Model model) {
         List<ErrorMessage> errorMessages = new ArrayList<>();
         Patient checkPatient = convertToEntity(patientDTO);
-        validate(checkPatient,errorMessages);
+//        validate(checkPatient,errorMessages);
 
         if(!errorMessages.isEmpty()) {
             model.addAttribute("patient",patientDTO);
@@ -85,9 +90,9 @@ public class PatientService {
             updatePatient.setAppUser(appUser);
             appUser.setPatient(updatePatient);
         }
-        if(patientDTO.getFile() != null && !patientDTO.getFile().isEmpty()){
-            fileService.handleFileUpload(patientDTO.getFile(), FileType.PATIENT, updatePatient.getId(),"s3");
-        }
+//        if(patientDTO.getFile() != null && !patientDTO.getFile().isEmpty()){
+//            fileService.handleFileUpload(patientDTO.getFile(), FileType.PATIENT, updatePatient.getId(),"s3");
+//        }
         return patientRepository.save(updatePatient);
     }
 
@@ -126,6 +131,10 @@ public class PatientService {
 
     public void deleteById(Long id) {
         Patient patient = this.patientRepository.findById(id).orElseThrow();
+        AppUser user = patient.getAppUser();
+        if(user != null){
+            user.getRoles().removeIf(r -> r.getRoleName().equals("PATIENT"));
+        }
         patientRepository.delete(patient);
     }
 
@@ -139,7 +148,9 @@ public class PatientService {
         patientDTO.setGenderType(patient.getGenderType());
         patientDTO.setDateOfBirth(patient.getDateOfBirth());
         patientDTO.setPatientType(patient.getPatientType());
-        patientDTO.setProfileUrl(this.fileService.getFileName(FileType.PATIENT, patient.getId()));
+        patientDTO.setAge(AgeCalculator.calculateAge(patient.getDateOfBirth()));
+        patientDTO.setAppUserId(patient.getAppUser().getId());
+//        patientDTO.setProfileUrl(this.fileService.getFileName(FileType.PATIENT, patient.getId()));
         return patientDTO;
     }
 
@@ -153,17 +164,22 @@ public class PatientService {
         patient.setStatus(Status.ACTIVE.name());
         patient.setCreatedAt(LocalDate.now());
         patient.setCreatedBy(authService.getCurrentUser());
+        Role doctorRole = roleRepository.findByRoleName("PATIENT")
+                .orElseThrow(() -> new RuntimeException("PATIENT not found"));
         if(patientCreateDto.getAppUserId() != null){
             AppUser appUser = appUserRepository.findById(patientCreateDto.getAppUserId())
                     .orElseThrow(() -> new RuntimeException("AppUser not found"));
             patient.setAppUser(appUser);
             appUser.setPatient(patient);
+            appUser.getRoles().add(doctorRole);
+            appUserRepository.save(appUser);
         }
         return patient;
     }
 
     public Patient convertToEntity(PatientDTO patientDTO) {
         Patient patient = new Patient();
+        patient.setId(patientDTO.getId());
         patient.setName(patientDTO.getName());
         patient.setPhone(patientDTO.getPhone());
         patient.setAddress(patientDTO.getAddress());

@@ -25,6 +25,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry.addResourceHandler("/files/**").addResourceLocations("file:/Users/chr1skak/Documents/clinic_file_import/");
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("classpath:/static/assets/");
+
+// Optional: serve standard Spring Boot static folders
+        registry.addResourceHandler("/**")
+                .addResourceLocations(
+                        "classpath:/static/",
+                        "classpath:/public/",
+                        "classpath:/resources/",
+                        "classpath:/META-INF/resources/"
+                );
 
     }
 

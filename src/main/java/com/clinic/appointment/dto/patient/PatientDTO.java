@@ -17,9 +17,10 @@ public class PatientDTO {
     private String address;
     private GenderType genderType;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private int age;
     private LocalDate dateOfBirth;
     private Long appUserId;
     private PatientType patientType;
-    private MultipartFile file;
-    private String profileUrl;
+//    private MultipartFile file;
+//    private String profileUrl;
 }
