@@ -1,5 +1,6 @@
 package com.clinic.appointment.repository;
 
+import com.clinic.appointment.dto.doctor.DoctorDTO;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByPhone(String phone);
 
     Optional<Doctor> findDoctorByAppUser(AppUser appUser);
+
+    Optional<DoctorDTO> findByAppUserId(Long appUserId);
 }
