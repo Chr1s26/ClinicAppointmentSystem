@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserMasterData extends MasterData {
+public abstract class UserMasterData extends MasterData {
     @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false, unique = true)

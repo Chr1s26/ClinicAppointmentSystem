@@ -1,5 +1,6 @@
 package com.clinic.appointment.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class AppUser extends MasterData {
 
     @Column
     private LocalDate confirmedAt;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_roles",
@@ -38,12 +40,15 @@ public class AppUser extends MasterData {
     private Set<Role> roles;
 
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Admin admin;
 
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Doctor doctor;
 
     @OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Patient patient;
 
     public boolean isAccountConfirmed(){

@@ -22,9 +22,6 @@ import java.time.LocalDate;
 public class Patient extends UserMasterData {
 
     @Column
-    private String name;
-
-    @Column
     private String address;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

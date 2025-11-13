@@ -1,6 +1,7 @@
 package com.clinic.appointment.model;
 
 import com.clinic.appointment.model.constant.GenderType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,9 +24,6 @@ import java.util.Set;
 public class Doctor extends UserMasterData {
 
     @Column
-    private String name;
-
-    @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
@@ -43,6 +41,7 @@ public class Doctor extends UserMasterData {
 
     @OneToOne
     @JoinColumn(name = "app_user_id")
+    @JsonIgnore
     private AppUser appUser;
 
     public void addDepartment(Department department) {
@@ -53,5 +52,14 @@ public class Doctor extends UserMasterData {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Doctor{" +
+                ", dateOfBirth=" + dateOfBirth +
+                ", address='" + address + '\'' +
+                ", genderType=" + genderType +
+                '}';
     }
 }
