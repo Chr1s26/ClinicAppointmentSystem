@@ -4,15 +4,15 @@
     <!-- Sidebar Header -->
     <div class="flex flex-col gap-2.5" id="sidebar_header">
         <div class="flex items-center gap-2.5 px-3.5 h-[70px]">
-            <a href="html/demo10/index.html">
-                <img class="size-[34px] rounded-full object-cover" th:src="@{${profile.profileUrl}}" alt="Profile Picture"/>
-            </a>
+
+<!--                <img th:src="@{${profile.profileUrl}}">-->
+<!--                <img class="size-[34px] rounded-full object-cover" th:src="@{${profile.profileUrl}}" alt="Profile Picture"/>-->
             <div class="kt-menu kt-menu-default grow" data-kt-menu="true">
                 <div class="kt-menu-item grow" data-kt-menu-item-offset="0, 15px"
                      data-kt-menu-item-placement="bottom-start" data-kt-menu-item-toggle="dropdown"
                      data-kt-menu-item-trigger="hover">
                     <div class="kt-menu-label cursor-pointer text-mono font-medium grow justify-between">
-                        <span th:text="${profile.username}">Default Title</span>
+<!--                        <span th:text="${profile.username}">Default Title</span>-->
                         <div class="flex flex-col text-mono font-medium">
            <span class="kt-menu-arrow">
             <i class="ki-filled ki-up">

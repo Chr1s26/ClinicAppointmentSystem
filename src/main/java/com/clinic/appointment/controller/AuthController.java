@@ -21,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String showLoginForm(@ModelAttribute AppUser appUser, Model model) {
+    public String showLoginForm(@ModelAttribute("user") AppUser appUser, Model model) {
         try{
             userService.registerNewUser(appUser);
         }catch(Exception e){

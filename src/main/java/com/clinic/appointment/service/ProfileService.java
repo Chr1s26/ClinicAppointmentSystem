@@ -1,10 +1,7 @@
 package com.clinic.appointment.service;
 
 import com.clinic.appointment.dto.ProfileDTO;
-import com.clinic.appointment.model.Admin;
-import com.clinic.appointment.model.AppUser;
-import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.*;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.repository.AdminRepository;
 import com.clinic.appointment.repository.DoctorRepository;
@@ -13,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProfileService {
@@ -60,4 +58,18 @@ public class ProfileService {
         ProfileDTO profileDTO = new ProfileDTO(username,profileUrl,email);
         return profileDTO;
     }
+    public String extractPrimaryRole(Set<Role> roles) {
+        if (roles == null || roles.isEmpty()) return null;
+
+        for (Role r : roles) {
+            String name = r.getRoleName();
+
+            if (name.equals("ROLE_ADMIN")) return "ROLE_ADMIN";
+            if (name.equals("ROLE_DOCTOR")) return "ROLE_DOCTOR";
+            if (name.equals("ROLE_PATIENT")) return "ROLE_PATIENT";
+        }
+
+        return null; // Unexpected case
+    }
+
 }
