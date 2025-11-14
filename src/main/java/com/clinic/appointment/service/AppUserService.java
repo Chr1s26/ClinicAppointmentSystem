@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,5 +122,10 @@ public class AppUserService {
         );
 
         return dto;
+    }
+
+    public List<AppUserDTO> findAllUsers() {
+        List<AppUser> users = appUserRepository.findAll();
+        return users.stream().map(this::toDTO).collect(Collectors.toList());
     }
 }

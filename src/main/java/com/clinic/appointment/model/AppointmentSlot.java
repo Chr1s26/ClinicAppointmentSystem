@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Table(name = "appointment_slots")
-public class AppointmentSlot {
+public class AppointmentSlot extends MasterData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

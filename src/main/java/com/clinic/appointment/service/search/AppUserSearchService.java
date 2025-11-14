@@ -1,14 +1,17 @@
-package com.clinic.appointment.service;
+package com.clinic.appointment.service.search;
 
 import com.clinic.appointment.dto.searchFilter.appUser.AppUserSearchQuery;
 import com.clinic.appointment.entity.specification.AppUserSpecification;
 import com.clinic.appointment.dto.appUser.AppUserDTO;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.repository.AppUserRepository;
+import com.clinic.appointment.service.search.CommonSearchService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

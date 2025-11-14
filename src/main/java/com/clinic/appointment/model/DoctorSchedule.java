@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @Table(name = "doctor_schedule")
-public class DoctorSchedule {
+public class DoctorSchedule extends MasterData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -18,10 +18,10 @@ public class DoctorSearchService {
     private final DoctorRepository doctorRepository;
 
     public Page<Doctor> searchByQuery(DoctorSearchQuery query) {
-        return commonSearchService.searchByQuery(doctorRepository, com.clinic.appointment.entity.specification.DoctorSpecification::fromFilter, query);
+        return commonSearchService.searchByQuery(doctorRepository, com.clinic.appointment.model.specification.DoctorSpecification::fromFilter, query);
     }
 
     public List<Doctor> searchByQueryAll(DoctorSearchQuery query) {
-        return commonSearchService.searchByQueryAll(doctorRepository, com.clinic.appointment.entity.specification.DoctorSpecification::fromFilter, query);
+        return commonSearchService.searchByQueryAll(doctorRepository, com.clinic.appointment.model.specification.DoctorSpecification::fromFilter, query);
     }
 }

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @MappedSuperclass
@@ -21,9 +22,9 @@ public abstract class MasterData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String status;
-    private LocalDate updatedAt;
-    private LocalDate createdAt;
+    private StatusType status;
+    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id",referencedColumnName = "ID")
@@ -36,7 +37,7 @@ public abstract class MasterData {
 
     @JsonIgnore
     public boolean isDeleted(){
-        if(this.status != null && this.status.equalsIgnoreCase(StatusType.DELETE.name())){
+        if(this.status != null && this.status.equals(StatusType.DELETED)){
             return true;
         }
         return false;

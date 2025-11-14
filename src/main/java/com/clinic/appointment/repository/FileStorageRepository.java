@@ -12,4 +12,6 @@ import java.util.List;
 public interface FileStorageRepository extends JpaRepository<FileStorage, Long> {
 
     List<FileStorage> findByFileTypeAndFileId(FileType fileType, Long fileId);
+
+    FileStorage findTopByFileIdAndFileTypeOrderByCreatedAtDesc(Long id, FileType fileType);
 }

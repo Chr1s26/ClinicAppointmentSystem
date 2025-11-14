@@ -4,13 +4,13 @@ import com.clinic.appointment.dto.searchFilter.doctorSchedule.DoctorScheduleSear
 import com.clinic.appointment.model.DoctorSchedule;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.service.*;
+import com.clinic.appointment.service.DoctorScheduleSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class DoctorScheduleExportProcess
         extends CommonExportProcess<DoctorSchedule, DoctorScheduleSearchQuery> {
 
