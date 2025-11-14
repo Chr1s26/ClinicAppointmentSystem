@@ -2,6 +2,9 @@ package com.clinic.appointment.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.ExportListing;
 import com.clinic.appointment.model.FileStorage;
@@ -9,6 +12,8 @@ import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.ExportListingRepository;
 import com.clinic.appointment.repository.FileStorageRepository;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +27,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Data
 @Service
@@ -142,8 +149,64 @@ public class FileService {
         return fileStorage;
     }
 
+    public void downloadExportFile(ExportListing exportListing, HttpServletResponse response, boolean asZip) throws IOException {
+
+        FileStorage file = fileStorageRepository.findTopByFileIdAndFileTypeOrderByCreatedAtDesc(exportListing.getId(), exportListing.getFileType());
+        if (file == null) {
+            throw new ResourceNotFoundException("FileStorage", file, "fileId", "/exports","File not found");
+        }
+        S3Object s3Object = amazonS3.getObject("hotel-export-report-bucket", file.getKey());
+        S3ObjectInputStream s3is = s3Object.getObjectContent();
+
+        if (asZip) {
+            // Deliver as ZIP
+            response.setContentType("application/zip");
+            String zipFileName = exportListing.getFileName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_").replace(".xlsx", ".zip");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFileName + "\"");
+
+            // Read Excel bytes fully
+            byte[] excelBytes = s3is.readAllBytes();
+
+            // Create ZIP in memory
+            try (ServletOutputStream sos = response.getOutputStream();
+                 ZipOutputStream zos = new ZipOutputStream(sos)) {
+
+                ZipEntry entry = new ZipEntry(exportListing.getFileName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_"));
+                zos.putNextEntry(entry);
+                zos.write(excelBytes);
+                zos.closeEntry();
+                zos.finish();
+            }
+        } else {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            String excelFileName = exportListing.getFileName().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + excelFileName + "\"");
+
+            try (ServletOutputStream sos = response.getOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int len;
+                while ((len = s3is.read(buffer)) != -1) {
+                    sos.write(buffer, 0, len);
+                }
+            }
+        }
+    }
+
+
+    public List<String> getFileNames(FileType fileType, Long fileId) {
+        List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(fileType,fileId);
+        if(files.isEmpty()){
+            return List.of("/images/default-profile.png");
+        }
+        return files.stream().map(fs -> getFileUrl(fs.getKey(), fs.getServiceName())).toList();
+    }
+
     public void saveExportFileWithFailStatus(ExportListing exportListing) {
         exportListing.setStatus(StatusType.FAIL);
         exportListingRepository.save(exportListing);
+    }
+
+    public String getBucketName(){
+        return s3BucketName;
     }
 }
