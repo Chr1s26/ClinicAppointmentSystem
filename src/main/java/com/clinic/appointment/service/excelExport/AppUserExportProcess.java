@@ -3,10 +3,9 @@ package com.clinic.appointment.service.excelExport;
 import com.clinic.appointment.dto.searchFilter.appUser.AppUserSearchQuery;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.constant.FileType;
-import com.clinic.appointment.service.AppUserSearchService;
 import com.clinic.appointment.service.ExportListingService;
 import com.clinic.appointment.service.FileService;
-import lombok.RequiredArgsConstructor;
+import com.clinic.appointment.service.search.AppUserSearchService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class AppUserExportProcess extends CommonExportProcess<AppUser, AppUserSe
 
     @Override
     public String getRecordType() {
-        return AppUser.class.getSimpleName(); // "AppUser"
+        return AppUser.class.getSimpleName();
     }
 
     @Override
@@ -40,7 +39,7 @@ public class AppUserExportProcess extends CommonExportProcess<AppUser, AppUserSe
 
     @Override
     public List<AppUser> fetchData(AppUserSearchQuery query) {
-        return searchService.searchUsersAll(query); // You will create this method below
+        return searchService.searchByQueryAll(query);
     }
 
     @Override
@@ -49,11 +48,8 @@ public class AppUserExportProcess extends CommonExportProcess<AppUser, AppUserSe
                 new ColumnSpec<>("ID", u -> String.valueOf(u.getId()), null),
                 new ColumnSpec<>("Username", AppUser::getUsername, null),
                 new ColumnSpec<>("Email", AppUser::getEmail, null),
-                new ColumnSpec<>("Roles", u -> u.getRoles() != null
-                        ? String.join(", ", u.getRoles().stream().map(r -> r.getRoleName()).toList())
-                        : "", null),
                 new ColumnSpec<>("Confirmed", u -> u.isAccountConfirmed() ? "YES" : "NO", null),
-                new ColumnSpec<>("Status", u -> u.getStatus() != null ? u.getStatus() : "-", null),
+                new ColumnSpec<>("Status", u -> u.getStatus() != null ? u.getStatus().name() : "-", null),
                 new ColumnSpec<>("Created At", u -> u.getCreatedAt() != null ? u.getCreatedAt().toString() : "-", null),
                 new ColumnSpec<>("Updated At", u -> u.getUpdatedAt() != null ? u.getUpdatedAt().toString() : "-", null),
                 new ColumnSpec<>("Created By", u ->

@@ -6,7 +6,6 @@ import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.service.ExportListingService;
 import com.clinic.appointment.service.FileService;
 import com.clinic.appointment.service.search.DoctorSearchService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
