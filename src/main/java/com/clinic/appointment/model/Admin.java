@@ -4,6 +4,10 @@ import com.clinic.appointment.model.constant.GenderType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,4 +23,10 @@ public class Admin extends UserMasterData {
 
     @Enumerated(EnumType.STRING)
     private GenderType genderType;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime dateOfBirth;
+
+    private String address;
+    private String email;
 }

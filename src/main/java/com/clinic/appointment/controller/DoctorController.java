@@ -129,7 +129,7 @@ public class DoctorController {
 
     @GetMapping("/view/{id}")
     public String viewDoctor(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("customer", doctorService.findById(id));
+        model.addAttribute("doctor", doctorService.findById(id));
         return "doctors/view";
     }
 }

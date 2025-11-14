@@ -1,7 +1,7 @@
-package com.clinic.appointment.service;
+package com.clinic.appointment.service.search;
 
 import com.clinic.appointment.dto.searchFilter.patient.PatientSearchQuery;
-import com.clinic.appointment.entity.specification.PatientSpecification;
+import com.clinic.appointment.model.specification.PatientSpecification;
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.repository.PatientRepository;
 import com.clinic.appointment.service.search.CommonSearchService;
