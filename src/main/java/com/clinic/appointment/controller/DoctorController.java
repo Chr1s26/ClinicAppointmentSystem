@@ -125,4 +125,10 @@ public class DoctorController {
         doctorExportProcess.generateExportFile(query);
         return "redirect:/doctors";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewDoctor(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("customer", doctorService.findById(id));
+        return "doctors/view";
+    }
 }
