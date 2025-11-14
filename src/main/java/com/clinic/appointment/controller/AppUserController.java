@@ -70,7 +70,7 @@ public class AppUserController {
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("user") AppUserCreateDTO dto, BindingResult br) {
         if (br.hasErrors()) return "users/create";
-        this.appUserService.create(dto, dto);
+        this.appUserService.create(dto);
         return "redirect:/users";
     }
 
