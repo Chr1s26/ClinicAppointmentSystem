@@ -9,13 +9,13 @@ import org.springframework.web.servlet.config.annotation.*;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private RequestURIInterceptor requestURIInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestURIInterceptor);
-    }
+//    @Autowired
+//    private RequestURIInterceptor requestURIInterceptor;
+//
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(requestURIInterceptor);
+//    }
 
     @Bean
     public ModelMapper modelMapper() {

@@ -6,7 +6,6 @@ import com.clinic.appointment.dto.searchFilter.doctorSchedule.*;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.DoctorSchedule;
 import com.clinic.appointment.service.*;
-import com.clinic.appointment.service.excelExport.DoctorScheduleExportProcess;
 import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -24,7 +23,7 @@ public class DoctorScheduleController {
 
     private final DoctorScheduleService doctorScheduleService;
 //    private final DoctorScheduleSearchService doctorScheduleSearchService;
-    private final DoctorScheduleExportProcess exportProcess;
+//    private final DoctorScheduleExportProcess exportProcess;
 //
 //    @ModelAttribute("query")
 //    public DoctorScheduleSearchQuery initQuery() {
@@ -97,11 +96,11 @@ public class DoctorScheduleController {
 //        return "redirect:/doctor-schedule";
 //    }
 
-    @PostMapping("/export/excel")
-    public String export(@ModelAttribute("query") DoctorScheduleSearchQuery query) {
-        exportProcess.generateExportFile(query);
-        return "redirect:/doctor-schedule";
-    }
+//    @PostMapping("/export/excel")
+//    public String export(@ModelAttribute("query") DoctorScheduleSearchQuery query) {
+//        exportProcess.generateExportFile(query);
+//        return "redirect:/doctor-schedule";
+//    }
 
     @PostMapping("/doctor/{id}/schedule")
     public String saveDoctorSchedule(@PathVariable Long id, @ModelAttribute("schedules") List<DoctorScheduleCreateDTO> list) {

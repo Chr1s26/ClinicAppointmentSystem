@@ -23,7 +23,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long>, JpaSpec
 
     Optional<AppUser> findByEmail(String parameter);
 
-    boolean existsByUsernameIgnoreCaseAndEmail(String email);
+    boolean existsByUsernameIgnoreCaseAndEmail(String username,String email);
 
     boolean existsByUsernameIgnoreCase(String username);
 

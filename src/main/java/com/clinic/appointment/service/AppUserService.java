@@ -27,7 +27,7 @@ public class AppUserService {
     private final FileService fileService;
 
     public AppUserCreateDTO create(AppUserCreateDTO dto) {
-        if(appUserRepository.existsByUsernameIgnoreCaseAndEmail(dto.getUsername())) throw new DuplicateException("user",dto,"name","users/create","An account with this name and email already exists");
+        if(appUserRepository.existsByUsernameIgnoreCaseAndEmail(dto.getUsername(),dto.getEmail())) throw new DuplicateException("user",dto,"name","users/create","An account with this name and email already exists");
         AppUser user = CreateDTOtoEntity(dto);
         AppUser saved = appUserRepository.save(user);
         return entityToCreateDTO(saved);

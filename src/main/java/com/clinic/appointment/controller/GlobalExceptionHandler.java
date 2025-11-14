@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
             model.addAttribute("users", appUserService.findAllUsers());
         }else if(object.equalsIgnoreCase("appointment")) {
             model.addAttribute("doctors", this.doctorService.findAll());
-            model.addAttribute("patients", this.patientService.findAll());
+            model.addAttribute("patients", this.patientService.findAllPatients());
             model.addAttribute("departments", this.departmentService.findAllDepartments());
         }
     }
