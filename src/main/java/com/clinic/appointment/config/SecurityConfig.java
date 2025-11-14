@@ -134,9 +134,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/confirm-account/otp**","/confirm-account/verify-otp", "/static/assets/**").permitAll()
                         .requestMatchers("/select-role", "/set-active-role").authenticated()
-                        .requestMatchers("/admins/**","/doctors/delete/","/doctors/edit/","/doctors/update/","/departments/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_ADMIN') and @activeRoleService.hasActiveRole('ROLE_ADMIN')", currentExpressionHandler))
+                        .requestMatchers("/admins/**","/doctors/delete/","/doctors/edit/","/doctors/update/","/departments/**","/patients/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_ADMIN') and @activeRoleService.hasActiveRole('ROLE_ADMIN')", currentExpressionHandler))
                         .requestMatchers("/doctors/dashboard/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_DOCTOR') and @activeRoleService.hasActiveRole('ROLE_DOCTOR')", currentExpressionHandler))
-                        .requestMatchers("/patients/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_PATIENT') and @activeRoleService.hasActiveRole('ROLE_PATIENT')", currentExpressionHandler))
+//                        .requestMatchers("/patients/**").access(createWebExpressionAuthorizationManager("hasRole('ROLE_PATIENT') and @activeRoleService.hasActiveRole('ROLE_PATIENT')", currentExpressionHandler))
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

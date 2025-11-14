@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("classpath:/static/assets/");
 
-        // Optional: serve standard Spring Boot static folders
+// Optional: serve standard Spring Boot static folders
         registry.addResourceHandler("/**")
                 .addResourceLocations(
                         "classpath:/static/",

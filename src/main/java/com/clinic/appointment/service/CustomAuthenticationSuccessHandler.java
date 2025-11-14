@@ -38,17 +38,17 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         }else if(roles.contains("ROLE_ADMIN")){
             session.setAttribute("userRoles", new ArrayList<>(roles));
             session.setAttribute("activeRole", "ROLE_ADMIN");
-            response.sendRedirect("/admins/dashboard");
+            response.sendRedirect("/home");
         }else if(roles.contains("ROLE_PATIENT")){
             session.setAttribute("userRoles", new ArrayList<>(roles));
             session.setAttribute("activeRole", "ROLE_PATIENT");
-            response.sendRedirect("/patients/home");
+            response.sendRedirect("/home");
         } else if(roles.contains("ROLE_DOCTOR")){
             session.setAttribute("userRoles", new ArrayList<>(roles));
             session.setAttribute("activeRole", "ROLE_DOCTOR");
-            response.sendRedirect("/doctors/dashboard");
+            response.sendRedirect("/home");
         } else {
-            response.sendRedirect("/");
+            response.sendRedirect("/home");
         }
     }
 }

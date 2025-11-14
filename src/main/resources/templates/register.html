@@ -1,0 +1,26 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: base (~{::content})">
+<div th:fragment="content" class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h4>Create an account</h4>
+            <form th:action="@{/register}" th:object="${user}" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input th:field="*{username}" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input th:field="*{email}" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input th:field="*{password}" type="password" class="form-control"/>
+                </div>
+                <div th:if="${registrationError}" class="alert alert-danger" th:text="${registrationError}"></div>
+                <button class="btn btn-success">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

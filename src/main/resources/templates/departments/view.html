@@ -1,0 +1,7 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: base (~{::content})" th:with="sidebarFragment='fragments/sidebar-admin :: sidebar'">
+<div th:fragment="content">
+    <h4 th:text="${department.departmentName}">Department</h4>
+    <p th:text="${department.departmentDescription}"></p>
+    <a th:href="@{/departments}" class="btn btn-link">Back</a>
+</div>
+</html>

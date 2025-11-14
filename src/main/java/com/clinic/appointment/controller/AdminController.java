@@ -1,7 +1,5 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.model.AppUser;
-import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.service.AdminService;
 import com.clinic.appointment.service.AuthService;
 import lombok.RequiredArgsConstructor;
