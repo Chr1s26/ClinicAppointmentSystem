@@ -7,11 +7,13 @@ import com.clinic.appointment.exception.ErrorMessage;
 import com.clinic.appointment.helper.StringUtil;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.Role;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.model.constant.Status;
 import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.DoctorRepository;
+import com.clinic.appointment.repository.RoleRepository;
 import com.clinic.appointment.util.AgeCalculator;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -35,10 +37,9 @@ import java.util.Optional;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
-
     private final ModelMapper modelMapper;
-
     private final MasterDataPolicy masterDataPolicy;
+    private final RoleRepository roleRepository;
 
     @Autowired
     private  FileService fileService;
@@ -70,11 +71,16 @@ public class DoctorService {
             throw new CommonException(errorMessages,"doctors/create",model);
         }
         if(masterDataPolicy.canCreate(doctor)) {
+            Role doctorRole = roleRepository.findByRoleName("DOCTOR")
+                    .orElseThrow(() -> new RuntimeException("DOCTOR not found"));
+
+            appUser.getRoles().add(doctorRole);
+            appUserRepository.save(appUser);
             doctor =this.doctorRepository.save(doctor);
-            if(createDoctor.getFile() != null && !createDoctor.getFile().isEmpty()){
-                fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
-                return doctor;
-            }
+//            if(createDoctor.getFile() != null && !createDoctor.getFile().isEmpty()){
+//                fileService.handleFileUpload(createDoctor.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+//                return doctor;
+//            }
         }else{
             throw new AccessDeniedException("Access denied");
         }
@@ -113,9 +119,9 @@ public class DoctorService {
             appUser.setDoctor(updatedDoctor);
 
             if(masterDataPolicy.canUpdate(updatedDoctor)){
-                if(doctorDTO.getFile() != null && !doctorDTO.getFile().isEmpty()){
-                    fileService.handleFileUpload(doctorDTO.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
-                }
+//                if(doctorDTO.getFile() != null && !doctorDTO.getFile().isEmpty()){
+//                    fileService.handleFileUpload(doctorDTO.getFile(), FileType.DOCTOR, doctor.getId(), "s3");
+//                }
                 doctor =this.doctorRepository.save(updatedDoctor);
 
                 return doctor;
@@ -147,7 +153,7 @@ public class DoctorService {
         return doctors;
     }
 
-    @PreAuthorize("@masterDataPolicy.canView(filterObject)")
+//    @PreAuthorize("@masterDataPolicy.canView(filterObject)")
     public DoctorResponse getAllDoctors(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder){
         if(masterDataPolicy.isAdmin()){
             Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -191,19 +197,26 @@ public class DoctorService {
         Optional<Doctor> doctorOp = doctorRepository.findById(id);
 
         if (doctorOp.isPresent()) {
-            if(masterDataPolicy.canDestroy(doctorOp.get())){
-                Doctor doctor = doctorOp.get();
+            Doctor doctor = doctorOp.get();
 
-                AppUser appUser = doctor.getAppUser();
-                if (appUser != null) {
-                    appUser.setDoctor(null);
-                }
-
-                doctor.setAppUser(null);
-                doctorRepository.delete(doctor);
-            }else{
+            if (!masterDataPolicy.canDestroy(doctor)) {
                 throw new AccessDeniedException("Access denied");
             }
+
+            AppUser appUser = doctor.getAppUser();
+
+            if (appUser != null) {
+                // Clear doctor role
+                appUser.getRoles().removeIf(r -> r.getRoleName().equals("DOCTOR"));
+
+                // Remove doctor reference
+                appUser.setDoctor(null);
+
+                appUserRepository.save(appUser);
+            }
+
+            doctor.setAppUser(null);
+            doctorRepository.delete(doctor);
         }
     }
 
@@ -217,7 +230,8 @@ public class DoctorService {
         doctorDTO.setGenderType(doctor.getGenderType());
         doctorDTO.setDateOfBirth(doctor.getDateOfBirth());
         doctorDTO.setAge(AgeCalculator.calculateAge(doctor.getDateOfBirth()));
-        doctorDTO.setProfileUrl(this.fileService.getFileName(FileType.DOCTOR, doctor.getId()));
+        doctorDTO.setAppUserId(doctor.getAppUser().getId());
+//        doctorDTO.setProfileUrl(this.fileService.getFileName(FileType.DOCTOR, doctor.getId()));
         return doctorDTO;
     }
 

@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: base (~{::content})" th:with="sidebarFragment='fragments/sidebar-admin :: sidebar'">
+<div th:fragment="content">
+    <div class="card p-3">
+        <div class="d-flex gap-3">
+            <img th:if="${doctor.profileUrl}" th:src="${doctor.profileUrl}" style="width:96px;height:96px;border-radius:8px;"/>
+            <div>
+                <h5 th:text="${doctor.name}">Dr Name</h5>
+                <div><strong>Phone:</strong> <span th:text="${doctor.phone}"></span></div>
+                <div><strong>Address:</strong> <span th:text="${doctor.address}"></span></div>
+                <div><strong>Age:</strong> <span th:text="${doctor.age}"></span></div>
+            </div>
+        </div>
+        <a th:href="@{/doctors}" class="btn btn-link mt-3">Back</a>
+    </div>
+</div>
+</html>

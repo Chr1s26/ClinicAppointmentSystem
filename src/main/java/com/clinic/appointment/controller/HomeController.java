@@ -33,14 +33,19 @@ public class HomeController {
         if(isValidRole){
             session.setAttribute("activeRole", selectedRole);
             if("ROLE_ADMIN".equalsIgnoreCase(selectedRole)){
-                return "redirect:/admins/dashboard";
+                return "redirect:/home";
             }else if("ROLE_DOCTOR".equalsIgnoreCase(selectedRole)){
-                return "redirect:/doctors/dashboard";
+                return "redirect:/home";
             }else if("ROLE_PATIENT".equalsIgnoreCase(selectedRole)){
-                return "redirect:/patients/home";
+                return "redirect:/home";
             }
         }
 
         return "redirect:/select-role?error=invalid_selection";
+    }
+
+    @GetMapping("/home")
+    public String homePage(Model model){
+        return "home";
     }
 }

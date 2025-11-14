@@ -1,0 +1,19 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layouts/base :: base (~{::content})">
+<div th:fragment="content" class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h4>Confirm Account</h4>
+            <p th:text="${message}">We sent an OTP to your email</p>
+            <form th:action="@{/confirm-account/verify-otp}" method="post">
+                <input type="hidden" name="email" th:value="${email}" />
+                <div class="mb-3">
+                    <label>OTP</label>
+                    <input type="text" name="otp" class="form-control"/>
+                </div>
+                <button class="btn btn-success">Verify</button>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

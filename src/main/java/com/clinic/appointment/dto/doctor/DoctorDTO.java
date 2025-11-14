@@ -18,6 +18,6 @@ public class DoctorDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private Long appUserId;
-    private MultipartFile file;
-    private String profileUrl;
+//    private MultipartFile file;
+//    private String profileUrl;
 }

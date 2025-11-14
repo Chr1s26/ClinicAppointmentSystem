@@ -22,5 +22,5 @@ public class PatientCreateDto {
     private GenderType genderType;
     private PatientType patientType;
     private Long appUserId;
-    private MultipartFile file;
+//    private MultipartFile file;
 }
