@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PatientExportProcess extends CommonExportProcess<Patient, PatientSearchQuery> {
 
     private final PatientSearchService patientSearchService;

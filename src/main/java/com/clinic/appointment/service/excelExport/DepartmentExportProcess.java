@@ -2,9 +2,13 @@ package com.clinic.appointment.service.excelExport;
 
 import com.clinic.appointment.dto.searchFilter.department.DepartmentSearchQuery;
 import com.clinic.appointment.model.Department;
+import com.clinic.appointment.model.constant.FileType;
+import com.clinic.appointment.service.ExportListingService;
 import com.clinic.appointment.service.FileService;
 import com.clinic.appointment.service.search.DepartmentSearchService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DepartmentExportProcess extends CommonExportProcess<Department, DepartmentSearchQuery> {
@@ -44,7 +48,7 @@ public class DepartmentExportProcess extends CommonExportProcess<Department, Dep
                 new ColumnSpec<>("ID", d -> d.getId().toString(), null),
                 new ColumnSpec<>("Name", Department::getDepartmentName, null),
                 new ColumnSpec<>("Description", Department::getDepartmentDescription, null),
-                new ColumnSpec<>("Status", d -> d.getStatus(), null),
+                new ColumnSpec<>("Status", d -> String.valueOf(d.getStatus()), null),
                 new ColumnSpec<>("Created At", d -> String.valueOf(d.getCreatedAt()), null),
                 new ColumnSpec<>("Updated At", d -> String.valueOf(d.getUpdatedAt()), null)
         );

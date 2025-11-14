@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AppUserExportProcess extends CommonExportProcess<AppUser, AppUserSearchQuery> {
 
     private final AppUserSearchService searchService;

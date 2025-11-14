@@ -1,4 +1,4 @@
-package com.clinic.appointment.service;
+package com.clinic.appointment.service.search;
 
 import com.clinic.appointment.dto.searchFilter.appUser.AppUserSearchQuery;
 import com.clinic.appointment.dto.appUser.AppUserDTO;

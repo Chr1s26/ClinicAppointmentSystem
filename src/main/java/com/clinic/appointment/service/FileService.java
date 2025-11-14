@@ -2,8 +2,12 @@ package com.clinic.appointment.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.ExportListing;
 import com.clinic.appointment.model.FileStorage;
 import com.clinic.appointment.model.constant.FileType;
+import com.clinic.appointment.model.constant.StatusType;
+import com.clinic.appointment.repository.ExportListingRepository;
 import com.clinic.appointment.repository.FileStorageRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +30,8 @@ import java.util.UUID;
 public class FileService {
 
     public static final String UPLOAD_DIRECTORY = "/Users/chr1skak/Documents/clinic_file_import";
+    private final AuthService authService;
+    private final ExportListingRepository exportListingRepository;
 
     @Value("${cloud.aws.bucket}")
     private String s3BucketName;
@@ -94,5 +102,48 @@ public class FileService {
         }catch (IOException ex){
             throw new RuntimeException("Failed to upload file : "+ex.getMessage());
         }
+    }
+
+    public FileStorage saveExportFileWithStatus(ByteArrayInputStream inputStream, ExportListing exportListing) throws IOException {
+
+        byte[] bytes = inputStream.readAllBytes();
+        ByteArrayInputStream uploadStream = new ByteArrayInputStream(bytes);
+        long fileSize = bytes.length;
+
+        AppUser user = authService.getCurrentUser();
+        String fileName = exportListing.getFileName();
+
+        String uuid = UUID.randomUUID().toString();
+        String extension = fileName.substring(fileName.lastIndexOf("."));
+        String s3Key = uuid + extension;
+
+        FileStorage fileStorage = new FileStorage();
+
+        fileStorage.setFileName(fileName);
+        fileStorage.setFileSize(fileSize);
+        fileStorage.setKey(s3Key);
+        fileStorage.setServiceName("s3");
+        fileStorage.setFileType(exportListing.getFileType());
+        fileStorage.setFileId(exportListing.getId());
+        fileStorage.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        fileStorage.setStatus(StatusType.COMPLETED);
+        fileStorage.setCreatedAt(LocalDateTime.now());
+        fileStorage.setCreatedBy(user);
+
+        fileStorage = fileStorageRepository.save(fileStorage);
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(bytes.length);
+        metadata.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        amazonS3.putObject("hotel-export-report-bucket", s3Key, uploadStream, metadata);
+        log.info("Export file uploaded successfully to S3: {}", s3Key);
+
+        return fileStorage;
+    }
+
+    public void saveExportFileWithFailStatus(ExportListing exportListing) {
+        exportListing.setStatus(StatusType.FAIL);
+        exportListingRepository.save(exportListing);
     }
 }

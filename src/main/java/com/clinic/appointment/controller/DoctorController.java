@@ -10,6 +10,7 @@ import com.clinic.appointment.dto.searchFilter.MatchType;
 import com.clinic.appointment.dto.searchFilter.SortDirection;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.service.AppUserService;
 import com.clinic.appointment.service.DoctorService;
 import com.clinic.appointment.service.excelExport.DoctorExportProcess;
 import com.clinic.appointment.service.search.DoctorSearchService;
@@ -31,6 +32,7 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorSearchService doctorSearchService;
     private final DoctorExportProcess doctorExportProcess;
+    private final AppUserService appUserService;
 
     @ModelAttribute("query")
     public DoctorSearchQuery initQuery() {
@@ -63,27 +65,29 @@ public class DoctorController {
     public String search(Model model, @ModelAttribute("query") DoctorSearchQuery query) {
         Page<Doctor> page = doctorSearchService.searchByQuery(query);
         model.addAttribute("doctors", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
         return "doctors/listing";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("doctor", new DoctorCreateDTO());
-        // also include department list, appUser list etc via services in your context
+        model.addAttribute("appUsers", appUserService.findAllUsers());
         return "doctors/create";
     }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("doctor") DoctorCreateDTO dto,
                          BindingResult result,
-                         Model model,
-                         @ActiveUser AppUser user) {
+                         Model model) {
 
         if (result.hasErrors()) {
+            model.addAttribute("appUsers", appUserService.findAllUsers());
             return "doctors/create";
         }
 
-        doctorService.create(dto, user);
+        doctorService.create(dto);
         return "redirect:/doctors";
     }
 
@@ -91,6 +95,7 @@ public class DoctorController {
     public String showEdit(@PathVariable Long id, Model model) {
         DoctorDTO dto = doctorService.findById(id);
         model.addAttribute("doctor", dto);
+        model.addAttribute("appUsers", appUserService.findAllUsers());
         return "doctors/edit";
     }
 
@@ -98,14 +103,14 @@ public class DoctorController {
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("doctor") DoctorUpdateDTO dto,
                          BindingResult result,
-                         Model model,
-                         AppUser user) {
+                         Model model) {
 
         if (result.hasErrors()) {
+            model.addAttribute("appUsers", appUserService.findAllUsers());
             return "doctors/edit";
         }
 
-        doctorService.update(id, dto, user);
+        doctorService.update(id, dto);
         return "redirect:/doctors";
     }
 
@@ -119,5 +124,11 @@ public class DoctorController {
     public String export(@ModelAttribute("query") DoctorSearchQuery query) {
         doctorExportProcess.generateExportFile(query);
         return "redirect:/doctors";
+    }
+
+    @GetMapping("/view/{id}")
+    public String viewDoctor(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("customer", doctorService.findById(id));
+        return "doctors/view";
     }
 }

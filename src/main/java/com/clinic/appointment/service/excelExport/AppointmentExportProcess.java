@@ -4,13 +4,13 @@ import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchQuer
 import com.clinic.appointment.model.Appointment;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.service.*;
+import com.clinic.appointment.service.AppointmentSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AppointmentExportProcess extends CommonExportProcess<Appointment, AppointmentSearchQuery> {
 
     private final AppointmentSearchService searchService;
