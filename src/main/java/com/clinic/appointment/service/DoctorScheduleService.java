@@ -1,84 +1,102 @@
 package com.clinic.appointment.service;
 
 import com.clinic.appointment.dto.doctorSchedule.DoctorScheduleCreateDTO;
-import com.clinic.appointment.dto.doctorSchedule.DoctorScheduleDTO;
-import com.clinic.appointment.dto.doctorSchedule.DoctorScheduleUpdateDTO;
-import com.clinic.appointment.exception.DuplicateException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
-import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.AppointmentSlot;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.DoctorSchedule;
+import com.clinic.appointment.repository.AppointmentSlotRepository;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.repository.DoctorScheduleRepository;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class DoctorScheduleService {
 
-    private final DoctorScheduleRepository doctorScheduleRepository;
     private final DoctorRepository doctorRepository;
-    private final ModelMapper modelMapper;
+    private final DoctorScheduleRepository scheduleRepository;
+    private final AppointmentSlotRepository slotRepository;
 
-    public DoctorScheduleDTO findById(Long id) {
-        DoctorSchedule ds = doctorScheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
-        return modelMapper.map(ds, DoctorScheduleDTO.class);
+    private static final int SLOT_MINUTES = 30;
+    private static final int DAYS_TO_GENERATE = 7;
+
+    @Transactional
+    public void saveSchedule(Long doctorId, List<DoctorScheduleCreateDTO> scheduleList) {
+
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "doctorSchedule", scheduleList, "doctorId",
+                        "doctorSchedule/create", "Doctor not found"
+                ));
+
+        scheduleRepository.deleteByDoctorId(doctorId);
+
+        List<DoctorSchedule> saved = new ArrayList<>();
+        for (DoctorScheduleCreateDTO dto : scheduleList) {
+            DoctorSchedule schedule = DoctorSchedule.builder()
+                    .doctor(doctor)
+                    .dayOfWeek(dto.getDayOfWeek())
+                    .startTime(dto.getStartTime())
+                    .endTime(dto.getEndTime())
+                    .available(dto.isAvailable())
+                    .build();
+            saved.add(scheduleRepository.save(schedule));
+        }
+
+        regenerateSlots(doctor, saved);
     }
 
-    public DoctorScheduleDTO create(DoctorScheduleCreateDTO dto, AppUser user) {
+    @Transactional
+    public void regenerateSlots(Doctor doctor, List<DoctorSchedule> schedules) {
 
-        Doctor doctor = doctorRepository.findById(dto.getDoctorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+        slotRepository.deleteAllByDoctorId(doctor.getId());
 
-        // Duplicate check: doctor can only have one schedule per day
-        doctorScheduleRepository.findByDoctorAndDayOfWeekIgnoreCase(doctor, dto.getDayOfWeek())
-                .ifPresent(s -> { throw new DuplicateException("Doctor already has schedule on this day"); });
+        LocalDate today = LocalDate.now();
+        LocalDate end = today.plusDays(DAYS_TO_GENERATE);
 
-        DoctorSchedule ds = new DoctorSchedule();
-        ds.setDoctor(doctor);
-        ds.setDayOfWeek(dto.getDayOfWeek());
-        ds.setStartTime(dto.getStartTime());
-        ds.setEndTime(dto.getEndTime());
-        ds.setAvailable(dto.isAvailable());
-        ds.setCreatedAt(LocalDate.now());
-        ds.setUpdatedAt(LocalDate.now());
-        ds.setCreatedBy(user);
-        ds.setUpdatedBy(user);
-        ds.setStatus("ACTIVE");
+        for (LocalDate date = today; !date.isAfter(end); date = date.plusDays(1)) {
 
-        DoctorSchedule saved = doctorScheduleRepository.save(ds);
-        return modelMapper.map(saved, DoctorScheduleDTO.class);
+            String day = date.getDayOfWeek().name(); // MONDAY, TUESDAY, …
+
+            LocalDate finalDate = date;
+            schedules.stream()
+                    .filter(s -> s.isAvailable() && s.getDayOfWeek().equalsIgnoreCase(day))
+                    .forEach(s -> generateDaySlots(doctor, finalDate, s));
+        }
     }
 
-    public DoctorScheduleDTO update(Long id, DoctorScheduleUpdateDTO dto, AppUser user) {
+    private void generateDaySlots(Doctor doctor, LocalDate date, DoctorSchedule schedule) {
 
-        DoctorSchedule ds = doctorScheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm");
 
-        doctorScheduleRepository
-                .findByDoctorAndDayOfWeekIgnoreCaseAndIdNot(ds.getDoctor(), dto.getDayOfWeek(), id)
-                .ifPresent(s -> { throw new DuplicateException("Doctor already has schedule on this day"); });
+        LocalTime start = LocalTime.parse(schedule.getStartTime(), f);
+        LocalTime end = LocalTime.parse(schedule.getEndTime(), f);
 
-        ds.setDayOfWeek(dto.getDayOfWeek());
-        ds.setStartTime(dto.getStartTime());
-        ds.setEndTime(dto.getEndTime());
-        ds.setAvailable(dto.isAvailable());
-        ds.setUpdatedAt(LocalDate.now());
-        ds.setUpdatedBy(user);
+        LocalTime time = start;
 
-        DoctorSchedule saved = doctorScheduleRepository.save(ds);
-        return modelMapper.map(saved, DoctorScheduleDTO.class);
+        while (time.plusMinutes(SLOT_MINUTES).compareTo(end) <= 0) {
+
+            String slotString = time.format(f) + "-" + time.plusMinutes(SLOT_MINUTES).format(f);
+
+            AppointmentSlot slot = AppointmentSlot.builder()
+                    .doctor(doctor)
+                    .date(date)
+                    .timeSlot(slotString)
+                    .booked(false)
+                    .build();
+
+            slotRepository.save(slot);
+
+            time = time.plusMinutes(SLOT_MINUTES);
+        }
     }
 
-    public void softDelete(Long id) {
-        DoctorSchedule ds = doctorScheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
-        ds.setStatus("DELETE");
-        doctorScheduleRepository.save(ds);
-    }
 }

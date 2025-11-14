@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,6 +64,28 @@ public class DepartmentService {
             throw new ResourceNotFoundException("department",departmentOp.get(),"id","departments","Department with this id does not exist");
         }
         return entityToUpdateDTO(departmentOp.get());
+    }
+
+    public List<DepartmentDTO> findAllDepartments() {
+        List<Department> departments = departmentRepository.findAll();
+        return entityToDTOList(departments);
+    }
+
+    private List<DepartmentDTO> entityToDTOList(List<Department> departments) {
+        List<DepartmentDTO> dtos = new ArrayList<>();
+        for(Department department : departments) {
+            DepartmentDTO dto = new DepartmentDTO();
+            dto.setId(department.getId());
+            dto.setDepartmentName(department.getDepartmentName());
+            dto.setDepartmentDescription(department.getDepartmentDescription());
+            dto.setCreatedAt(department.getCreatedAt());
+            dto.setCreatedBy(department.getCreatedBy());
+            dto.setUpdatedAt(department.getUpdatedAt());
+            dto.setUpdatedBy(department.getUpdatedBy());
+            dto.setStatus(department.getStatus());
+            dtos.add(dto);
+        }
+        return dtos;
     }
 
     public DepartmentDTO findDepartmentById(Long id) {

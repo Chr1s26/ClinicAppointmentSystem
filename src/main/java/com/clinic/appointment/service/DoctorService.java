@@ -16,6 +16,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -86,6 +88,28 @@ public class DoctorService {
             throw new ResourceNotFoundException("doctor",doctorOptional,"id","doctors","A doctor with this id not found");
         }
         doctorRepository.deleteById(id);
+    }
+
+    public List<DoctorDTO> findAll() {
+        List<Doctor> doctors = doctorRepository.findAll();
+        return entityToDTOList(doctors);
+    }
+
+    private List<DoctorDTO> entityToDTOList(List<Doctor> doctors) {
+        List<DoctorDTO> dtos = new ArrayList<>();
+        for(Doctor doc : doctors) {
+            DoctorDTO dto = new DoctorDTO();
+            dto.setId(doc.getId());
+            dto.setName(doc.getName());
+            dto.setPhone(doc.getPhone());
+            dto.setAddress(doc.getAddress());
+            dto.setDateOfBirth(doc.getDateOfBirth());
+            dto.setGenderType(doc.getGenderType());
+            dto.setEmail(doc.getEmail());
+            dto.setStatus(doc.getStatus());
+            dtos.add(dto);
+        }
+        return dtos;
     }
 
     private DoctorCreateDTO entityToCreateDTO(Doctor saved) {

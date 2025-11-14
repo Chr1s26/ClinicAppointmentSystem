@@ -3,6 +3,7 @@ package com.clinic.appointment.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,4 +21,10 @@ public class Department extends MasterData {
 
     @ManyToMany(mappedBy = "departments")
     private Set<Doctor> doctors = new HashSet<>();
+
+    public static Specification<Department> hasName(String name) {
+        return (root, q, cb) ->
+                cb.like(cb.lower(root.get("departmentName")), "%" + name.toLowerCase() + "%");
+    }
+
 }

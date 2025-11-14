@@ -40,4 +40,7 @@ public class DoctorUpdateDTO {
 
     @Size(min = 1, message = "Select at least one department")
     private Set<@NotNull(message = "Department id cannot be null") Long> departmentIds;
+
+    @NotNull(message = "App user id required")
+    private Long appUserId;
 }

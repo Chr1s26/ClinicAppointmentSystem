@@ -1,7 +1,7 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.dto.department.DepartmentResponse;
 import com.clinic.appointment.dto.doctor.DoctorDTO;
+import com.clinic.appointment.dto.searchFilter.doctorDepartment.DoctorDepartmentDTO;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorDepartmentService;
@@ -21,25 +21,16 @@ public class DoctorDepartmentController {
     private final DoctorDepartmentService doctorDepartmentService;
 
     @GetMapping("/doctorDepartment/{id}")
-    public String showCreateForm(@PathVariable Long id,Model model,
-                                 @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
-                                 @RequestParam(defaultValue = "9",required = false) Integer pageSize,
-                                 @RequestParam(defaultValue = "departmentName",required = false) String sortBy,
-                                 @RequestParam(defaultValue = "asc",required = false)String sortOrder){
-        DepartmentResponse  departments = doctorDepartmentService.getAllDepartmentsByDoctorId(id,pageNumber,pageSize,sortBy,sortOrder);
-        DoctorDTO doctor = doctorService.getDoctorById(id);
-        model.addAttribute("doctor",doctor);
-        model.addAttribute("departments",departments.getDepartments());
-        model.addAttribute("response",departments);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
-
+    public String showCreateForm(@PathVariable Long id,Model model){
+        DoctorDTO doctorDTO = doctorService.findById(id);
+        model.addAttribute("doctor",doctorDTO);
+        model.addAttribute("departments", departmentService.findAllDepartments());
         return "doctorDepartments/listing";
     }
 
-    @PostMapping("/doctor/{doctorId}/department/{departmentId}/join")
-    public String addDoctorToDepartment(@PathVariable Long doctorId, @PathVariable Long departmentId){
-        Doctor doctor = doctorDepartmentService.addDoctorToDepartment(doctorId, departmentId);
-        return "redirect:/doctorDepartment/" + doctorId;
+    @PostMapping("/doctorDepartment")
+    public String addDoctorToDepartment(@ModelAttribute DoctorDepartmentDTO dto){
+        Doctor doctor = doctorDepartmentService.addDoctorToDepartment(dto);
+        return "redirect:/doctors";
     }
 }

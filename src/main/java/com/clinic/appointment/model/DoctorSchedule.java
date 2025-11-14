@@ -12,19 +12,18 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "doctor_schedule")
 public class DoctorSchedule extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
-    @JoinColumn(name = "doctor_id")
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @Column(nullable = false)
     private String dayOfWeek;
+
+    @Column(nullable = false)
     private String startTime;
+
+    @Column(nullable = false)
     private String endTime;
 
     private boolean available = true;
-
-
 }

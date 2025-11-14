@@ -29,7 +29,6 @@ public class Appointment extends MasterData {
 
     private LocalDate appointmentDate;
 
-    /** Example: "09:00-09:30" */
     private String timeSlot;
 
     @Enumerated(EnumType.STRING)

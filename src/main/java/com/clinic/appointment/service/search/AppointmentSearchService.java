@@ -1,9 +1,10 @@
 package com.clinic.appointment.service;
 
 import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchQuery;
-import com.clinic.appointment.entity.specification.AppointmentSpecification;
 import com.clinic.appointment.model.Appointment;
+import com.clinic.appointment.model.specification.AppointmentSpecification;
 import com.clinic.appointment.repository.AppointmentRepository;
+import com.clinic.appointment.service.search.CommonSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

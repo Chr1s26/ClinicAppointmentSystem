@@ -13,4 +13,7 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
     Optional<DoctorSchedule> findByDoctorAndDayOfWeekIgnoreCase(Doctor doctor, String day);
 
     Optional<DoctorSchedule> findByDoctorAndDayOfWeekIgnoreCaseAndIdNot(Doctor doctor, String day, Long id);
+
+    void deleteByDoctorId(Long doctorId);
+
 }

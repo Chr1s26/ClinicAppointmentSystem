@@ -7,24 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoctorScheduleCreateDTO {
-
-    private Long id;
-
-    @NotNull(message = "Doctor ID is required")
-    private Long doctorId;
-
-    @NotBlank(message = "Day of week cannot be empty")
-    @Pattern(regexp = "^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$",
-            message = "Invalid day of week")
     private String dayOfWeek;
-
-    @NotBlank(message = "Start time required")
-    @Pattern(regexp = "^\\d{2}:\\d{2}$", message = "Time format must be HH:mm")
     private String startTime;
-
-    @NotBlank(message = "End time required")
-    @Pattern(regexp = "^\\d{2}:\\d{2}$", message = "Time format must be HH:mm")
     private String endTime;
-
-    private boolean available = true;
+    private boolean available;
 }

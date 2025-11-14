@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -47,4 +48,9 @@ public class Doctor extends UserMasterData {
         this.departments.add(department);
         department.getDoctors().add(this);
     }
+
+    public static Specification<Doctor> hasName(String name) {
+        return (root, q, cb) -> cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");
+    }
+
 }
