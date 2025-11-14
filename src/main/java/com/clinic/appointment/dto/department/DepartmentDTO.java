@@ -13,6 +13,4 @@ public class DepartmentDTO {
     private String departmentDescription;
     private LocalDate createdAt;
     private LocalDate updatedAt;
-    private boolean isJoined;
-
 }
