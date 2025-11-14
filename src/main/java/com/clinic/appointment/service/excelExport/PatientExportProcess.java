@@ -5,8 +5,7 @@ import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.service.ExportListingService;
 import com.clinic.appointment.service.FileService;
-import com.clinic.appointment.service.PatientSearchService;
-import lombok.RequiredArgsConstructor;
+import com.clinic.appointment.service.search.PatientSearchService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,8 +44,7 @@ public class PatientExportProcess extends CommonExportProcess<Patient, PatientSe
                 new ColumnSpec<>("Phone", Patient::getPhone, null),
                 new ColumnSpec<>("Email", Patient::getEmail, null),
                 new ColumnSpec<>("Gender", p -> p.getGenderType() != null ? p.getGenderType().name() : "", null),
-                new ColumnSpec<>("Patient Type", p -> p.getPatientType() != null ? p.getPatientType().name() : "", null),
-                new ColumnSpec<>("Status", Patient::getStatus, null)
+                new ColumnSpec<>("Patient Type", p -> p.getPatientType() != null ? p.getPatientType().name() : "", null)
         );
     }
 
