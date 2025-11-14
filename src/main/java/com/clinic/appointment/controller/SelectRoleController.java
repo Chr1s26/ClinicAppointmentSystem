@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Controller
-public class HomeController {
+public class SelectRoleController {
 
     @GetMapping("/select-role")
     public String selectRole(Model model, HttpSession session){
@@ -38,14 +38,11 @@ public class HomeController {
                 return "redirect:/home";
             }else if("ROLE_PATIENT".equalsIgnoreCase(selectedRole)){
                 return "redirect:/home";
+            }else{
+                return "redirect:/login?authorization=true";
             }
         }
 
-        return "redirect:/select-role?error=invalid_selection";
-    }
-
-    @GetMapping("/home")
-    public String homePage(Model model){
-        return "home";
+        return "redirect:/login?authorization=true";
     }
 }

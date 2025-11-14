@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @MappedSuperclass
@@ -22,8 +23,8 @@ public abstract class MasterData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String status;
-    private LocalDate updatedAt;
-    private LocalDate createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id",referencedColumnName = "ID")

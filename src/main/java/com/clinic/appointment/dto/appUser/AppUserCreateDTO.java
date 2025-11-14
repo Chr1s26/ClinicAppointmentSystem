@@ -26,7 +26,4 @@ public class AppUserCreateDTO {
             message = "Password must contain upper, lower, digit, symbol, and no spaces"
     )
     private String password;
-
-    @NotNull(message = "At least one role must be selected")
-    private Set<Long> roleIds;
 }

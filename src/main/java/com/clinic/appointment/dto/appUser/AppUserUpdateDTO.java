@@ -3,6 +3,8 @@ package com.clinic.appointment.dto.appUser;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

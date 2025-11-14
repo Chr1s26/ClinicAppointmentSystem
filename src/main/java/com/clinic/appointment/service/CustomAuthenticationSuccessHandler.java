@@ -51,7 +51,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             session.setAttribute("activeRole", "ROLE_DOCTOR");
             response.sendRedirect("/home");
         } else {
-            response.sendRedirect("/login");
+            response.sendRedirect("/login?authorization=true");
         }
     }
 }

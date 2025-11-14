@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -27,7 +28,7 @@ public class AppUser extends MasterData {
     private String password;
 
     @Column
-    private LocalDate confirmedAt;
+    private LocalDateTime confirmedAt;
 
     // ---------- ROLES ----------
     @ManyToMany(fetch = FetchType.EAGER)
@@ -56,6 +57,12 @@ public class AppUser extends MasterData {
     public boolean isAccountConfirmed() {
         return confirmedAt != null;
     }
+
+    @Column
+    private String otp;
+
+    @Column
+    private Long otpGeneratedAt;
 
     @Override
     public String toString() {

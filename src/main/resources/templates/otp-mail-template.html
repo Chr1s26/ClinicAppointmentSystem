@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Clinic OTP Verification</title>
+    <style>
+        .container {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+        .header {
+            background: #28a745; /* Clinic green */
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .main {
+            padding: 20px 30px;
+            text-align: center;
+        }
+        .otp-box {
+            background: #f0f7f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 26px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #1f7a38;
+        }
+        p {
+            font-size: 15px;
+            line-height: 22px;
+        }
+        .footer {
+            text-align: center;
+            padding: 12px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #eee;
+            border-radius: 0 0 10px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        Clinic OTP Verification
+    </div>
+
+    <div class="main">
+        <p>Your One-Time Password (OTP) is:</p>
+
+        <div class="otp-box" th:text="${otp}">000000</div>
+
+        <p>Please use this code to verify your identity.
+            <br>Do NOT share this OTP with anyone.</p>
+    </div>
+
+    <div class="footer">
+        © <span th:text="${websiteUrl}">www.clinic-system.com</span> — All Rights Reserved.
+    </div>
+</div>
+
+</body>
+</html>
