@@ -48,9 +48,11 @@ public class DepartmentExportProcess extends CommonExportProcess<Department, Dep
                 new ColumnSpec<>("ID", d -> d.getId().toString(), null),
                 new ColumnSpec<>("Name", Department::getDepartmentName, null),
                 new ColumnSpec<>("Description", Department::getDepartmentDescription, null),
-                new ColumnSpec<>("Status", d -> String.valueOf(d.getStatus()), null),
-                new ColumnSpec<>("Created At", d -> String.valueOf(d.getCreatedAt()), null),
-                new ColumnSpec<>("Updated At", d -> String.valueOf(d.getUpdatedAt()), null)
+                new ColumnSpec<>("Status", d -> d.getStatus() != null ? d.getStatus().name() : "", null),
+                new ColumnSpec<>("Created at", d -> d.getCreatedAt() != null ? d.getCreatedAt().toString() : "", null),
+                new ColumnSpec<>("Updated at", d -> d.getUpdatedAt() != null ? d.getUpdatedAt().toString() : "", null),
+                new ColumnSpec<>("Created by", d -> d.getCreatedBy() != null ? d.getCreatedBy().getUsername() : "", null),
+                new ColumnSpec<>("Updated by", d -> d.getUpdatedBy() != null ? d.getUpdatedBy().getUsername() : "", null)
         );
     }
 

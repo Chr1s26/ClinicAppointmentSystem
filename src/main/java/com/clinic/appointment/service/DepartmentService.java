@@ -4,86 +4,109 @@ import com.clinic.appointment.dto.department.DepartmentCreateDTO;
 import com.clinic.appointment.dto.department.DepartmentDTO;
 import com.clinic.appointment.dto.department.DepartmentUpdateDTO;
 import com.clinic.appointment.exception.DuplicateException;
-import com.clinic.appointment.exception.NotFoundException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
-import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Department;
+import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
+    private final AuthService authService;
 
-    public DepartmentDTO createDepartment(DepartmentCreateDTO dto, AppUser user) {
+    public DepartmentCreateDTO createDepartment(DepartmentCreateDTO dto) {
 
         departmentRepository.findByDepartmentNameIgnoreCase(dto.getDepartmentName())
-                .ifPresent(d -> {
-                    throw new DuplicateException("Department name already exists.");
-                });
+                .ifPresent(d -> {throw new DuplicateException("department",dto,"departmentName","departments/create","Department with this name already exists");});
 
-        Department department = Department.builder()
-                .departmentName(dto.getDepartmentName())
-                .departmentDescription(dto.getDepartmentDescription())
-                .createdAt(LocalDate.now())
-                .updatedAt(LocalDate.now())
-                .createdBy(user)
-                .updatedBy(user)
-                .status("ACTIVE")
-                .build();
+        Department department = new Department();
+        department.setDepartmentName(dto.getDepartmentName());
+        department.setDepartmentDescription(dto.getDepartmentDescription());
+        department.setStatus(StatusType.ACTIVE);
+        department.setCreatedAt(LocalDateTime.now());
+        department.setCreatedBy(authService.getCurrentUser());
 
         departmentRepository.save(department);
 
-        return toDTO(department);
+        return entityToCreateDTO(department);
     }
 
-    public DepartmentDTO updateDepartment(Long id, DepartmentUpdateDTO dto, AppUser user) {
+    public DepartmentUpdateDTO updateDepartment(Long id, DepartmentUpdateDTO dto) {
 
         Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("department",dto,"name","departments/edit","Department with this id does not exist"));
 
         departmentRepository.findByDepartmentNameIgnoreCaseAndIdNot(dto.getDepartmentName(), id)
-                .ifPresent(d -> {
-                    throw new DuplicateException("Another department with same name already exists.");
-                });
+                .ifPresent(d -> {throw new DuplicateException("department",dto,"name","departments/edit","Department with this name already exists");});
 
         department.setDepartmentName(dto.getDepartmentName());
         department.setDepartmentDescription(dto.getDepartmentDescription());
-        department.setUpdatedAt(LocalDate.now());
-        department.setUpdatedBy(user);
+        department.setUpdatedAt(LocalDateTime.now());
+        department.setUpdatedBy(authService.getCurrentUser());
 
         departmentRepository.save(department);
 
-        return toDTO(department);
+        return entityToUpdateDTO(department);
     }
 
-    public DepartmentDTO findById(Long id) {
-        Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found."));
-        return toDTO(department);
+    public DepartmentUpdateDTO findById(Long id) {
+        Optional<Department> departmentOp = departmentRepository.findById(id);
+        if(departmentOp.isEmpty()) {
+            throw new ResourceNotFoundException("department",departmentOp.get(),"id","departments","Department with this id does not exist");
+        }
+        return entityToUpdateDTO(departmentOp.get());
+    }
+
+    public DepartmentDTO findDepartmentById(Long id) {
+        Optional<Department> departmentOp = departmentRepository.findById(id);
+        if(departmentOp.isEmpty()) {
+            throw new ResourceNotFoundException("department",departmentOp.get(),"id","departments","Department with this id does not exist");
+        }
+        return entityToDTO(departmentOp.get());
+    }
+
+    private DepartmentDTO entityToDTO(Department department) {
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setId(department.getId());
+        departmentDTO.setDepartmentName(department.getDepartmentName());
+        departmentDTO.setDepartmentDescription(department.getDepartmentDescription());
+        departmentDTO.setStatus(department.getStatus());
+        departmentDTO.setCreatedAt(LocalDateTime.now());
+        departmentDTO.setUpdatedAt(LocalDateTime.now());
+        departmentDTO.setCreatedBy(department.getCreatedBy());
+        departmentDTO.setUpdatedBy(department.getUpdatedBy());
+        return departmentDTO;
     }
 
     public void deleteDepartment(Long id) {
-        Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found."));
+        Optional<Department> departmentOp = departmentRepository.findById(id);
+        if (departmentOp.isPresent()) {
+            departmentRepository.delete(departmentOp.get());
+        }else{
+            throw new ResourceNotFoundException("department",departmentOp.get(),"id","departments","Department with this id does not exist");
+        }
 
-        department.setStatus("DELETE");
-        departmentRepository.save(department);
     }
 
-    private DepartmentDTO toDTO(Department d) {
-        return new DepartmentDTO(
-                d.getId(),
-                d.getDepartmentName(),
-                d.getDepartmentDescription(),
-                d.getStatus() != null ? d.getStatusEnum() : null,
-                d.getCreatedBy(),
-                d.getUpdatedBy()
-        );
+    private DepartmentCreateDTO entityToCreateDTO(Department department) {
+        DepartmentCreateDTO departmentCreateDTO = new DepartmentCreateDTO();
+        departmentCreateDTO.setDepartmentName(department.getDepartmentName());
+        departmentCreateDTO.setDepartmentDescription(department.getDepartmentDescription());
+        return departmentCreateDTO;
     }
+
+    private DepartmentUpdateDTO entityToUpdateDTO(Department department) {
+        DepartmentUpdateDTO departmentUpdateDTO = new DepartmentUpdateDTO();
+        departmentUpdateDTO.setDepartmentName(department.getDepartmentName());
+        departmentUpdateDTO.setDepartmentDescription(department.getDepartmentDescription());
+        return departmentUpdateDTO;
+    }
+
 }
