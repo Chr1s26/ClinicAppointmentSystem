@@ -105,24 +105,7 @@ public class ProfileService {
         return new ProfileDTO(username, profileUrl, email);
     }
 
-    public String getProfileUrlString(Long appUserId) {
 
-
-        // Check for Doctor
-        var doctor = doctorRepository.findByAppUserId(appUserId);
-        if (doctor.isPresent() && doctor.get().getProfileUrl() != null) {
-            return doctor.get().getProfileUrl();
-        }
-
-        // Check for Patient
-//        var patient = patientRepository.findByAppUserId(appUserId);
-//        if (patient.isPresent() && patient.get().getPhotoUrl() != null) {
-//            return patient.get().getPhotoUrl();
-//        }
-
-        // If no profile found
-        return null;
-    }
 
     public String extractPrimaryRole(Set<Role> roles) {
         if (roles == null || roles.isEmpty()) return null;
