@@ -44,7 +44,7 @@ public class DoctorDepartmentService {
             dto.setDepartmentDescription(proj.getDepartmentDescription());
             dto.setCreatedAt(proj.getCreatedAt());
             dto.setUpdatedAt(proj.getUpdatedAt());
-            dto.setJoined(Boolean.TRUE.equals(proj.getIsJoined()));
+//            dto.setJoined(Boolean.TRUE.equals(proj.getIsJoined()));
             return dto;
         }).collect(Collectors.toList());
 
