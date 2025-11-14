@@ -6,7 +6,6 @@ import com.clinic.appointment.dto.doctor.DoctorUpdateDTO;
 import com.clinic.appointment.exception.DuplicateException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
-import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.AppUserRepository;
@@ -16,11 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +36,7 @@ public class DoctorService {
         return modelMapper.map(d, DoctorDTO.class);
     }
 
-    public DoctorDTO create(DoctorCreateDTO dto) {
+    public DoctorCreateDTO create(DoctorCreateDTO dto) {
         doctorRepository.findByPhoneIgnoreCase(dto.getPhone())
                 .ifPresent(d -> { throw new DuplicateException("doctor",dto,"phone","doctors/create","A doctor with the same phone number already exists"); });
 
@@ -57,19 +53,14 @@ public class DoctorService {
         doc.setUpdatedAt(LocalDateTime.now());
         doc.setCreatedBy(currentUser);
         doc.setAppUser(appUser);
+        doc.setEmail(dto.getEmail());
         doc.setStatus(StatusType.ACTIVE);
 
-        Set<Department> depts = dto.getDepartmentIds().stream()
-                .map(id -> departmentRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("department",dto,"id","departments","A department with this id not found")))
-                .collect(Collectors.toSet());
-        doc.setDepartments(depts);
-
         Doctor saved = doctorRepository.save(doc);
-        return modelMapper.map(saved, DoctorDTO.class);
+        return entityToCreateDTO(saved);
     }
 
-    public DoctorDTO update(Long id, DoctorUpdateDTO dto) {
+    public DoctorUpdateDTO update(Long id, DoctorUpdateDTO dto) {
         Doctor doc = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("doctor",dto,"id","doctors","A doctor with this id not found"));
 
         doctorRepository.findByPhoneIgnoreCaseAndIdNot(dto.getPhone(), id)
@@ -79,19 +70,14 @@ public class DoctorService {
         doc.setName(dto.getName());
         doc.setPhone(dto.getPhone());
         doc.setAddress(dto.getAddress());
+        doc.setEmail(dto.getEmail());
         doc.setDateOfBirth(dto.getDateOfBirth());
         doc.setGenderType(dto.getGenderType());
         doc.setUpdatedAt(LocalDateTime.now());
         doc.setUpdatedBy(currentUser);
 
-        Set<Department> depts = dto.getDepartmentIds().stream()
-                .map(did -> departmentRepository.findById(did)
-                        .orElseThrow(() -> new ResourceNotFoundException("department",dto,"id","departments","A department with this id not found")))
-                .collect(Collectors.toSet());
-        doc.setDepartments(depts);
-
         Doctor saved = doctorRepository.save(doc);
-        return modelMapper.map(saved, DoctorDTO.class);
+        return entityToUpdateDTO(saved);
     }
 
     public void softDelete(Long id) {
@@ -99,8 +85,30 @@ public class DoctorService {
         if(doctorOptional.isEmpty()) {
             throw new ResourceNotFoundException("doctor",doctorOptional,"id","doctors","A doctor with this id not found");
         }
-        Doctor doc = doctorOptional.get();
-        doc.setStatus(StatusType.DELETED);
-        doctorRepository.save(doc);
+        doctorRepository.deleteById(id);
+    }
+
+    private DoctorCreateDTO entityToCreateDTO(Doctor saved) {
+        DoctorCreateDTO dto = new DoctorCreateDTO();
+        dto.setId(saved.getId());
+        dto.setName(saved.getName());
+        dto.setPhone(saved.getPhone());
+        dto.setAddress(saved.getAddress());
+        dto.setDateOfBirth(saved.getDateOfBirth());
+        dto.setGenderType(saved.getGenderType());
+        dto.setEmail(saved.getEmail());
+        return dto;
+    }
+
+    private DoctorUpdateDTO entityToUpdateDTO(Doctor saved) {
+        DoctorUpdateDTO dto = new DoctorUpdateDTO();
+        dto.setId(saved.getId());
+        dto.setName(saved.getName());
+        dto.setPhone(saved.getPhone());
+        dto.setAddress(saved.getAddress());
+        dto.setDateOfBirth(saved.getDateOfBirth());
+        dto.setGenderType(saved.getGenderType());
+        dto.setEmail(saved.getEmail());
+        return dto;
     }
 }

@@ -45,8 +45,9 @@ public class DoctorController {
                 new DoctorSearchFilter(DoctorSearchField.NAME, MatchType.CONTAINS, ""),
                 new DoctorSearchFilter(DoctorSearchField.PHONE, MatchType.CONTAINS, ""),
                 new DoctorSearchFilter(DoctorSearchField.EMAIL, MatchType.CONTAINS, ""),
+                new DoctorSearchFilter(DoctorSearchField.ADDRESS, MatchType.CONTAINS, ""),
+                new DoctorSearchFilter(DoctorSearchField.GENDER, MatchType.EXACT, ""),
                 new DoctorSearchFilter(DoctorSearchField.STATUS, MatchType.EXACT, ""),
-                new DoctorSearchFilter(DoctorSearchField.DEPARTMENT, MatchType.EXACT, ""),
                 new DoctorSearchFilter(DoctorSearchField.GENDER, MatchType.EXACT, "")
         ));
         return q;
