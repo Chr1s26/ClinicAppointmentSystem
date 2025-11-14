@@ -58,7 +58,7 @@ public class AppUserServiceImpl implements UserService{
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         Role userRole = roleRepository.findByRoleName("PATIENT").orElseThrow(() -> new RoleNotFoundException("Invalid role"));
         appUser.setCreatedAt(LocalDateTime.now());
-        appUser.setStatus(StatusType.ACTIVE.name());
+        appUser.setStatus(StatusType.ACTIVE);
         appUser.setRoles(Collections.singleton(userRole));
         return appUserRepository.save(appUser);
     }

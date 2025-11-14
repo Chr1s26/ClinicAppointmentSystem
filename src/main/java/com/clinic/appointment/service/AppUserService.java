@@ -1,125 +1,154 @@
 package com.clinic.appointment.service;
 
 import com.clinic.appointment.dto.appUser.*;
+import com.clinic.appointment.dto.profile.ProfileRequest;
 import com.clinic.appointment.exception.*;
 import com.clinic.appointment.model.*;
+import com.clinic.appointment.model.constant.FileType;
+import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AppUserService {
 
     private final AppUserRepository appUserRepository;
-    private final RoleRepository roleRepository;
-    private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
+    private final FileService fileService;
 
-    // ---------------- CREATE ----------------
-    @Transactional
-    public AppUserDTO create(AppUserCreateDTO dto, AppUser actor) {
-
-        // duplicate username
-        appUserRepository.findByUsernameIgnoreCase(dto.getUsername())
-                .ifPresent(u -> { throw new DuplicateException("Username already exists"); });
-
-        // duplicate email
-        appUserRepository.findByEmailIgnoreCase(dto.getEmail())
-                .ifPresent(u -> { throw new DuplicateException("Email already exists"); });
-
-        Set<Role> roles = roleRepository.findAllById(dto.getRoleIds())
-                .stream().collect(Collectors.toSet());
-
-        AppUser user = AppUser.builder()
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .roles(roles)
-                .createdBy(actor)
-                .updatedBy(actor)
-                .createdAt(LocalDate.now())
-                .updatedAt(LocalDate.now())
-                .status("ACTIVE")
-                .build();
-
+    public AppUserCreateDTO create(AppUserCreateDTO dto) {
+        if(appUserRepository.existsByUsernameIgnoreCaseAndEmail(dto.getUsername())) throw new DuplicateException("user",dto,"name","users/create","An account with this name and email already exists");
+        AppUser user = CreateDTOtoEntity(dto);
         AppUser saved = appUserRepository.save(user);
-        return toDTO(saved);
+        return entityToCreateDTO(saved);
     }
 
-    // ---------------- UPDATE ----------------
-    @Transactional
-    public AppUserDTO update(Long id, AppUserUpdateDTO dto, AppUser actor) {
+    public AppUserUpdateDTO update(Long id, AppUserUpdateDTO dto) {
+
+        appUserRepository.findByUsernameIgnoreCaseAndEmailAndIdNot(dto.getUsername(), dto.getEmail(),id)
+                .ifPresent(u -> { throw new DuplicateException("user",dto,"name","users/edit","An account with this name and email already exists");});
 
         AppUser user = appUserRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        // duplicate username
-        appUserRepository.findByUsernameIgnoreCaseAndIdNot(dto.getUsername(), id)
-                .ifPresent(u -> { throw new DuplicateException("Username already in use"); });
-
-        // duplicate email
-        appUserRepository.findByEmailIgnoreCaseAndIdNot(dto.getEmail(), id)
-                .ifPresent(u -> { throw new DuplicateException("Email already in use"); });
-
-        Set<Role> roles = roleRepository.findAllById(dto.getRoleIds())
-                .stream().collect(Collectors.toSet());
+                .orElseThrow(() -> new ResourceNotFoundException("user",dto,"id","users/edit","An account with this id cannot be found"));
 
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setRoles(roles);
-        user.setUpdatedBy(actor);
-        user.setUpdatedAt(LocalDate.now());
-
-        // password change
-        if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        }
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setUpdatedBy(authService.getCurrentUser());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setStatus(StatusType.ACTIVE);
 
         AppUser saved = appUserRepository.save(user);
-        return toDTO(saved);
+        return entityToUpdateDTO(saved);
     }
 
-    // ---------------- DELETE (Soft Delete) ----------------
-    @Transactional
-    public void delete(Long id, AppUser actor) {
-        AppUser user = appUserRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        user.setStatus("DELETE");
-        user.setUpdatedBy(actor);
-        user.setUpdatedAt(LocalDate.now());
-        appUserRepository.save(user);
+    public void delete(Long id) {
+        Optional<AppUser> optionalUser = appUserRepository.findById(id);
+        if(optionalUser.isEmpty()) {
+            throw new ResourceNotFoundException("user",optionalUser.get(),"id","users","An account with this id cannot be found");
+        }
+        appUserRepository.delete(optionalUser.get());
     }
 
-    // ---------------- FIND ----------------
-    public AppUserDTO findById(Long id) {
-        AppUser user = appUserRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return toDTO(user);
+    public AppUserUpdateDTO findById(Long id) {
+        Optional<AppUser> user = appUserRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new ResourceNotFoundException("user",user,"id","users","An account with this id cannot be found");
+        }
+        return entityToUpdateDTO(user.get());
     }
 
-    // ---------------- MAPPER ----------------
-    private AppUserDTO toDTO(AppUser user) {
+    public AppUserDTO findUserById(Long id) {
+        Optional<AppUser> user = appUserRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new ResourceNotFoundException("user",user,"id","users","An account with this id cannot be found");
+        }
+        return entityToDTO(user.get());
+    }
+
+    private AppUserDTO entityToDTO(AppUser appUser) {
         AppUserDTO dto = new AppUserDTO();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setAccountConfirmed(user.isAccountConfirmed());
-        dto.setConfirmedAt(user.getConfirmedAt());
-        dto.setStatus(user.getStatus());
+        dto.setId(appUser.getId());
+        dto.setUsername(appUser.getUsername());
+        dto.setEmail(appUser.getEmail());
+        dto.setConfirmedAt(appUser.getConfirmedAt());
+        dto.setRoles(appUser.getRoles());
+        dto.setStatus(appUser.getStatus());
+        dto.setUpdatedBy(appUser.getUpdatedBy());
+        dto.setUpdatedAt(LocalDateTime.now());
+        dto.setCreatedAt(LocalDateTime.now());
+        dto.setCreatedBy(appUser.getCreatedBy());
+        String url = fileService.getFileName(FileType.APP_USER, appUser.getId());
+        dto.setProfileUrl(url);
+        return dto;
+    }
 
-        dto.setRoles(
-                user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toSet())
-        );
+    public List<AppUserDTO> findAllUsers() {
+        List<AppUser> users = appUserRepository.findAll();
+        return toListDTO(users);
+    }
 
+    public void uploadPicture(ProfileRequest profileRequest, Long id) {
+        MultipartFile file = profileRequest.getFile();
+        fileService.handleFileUpload(file,FileType.APP_USER, id,"S3");
+    }
+
+    private List<AppUserDTO> toListDTO(List<AppUser> users) {
+        List<AppUserDTO> list = new ArrayList<>();
+        for(AppUser user : users) {
+            AppUserDTO dto = new AppUserDTO();
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            dto.setRoles(user.getRoles());
+            dto.setCreatedAt(user.getCreatedAt());
+            dto.setUpdatedAt(user.getUpdatedAt());
+            dto.setStatus(user.getStatus());
+            dto.setUpdatedBy(user.getUpdatedBy());
+            dto.setCreatedBy(user.getCreatedBy());
+            dto.setConfirmedAt(user.getConfirmedAt());
+            list.add(dto);
+        }
+        return list;
+    }
+
+
+    private AppUserCreateDTO entityToCreateDTO(AppUser saved) {
+        AppUserCreateDTO dto = new AppUserCreateDTO();
+        dto.setId(saved.getId());
+        dto.setUsername(saved.getUsername());
+        dto.setEmail(saved.getEmail());
+        dto.setPassword(saved.getPassword());
+        return dto;
+    }
+
+    private AppUser CreateDTOtoEntity(AppUserCreateDTO dto) {
+        AppUser appUser = new AppUser();
+        appUser.setUsername(dto.getUsername());
+        appUser.setEmail(dto.getEmail());
+        appUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        appUser.setCreatedAt(LocalDateTime.now());
+        appUser.setCreatedBy(authService.getCurrentUser());
+        appUser.setStatus(StatusType.ACTIVE);
+        return appUser;
+    }
+
+    private AppUserUpdateDTO entityToUpdateDTO(AppUser saved) {
+        AppUserUpdateDTO dto = new AppUserUpdateDTO();
+        dto.setId(saved.getId());
+        dto.setUsername(saved.getUsername());
+        dto.setEmail(saved.getEmail());
+        dto.setPassword(saved.getPassword());
         return dto;
     }
 }

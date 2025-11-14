@@ -6,11 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
+@Repository
+public interface AppUserRepository extends JpaRepository<AppUser, Long>, JpaSpecificationExecutor<AppUser> {
 
     Optional<AppUser> findByEmailIgnoreCase(String email);
     Optional<AppUser> findByUsernameIgnoreCase(String username);
@@ -22,7 +25,9 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     boolean existsByUsernameIgnoreCaseAndEmail(String email);
 
-    boolean existsByUsernameIgnoreCase(@NotBlank(message = "Username cannot be empty.") @Size(min = 3, max = 50, message = "Username must be 3–50 characters.") @Pattern(regexp = "^[A-Za-z0-9_.-]+$", message = "Username can include letters, numbers, underscore, dash, dot.") String username);
+    boolean existsByUsernameIgnoreCase(String username);
 
-    boolean existsByEmail(@NotBlank(message = "Email cannot be empty.") @Email(message = "Invalid email format.") String email);
+    boolean existsByEmail(String email);
+
+    Optional<AppUser> findByUsernameIgnoreCaseAndEmailAndIdNot(String username,String email, Long id);
 }

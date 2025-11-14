@@ -20,10 +20,11 @@ public class AppUserCreateDTO {
     private String email;
 
     @NotBlank(message = "Password cannot be empty.")
-    @Size(min = 8, message = "Password must include at least 8 characters.")
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}\\[\\]|:;\"'<>,.?/])(?!.*\\s).{8,}$",
-            message = "Password must contain upper, lower, digit, symbol, and no spaces"
-    )
+    @Size(min = 3, message = "Password must include at least 3 characters.")
+//    @Pattern(
+//            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}\\[\\]|:;\"'<>,.?/])(?!.*\\s).{8,}$",
+//            message = "Password must contain upper, lower, digit, symbol, and no spaces"
+//    )
     private String password;
+
 }

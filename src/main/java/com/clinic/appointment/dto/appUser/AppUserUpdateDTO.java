@@ -23,7 +23,7 @@ public class AppUserUpdateDTO {
     private String email;
 
     // Optional password change
-    private String newPassword;
+    private String password;
 
     @NotNull(message = "At least one role must be selected")
     private Set<Long> roleIds;

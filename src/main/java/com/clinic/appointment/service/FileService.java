@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.clinic.appointment.model.FileStorage;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.repository.FileStorageRepository;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -22,7 +22,7 @@ public abstract class MasterData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String status;
+    private StatusType status;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 
@@ -34,14 +34,6 @@ public abstract class MasterData {
     @JoinColumn(name = "updated_by_id",referencedColumnName = "ID")
     @JsonIgnore
     private AppUser updatedBy;
-
-    @JsonIgnore
-    public boolean isDeleted(){
-        if(this.status != null && this.status.equalsIgnoreCase(StatusType.DELETE.name())){
-            return true;
-        }
-        return false;
-    }
 
     @JsonIgnore
     public boolean isOwnRecord(Long id) {
