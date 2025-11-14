@@ -1,120 +1,123 @@
 package com.clinic.appointment.controller;
 
-
-import com.clinic.appointment.dto.doctor.DoctorCreateDto;
+import com.clinic.appointment.dto.doctor.DoctorCreateDTO;
 import com.clinic.appointment.dto.doctor.DoctorDTO;
-import com.clinic.appointment.dto.doctor.DoctorResponse;
+import com.clinic.appointment.dto.doctor.DoctorUpdateDTO;
+import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchFilter;
+import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchField;
+import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchQuery;
+import com.clinic.appointment.dto.searchFilter.MatchType;
+import com.clinic.appointment.dto.searchFilter.SortDirection;
+import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
-import com.clinic.appointment.model.constant.GenderType;
-import com.clinic.appointment.repository.AppUserRepository;
-import com.clinic.appointment.service.AuthService;
-import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorService;
-import com.clinic.appointment.service.FileService;
+import com.clinic.appointment.service.excelExport.DoctorExportProcess;
+import com.clinic.appointment.service.search.DoctorSearchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/doctors")
 @RequiredArgsConstructor
+@RequestMapping("/doctors")
 public class DoctorController {
 
     private final DoctorService doctorService;
-    private final DepartmentService departmentService;
-    @Autowired
-    private AuthService authService;
+    private final DoctorSearchService doctorSearchService;
+    private final DoctorExportProcess doctorExportProcess;
 
-    @Autowired
-    private AppUserRepository appUserRepository;
-
-    @GetMapping("/dashboard")
-    public String doctorDashboard(Model model){
-        return "/doctors/dashboard/index";
+    @ModelAttribute("query")
+    public DoctorSearchQuery initQuery() {
+        DoctorSearchQuery q = new DoctorSearchQuery();
+        q.setPageNumber(0);
+        q.setPageSize(6);
+        q.setSortBy("createdAt");
+        q.setSortDirection(SortDirection.DESC);
+        q.setFilterList(List.of(
+                new DoctorSearchFilter(DoctorSearchField.NAME, MatchType.CONTAINS, ""),
+                new DoctorSearchFilter(DoctorSearchField.PHONE, MatchType.CONTAINS, ""),
+                new DoctorSearchFilter(DoctorSearchField.EMAIL, MatchType.CONTAINS, ""),
+                new DoctorSearchFilter(DoctorSearchField.STATUS, MatchType.EXACT, ""),
+                new DoctorSearchFilter(DoctorSearchField.DEPARTMENT, MatchType.EXACT, ""),
+                new DoctorSearchFilter(DoctorSearchField.GENDER, MatchType.EXACT, "")
+        ));
+        return q;
     }
 
     @GetMapping
-    public String getAllDoctors(Model model,
-                                    @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
-                                    @RequestParam(defaultValue = "9",required = false) Integer pageSize,
-                                    @RequestParam(defaultValue = "name",required = false) String sortBy,
-                                    @RequestParam(defaultValue = "asc",required = false)String sortOrder){
-        try {
-            DoctorResponse doctorResponse = doctorService.getAllDoctors(pageNumber,pageSize,sortBy,sortOrder);
-            List<DoctorDTO> safeDoctorsList = new ArrayList<>(doctorResponse.getDoctors());
-            model.addAttribute("doctors",safeDoctorsList);
-            model.addAttribute("response",doctorResponse);
-            model.addAttribute("sortBy", sortBy);
-            model.addAttribute("sortOrder", sortOrder);
-            return "doctors/listing";
-        }catch (AccessDeniedException e){
-            return "redirect:/access-denied";
-        }
+    public String list(Model model, @ModelAttribute("query") DoctorSearchQuery query) {
+        Page<Doctor> page = doctorSearchService.searchByQuery(query);
+        model.addAttribute("doctors", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+        return "doctors/listing";
+    }
+
+    @PostMapping
+    public String search(Model model, @ModelAttribute("query") DoctorSearchQuery query) {
+        Page<Doctor> page = doctorSearchService.searchByQuery(query);
+        model.addAttribute("doctors", page.getContent());
+        return "doctors/listing";
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model){
-        model.addAttribute("doctor",new DoctorCreateDto());
-        model.addAttribute("genderType",GenderType.values());
-        model.addAttribute("appUsers",appUserRepository.findAll());
+    public String showCreateForm(Model model) {
+        model.addAttribute("doctor", new DoctorCreateDTO());
+        // also include department list, appUser list etc via services in your context
         return "doctors/create";
     }
 
     @PostMapping("/create")
-    public String createDoctor(@ModelAttribute DoctorCreateDto doctor,Model model){
-        if(doctor.getAppUserId()==null){
-            return "redirect:/register";
-        }else{
-            try {
-                model.addAttribute("doctor", doctor);
-                doctorService.createDoctor(doctor, model);
-                return "redirect:/doctors";
-            }catch (AccessDeniedException e){
-                return "redirect:/access-denied";
-            }
+    public String create(@Valid @ModelAttribute("doctor") DoctorCreateDTO dto,
+                         BindingResult result,
+                         Model model,
+                         @ActiveUser AppUser user) {
+
+        if (result.hasErrors()) {
+            return "doctors/create";
         }
+
+        doctorService.create(dto, user);
+        return "redirect:/doctors";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model){
-        DoctorDTO doctor= this.doctorService.getDoctorById(id);
-        model.addAttribute("genderType", GenderType.values());
-        model.addAttribute("doctor",doctor);
-        model.addAttribute("appUsers",appUserRepository.findAll());
+    public String showEdit(@PathVariable Long id, Model model) {
+        DoctorDTO dto = doctorService.findById(id);
+        model.addAttribute("doctor", dto);
         return "doctors/edit";
-
     }
 
     @PostMapping("/update/{id}")
-    public String updateDoctor(@PathVariable("id") Long id, @ModelAttribute("doctor") DoctorDTO doctor,Model model){
-        try{
-            this.doctorService.updateDoctor(id,doctor,model);
-            return "redirect:/doctors";
-        }catch (AccessDeniedException e){
-            return "redirect:/access-denied";
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("doctor") DoctorUpdateDTO dto,
+                         BindingResult result,
+                         Model model,
+                         AppUser user) {
+
+        if (result.hasErrors()) {
+            return "doctors/edit";
         }
+
+        doctorService.update(id, dto, user);
+        return "redirect:/doctors";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteDoctor(@PathVariable("id") Long id){
-        try{
-            this.doctorService.deleteById(id);
-            return "redirect:/doctors";
-        }catch (AccessDeniedException e){
-            return "redirect:/access-denied";
-        }
+    public String delete(@PathVariable Long id) {
+        doctorService.softDelete(id);
+        return "redirect:/doctors";
     }
 
-    @GetMapping("/view")
-    public String viewDoctor(Model model){
-        model.addAttribute("doctors",doctorService.findAll());
-        return "doctors/listing";
+    @PostMapping("/export/excel")
+    public String export(@ModelAttribute("query") DoctorSearchQuery query) {
+        doctorExportProcess.generateExportFile(query);
+        return "redirect:/doctors";
     }
-
 }

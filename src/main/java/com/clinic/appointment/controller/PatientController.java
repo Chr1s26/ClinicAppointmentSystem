@@ -1,98 +1,122 @@
 package com.clinic.appointment.controller;
 
-import com.clinic.appointment.dto.patient.PatientCreateDto;
+import com.clinic.appointment.annotation.ActiveUser;
+import com.clinic.appointment.dto.patient.PatientCreateDTO;
 import com.clinic.appointment.dto.patient.PatientDTO;
-import com.clinic.appointment.dto.patient.PatientResponse;
+import com.clinic.appointment.dto.patient.PatientUpdateDTO;
+import com.clinic.appointment.dto.searchFilter.MatchType;
+import com.clinic.appointment.dto.searchFilter.SortDirection;
+import com.clinic.appointment.dto.searchFilter.patient.PatientSearchFilter;
+import com.clinic.appointment.dto.searchFilter.patient.PatientSearchField;
+import com.clinic.appointment.dto.searchFilter.patient.PatientSearchQuery;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Patient;
-import com.clinic.appointment.model.constant.GenderType;
-import com.clinic.appointment.model.constant.PatientType;
-import com.clinic.appointment.repository.AppUserRepository;
-import com.clinic.appointment.service.AuthService;
+import com.clinic.appointment.service.PatientSearchService;
 import com.clinic.appointment.service.PatientService;
+import com.clinic.appointment.service.excelExport.PatientExportProcess;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/patients")
 @RequiredArgsConstructor
+@RequestMapping("/patients")
 public class PatientController {
 
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private PatientService patientService;
-    @Autowired
-    private AppUserRepository appUserRepository;
+    private final PatientService patientService;
+    private final PatientSearchService patientSearchService;
+    private final PatientExportProcess patientExportProcess;
 
-    @GetMapping("/home")
-    public String doctorDashboard(Model model){
-        return "/patients/home/index";
+    @ModelAttribute("query")
+    public PatientSearchQuery initQuery() {
+        PatientSearchQuery q = new PatientSearchQuery();
+        q.setPageNumber(0);
+        q.setPageSize(6);
+        q.setSortBy("createdAt");
+        q.setSortDirection(SortDirection.DESC);
+        q.setFilterList(List.of(
+                new PatientSearchFilter(PatientSearchField.NAME, MatchType.CONTAINS, ""),
+                new PatientSearchFilter(PatientSearchField.PHONE, MatchType.CONTAINS, ""),
+                new PatientSearchFilter(PatientSearchField.EMAIL, MatchType.CONTAINS, ""),
+                new PatientSearchFilter(PatientSearchField.GENDER, MatchType.EXACT, ""),
+                new PatientSearchFilter(PatientSearchField.PATIENT_TYPE, MatchType.EXACT, ""),
+                new PatientSearchFilter(PatientSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return q;
+    }
+
+    @GetMapping
+    public String list(@ModelAttribute("query") PatientSearchQuery query, Model model) {
+        Page<Patient> page = patientSearchService.searchByQuery(query);
+        model.addAttribute("patients", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        return "patients/listing";
+    }
+
+    @PostMapping
+    public String search(@ModelAttribute("query") PatientSearchQuery query, Model model) {
+        Page<Patient> page = patientSearchService.searchByQuery(query);
+        model.addAttribute("patients", page.getContent());
+        return "patients/listing";
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("patient", new PatientCreateDto());
-        model.addAttribute("patientType", PatientType.values());
-        model.addAttribute("genderType", GenderType.values());
-        model.addAttribute("appUsers",appUserRepository.findAll());
+    public String createForm(Model model) {
+        model.addAttribute("patient", new PatientCreateDTO());
         return "patients/create";
     }
 
     @PostMapping("/create")
-    public String createPatient(@ModelAttribute PatientCreateDto patientCreateDto,Model model) {
-        if(patientCreateDto.getAppUserId() == null){
-            return "redirect:/register";
-        }else{
-            model.addAttribute("patient", patientCreateDto);
-            patientService.create(patientCreateDto,model);
-            return "redirect:/patients";
-        }
-    }
+    public String create(@Valid @ModelAttribute("patient") PatientCreateDTO dto,
+                         BindingResult result,
+                         @ActiveUser AppUser user,
+                         Model model) {
 
-    @GetMapping
-    public String getPatients(Model model,
-                              @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
-                              @RequestParam(defaultValue = "9",required = false) Integer pageSize,
-                              @RequestParam(defaultValue = "name",required = false) String sortBy,
-                              @RequestParam(defaultValue = "asc",required = false) String sortOrder, Sort sort) {
-        PatientResponse patientResponse = patientService.getAllPatients(pageNumber,pageSize,sortBy,sortOrder);
-        List<PatientDTO> patientDTOList = new ArrayList<>(patientResponse.getPatients());
-        model.addAttribute("patients",patientDTOList);
-        model.addAttribute("response",patientResponse);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
-        return "patients/listing";
+        if (result.hasErrors()) {
+            return "patients/create";
+        }
+
+        patientService.create(dto, user);
+        return "redirect:/patients";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        PatientDTO patient = this.patientService.getPatientById(id);
-        if(patient == null) return "redirect:/patients";
-        model.addAttribute("patient",patient);
-        model.addAttribute("patientType", PatientType.values());
-        model.addAttribute("genderType",GenderType.values());
-        model.addAttribute("appUsers",appUserRepository.findAll());
+    public String editForm(@PathVariable Long id, Model model) {
+        PatientDTO dto = patientService.findById(id);
+        model.addAttribute("patient", dto);
         return "patients/edit";
     }
 
     @PostMapping("/update/{id}")
-    public String updatePatient(@PathVariable("id") Long id,@ModelAttribute PatientDTO patient,Model model) {
-        model.addAttribute("patient",patient);
-        this.patientService.update(id,patient,model);
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("patient") PatientUpdateDTO dto,
+                         BindingResult result,
+                         @ActiveUser AppUser user,
+                         Model model) {
+
+        if (result.hasErrors()) {
+            return "patients/edit";
+        }
+
+        patientService.update(id, dto, user);
         return "redirect:/patients";
     }
 
     @GetMapping("/delete/{id}")
-    public String deletePatient(@PathVariable("id") Long id) {
-        this.patientService.deleteById(id);
+    public String delete(@PathVariable Long id) {
+        patientService.softDelete(id);
+        return "redirect:/patients";
+    }
+
+    @PostMapping("/export/excel")
+    public String export(@ModelAttribute("query") PatientSearchQuery query) {
+        patientExportProcess.generateExportFile(query);
         return "redirect:/patients";
     }
 }

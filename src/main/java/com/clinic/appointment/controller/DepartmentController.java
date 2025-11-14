@@ -9,53 +9,98 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/departments")
 public class DepartmentController {
 
     private final DepartmentService departmentService;
+    private final DepartmentSearchService departmentSearchService;
+    private final DepartmentExportProcess departmentExportProcess;
+
+    @ModelAttribute("query")
+    public DepartmentSearchQuery initQuery() {
+        DepartmentSearchQuery query = new DepartmentSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new DepartmentSearchFilter(DepartmentSearchField.NAME, MatchType.CONTAINS, ""),
+                new DepartmentSearchFilter(DepartmentSearchField.DESCRIPTION, MatchType.CONTAINS, ""),
+                new DepartmentSearchFilter(DepartmentSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllDepartments(Model model,
-                                    @RequestParam(defaultValue = "0",required = false) Integer pageNumber,
-                                    @RequestParam(defaultValue = "9",required = false) Integer pageSize,
-                                    @RequestParam(defaultValue = "departmentName",required = false) String sortBy,
-                                    @RequestParam(defaultValue = "asc",required = false)String sortOrder){
-        DepartmentResponse departments = departmentService.getAllDepartments(pageNumber,pageSize,sortBy,sortOrder);
-        model.addAttribute("departments",departments.getDepartments());
-        model.addAttribute("response",departments);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+    public String list(Model model, @ModelAttribute("query") DepartmentSearchQuery query) {
+        Page<Department> page = departmentSearchService.searchByQuery(query);
+        model.addAttribute("departments", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        return "departments/listing";
+    }
+
+    @PostMapping
+    public String searchDepartments(Model model,
+                                    @ModelAttribute("query") DepartmentSearchQuery query) {
+
+        Page<Department> page = departmentSearchService.searchByQuery(query);
+        model.addAttribute("departments", page.getContent());
         return "departments/listing";
     }
 
     @GetMapping("/new")
-    public String showCreateForm(Model model){
-        model.addAttribute("department",new Department());
+    public String newForm(Model model) {
+        model.addAttribute("department", new DepartmentCreateDTO());
         return "departments/create";
     }
 
     @PostMapping("/create")
-    public String createDepartment(@ModelAttribute Department department, Model model){
-        departmentService.createDepartment(department,model);
+    public String create(@Valid @ModelAttribute("department") DepartmentCreateDTO dto,
+                         BindingResult result,
+                         Model model,
+                         @ActiveUser AppUser user) {
+
+        if (result.hasErrors()) {
+            return "departments/create";
+        }
+
+        departmentService.createDepartment(dto, user);
+
         return "redirect:/departments";
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(Model model,@PathVariable Long id){
-        model.addAttribute("department",departmentService.findDepartmentById(id));
+    public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("department", departmentService.findById(id));
         return "departments/edit";
     }
 
     @PostMapping("/update/{id}")
-    public String updateDepartment(@PathVariable Long id, @ModelAttribute Department department, Model model){
-        departmentService.updateDepartment(id, department,model);
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("department") DepartmentUpdateDTO dto,
+                         BindingResult result,
+                         Model model,
+                         @ActiveUser AppUser user) {
+
+        if (result.hasErrors()) {
+            return "departments/edit";
+        }
+
+        departmentService.updateDepartment(id, dto, user);
         return "redirect:/departments";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteDepartment(@PathVariable Long id){
+    public String delete(@PathVariable Long id) {
         departmentService.deleteDepartment(id);
         return "redirect:/departments";
     }
+
+    @PostMapping("/export/excel")
+    public String exportExcel(@ModelAttribute("query") DepartmentSearchQuery query) {
+        departmentExportProcess.generateExportFile(query);
+        return "redirect:/departments";
+    }
 }
+

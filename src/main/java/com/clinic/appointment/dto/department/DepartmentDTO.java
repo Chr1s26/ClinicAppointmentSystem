@@ -1,16 +1,19 @@
 package com.clinic.appointment.dto.department;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.constant.StatusType;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class DepartmentDTO {
+
     private Long id;
     private String departmentName;
     private String departmentDescription;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+
+    private StatusType status;
+    private AppUser createdBy;
+    private AppUser updatedBy;
 }

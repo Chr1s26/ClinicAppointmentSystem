@@ -16,12 +16,6 @@ public class AuthService {
 
     @Autowired
     private AppUserRepository appUserRepository;
-    //thymleaf get current user
-//    public AppUser getCurrentUser(){
-//        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//        HttpSession session = attr.getRequest().getSession(false);
-//        return session != null ? (AppUser) session.getAttribute("currentUser") : null;
-//    }
 
     //rest controller get current user
     public AppUser getCurrentUser(){

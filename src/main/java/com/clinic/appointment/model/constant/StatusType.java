@@ -1,6 +1,6 @@
 package com.clinic.appointment.model.constant;
 
-public enum Status {
+public enum StatusType {
     ACTIVE,
     DELETE;
 }

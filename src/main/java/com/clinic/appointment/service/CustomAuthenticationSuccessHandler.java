@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -22,8 +23,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String email = authentication.getName();
-        AppUser appUser = appUserRepository.findByEmail(email).orElse(null);
+        String parameter = authentication.getName();
+        AppUser appUser = appUserRepository.findByEmail(parameter)
+                .orElseGet(() -> appUserRepository.findByUsernameIgnoreCase(parameter)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found")));
 
         if (appUser != null) {
             request.getSession().setAttribute("currentUser", appUser);
@@ -48,7 +51,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             session.setAttribute("activeRole", "ROLE_DOCTOR");
             response.sendRedirect("/home");
         } else {
-            response.sendRedirect("/home");
+            response.sendRedirect("/login");
         }
     }
 }

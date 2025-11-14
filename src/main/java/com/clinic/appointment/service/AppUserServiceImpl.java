@@ -4,7 +4,7 @@ import com.clinic.appointment.exception.AccountNotConfirmedException;
 import com.clinic.appointment.exception.RoleNotFoundException;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Role;
-import com.clinic.appointment.model.constant.Status;
+import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class AppUserServiceImpl implements UserService{
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         Role userRole = roleRepository.findByRoleName("USER").orElseThrow(() -> new RoleNotFoundException("Invalid role"));
         appUser.setCreatedAt(LocalDate.now());
-        appUser.setStatus(Status.ACTIVE.name());
+        appUser.setStatus(StatusType.ACTIVE.name());
         appUser.setRoles(Collections.singleton(userRole));
         return appUserRepository.save(appUser);
     }

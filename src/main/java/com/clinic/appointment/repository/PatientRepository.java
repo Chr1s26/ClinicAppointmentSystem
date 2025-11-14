@@ -1,29 +1,16 @@
 package com.clinic.appointment.repository;
 
-import com.clinic.appointment.model.AppUser;
-import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-@Repository
-public interface PatientRepository extends JpaRepository<Patient, Long> {
+public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpecificationExecutor<Patient> {
 
-    @Query("SELECT p FROM Patient p WHERE p.id <> :id AND LOWER(p.name) = LOWER(:name)")
-    Optional<Patient> findPatientByName(@Param("id") Long id,@Param("name") String name);
+    Optional<Patient> findByPhoneIgnoreCase(String phone);
+    Optional<Patient> findByPhoneIgnoreCaseAndIdNot(String phone, Long id);
 
-    @Query("SELECT p FROM Patient p WHERE LOWER(p.name) = LOWER(:name)")
-    Optional<Patient> findPatientByNameIgnoreCase(String name);
-
-    Optional<Patient> findPatientByAppUser(AppUser appUser);
-
-//    @Query("SELECT p FROM Patient p WHERE p.id <> :id AND p.email = :email")
-//    Optional<Patient> findPatientByEmail(@Param("id") Long id,@Param("email") String email);
-//
-//    Optional<Patient> findByEmail(String name);
+    Optional<Patient> findByEmailIgnoreCase(String email);
+    Optional<Patient> findByEmailIgnoreCaseAndIdNot(String email, Long id);
 }
-

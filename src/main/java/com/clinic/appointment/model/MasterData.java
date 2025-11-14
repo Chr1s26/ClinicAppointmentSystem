@@ -1,11 +1,12 @@
 package com.clinic.appointment.model;
 
 
-import com.clinic.appointment.model.constant.Status;
+import com.clinic.appointment.model.constant.StatusType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public abstract class MasterData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,34 +36,18 @@ public abstract class MasterData {
 
     @JsonIgnore
     public boolean isDeleted(){
-        if(this.status != null && this.status.equalsIgnoreCase(Status.DELETE.name())){
+        if(this.status != null && this.status.equalsIgnoreCase(StatusType.DELETE.name())){
             return true;
         }
         return false;
     }
 
     @JsonIgnore
-    public boolean isOwnRecord(Long id){
-        if(id != null && this.getCreatedBy().getId() != null && this.getCreatedBy().getId().equals(id) && this.getCreatedBy() != null){
-            return true;
-        }
-        return false;
+    public boolean isOwnRecord(Long id) {
+        return this.createdBy != null &&
+                this.createdBy.getId() != null &&
+                id != null &&
+                this.createdBy.getId().equals(id);
     }
 
-    @JsonIgnore
-    public boolean isAdmin(){
-        return this instanceof Admin;
-    }
-    @JsonIgnore
-    public boolean isPatient(){
-        return this instanceof Patient;
-    }
-    @JsonIgnore
-    public boolean isDoctor(){
-        return this instanceof Doctor;
-    }
-    @JsonIgnore
-    public boolean isAppUser(){
-        return this instanceof AppUser;
-    }
 }
