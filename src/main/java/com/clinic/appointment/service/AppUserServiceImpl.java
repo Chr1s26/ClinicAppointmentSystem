@@ -55,7 +55,7 @@ public class AppUserServiceImpl implements UserService{
         AppUser appUser = new AppUser();
         appUser.setUsername(appUserCreateDTO.getUsername());
         appUser.setEmail(appUserCreateDTO.getEmail());
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setPassword(passwordEncoder.encode(appUserCreateDTO.getPassword()));
         Role userRole = roleRepository.findByRoleName("PATIENT").orElseThrow(() -> new RoleNotFoundException("Invalid role"));
         appUser.setCreatedAt(LocalDateTime.now());
         appUser.setStatus(StatusType.ACTIVE);
