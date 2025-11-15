@@ -23,10 +23,7 @@ public class PatientCreateDTO {
     @Pattern(regexp = "^[0-9\\-\\s()+]{7,20}$", message = "Invalid phone number format.")
     private String phone;
 
-    @NotBlank(message = "Email cannot be empty.")
-    @Email(message = "Invalid email format.")
-    private String email;
-
+    @NotBlank(message = "Address cannot be empty.")
     private String address;
 
     @NotNull(message = "Date of birth required")

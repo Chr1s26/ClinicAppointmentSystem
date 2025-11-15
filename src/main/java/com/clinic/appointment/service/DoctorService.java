@@ -106,13 +106,13 @@ public class DoctorService {
         doctor.getDepartments().clear();
 
         AppUser appUser = doctor.getAppUser();
-        if (appUser != null) {
-            appUser.setDoctor(null);
-        }
+        appUser.setDoctor(null);
+        appUser.getRoles().removeIf(role -> role.getRoleName().equalsIgnoreCase("DOCTOR"));
 
         doctor.setAppUser(null);
 
         doctorRepository.delete(doctor);
+        appUserRepository.save(appUser);
     }
 
     public List<DoctorDTO> findAll() {

@@ -38,6 +38,16 @@ public class AdminService {
         adminRepository.findByPhone(dto.getPhone()).ifPresent(a -> {
             throw new DuplicateException("admin", dto, "phone", "admins/create", "An admin with this phone already exists");});
 
+        AppUser user = appUserRepository.findById(dto.getAppUserId()).orElseThrow(()->new ResourceNotFoundException( "admin", dto, "appUserId", "admins/create",
+                "AppUser not found"));
+
+        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException(
+                "role", null, "roleName", "admins/create",
+                "Admin role not found"));
+
+        user.getRoles().add(adminRole);
+        appUserRepository.save(user);
+
         Admin admin = createDTOtoEntity(dto);
         Admin saved = adminRepository.save(admin);
         return entityToCreateDTO(saved);
@@ -74,11 +84,13 @@ public class AdminService {
             throw new ResourceNotFoundException("admin", admin, "id", "admins", "An admin with this id cannot be found");
         }
         AppUser appUser = admin.getAppUser();
-        if (appUser != null) {
-            appUser.setAdmin(null);
-        }
+        appUser.setAdmin(null);
+        appUser.getRoles().removeIf(role -> role.getRoleName().equalsIgnoreCase("ADMIN"));
+
         admin.setAppUser(null);
+
         adminRepository.delete(admin);
+        appUserRepository.save(appUser);
     }
 
     public AdminUpdateDTO findById(Long id) {
