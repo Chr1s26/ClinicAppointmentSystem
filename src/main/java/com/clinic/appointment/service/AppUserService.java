@@ -140,6 +140,7 @@ public class AppUserService {
         appUser.setCreatedAt(LocalDateTime.now());
         appUser.setCreatedBy(authService.getCurrentUser());
         appUser.setStatus(StatusType.ACTIVE);
+//        appUser.setRoles();
         return appUser;
     }
 

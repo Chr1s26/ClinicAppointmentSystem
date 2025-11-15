@@ -25,6 +25,6 @@ public class AppUserUpdateDTO {
     // Optional password change
     private String password;
 
-    @NotNull(message = "At least one role must be selected")
-    private Set<Long> roleIds;
+//    @NotNull(message = "At least one role must be selected")
+//    private Set<Long> roleIds;
 }

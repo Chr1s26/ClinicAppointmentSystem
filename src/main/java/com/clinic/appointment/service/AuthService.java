@@ -23,16 +23,6 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    //rest controller get current user
-//    public AppUser getCurrentUser(){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if(authentication != null && authentication.getPrincipal() instanceof UserDetails){
-//            String email = ((UserDetails) authentication.getPrincipal()).getUsername();
-//            return appUserRepository.findByEmail(email).orElse(null);
-//        }
-//        return null;
-//    }
-
     public AppUser getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return null;
@@ -67,6 +57,18 @@ public class AuthService {
             activeRole =(String) session.getAttribute("activeRole");
         }
         return activeRole;
+    }
+
+    public boolean needsPatientInfo() {
+        AppUser user = getCurrentUser();
+        if (user == null) return false;
+
+        boolean isPatientRole = user.getRoles().stream()
+                .anyMatch(r -> r.getRoleName().equals("PATIENT"));
+
+        boolean hasPatientEntity = user.getPatient() != null;
+
+        return isPatientRole && !hasPatientEntity;
     }
 
 }

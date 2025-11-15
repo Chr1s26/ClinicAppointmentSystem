@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>Clinic Dashboard</title>
@@ -18,7 +17,6 @@
             <div th:insert="fragments/sidebar :: sidebar"></div>
         </div>
 
-
         <!-- MAIN CONTENT -->
         <main class="col p-4">
 
@@ -30,34 +28,47 @@
                 </div>
             </div>
 
+            <div th:if="${needsPatientInfo}" class="alert alert-warning d-flex justify-content-between align-items-center">
+                <span><strong>Please complete your profile information.</strong></span>
+
+                <a th:href="@{/profile}" class="btn btn-warning btn-sm">
+                    Complete Profile
+                </a>
+            </div>
+
+
             <!-- QUICK STATS -->
             <div class="row g-4 mb-4">
 
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card p-3 shadow-sm h-100">
                         <h6 class="text-muted">Total Appointments</h6>
-                        <h3 class="fw-bold" th:text="${appointmentCount ?: 0}">0</h3>
+                        <!-- use controller attribute totalAppointment -->
+                        <h3 class="fw-bold" th:text="${totalAppointment != null ? totalAppointment : 0}">0</h3>
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card p-3 shadow-sm h-100">
                         <h6 class="text-muted">Doctors</h6>
-                        <h3 class="fw-bold" th:text="${doctorCount ?: 0}">0</h3>
+                        <!-- use controller attribute totalDoctor -->
+                        <h3 class="fw-bold" th:text="${totalDoctor != null ? totalDoctor : 0}">0</h3>
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card p-3 shadow-sm h-100">
                         <h6 class="text-muted">Patients</h6>
-                        <h3 class="fw-bold" th:text="${patientCount ?: 0}">0</h3>
+                        <!-- use controller attribute totalPatient -->
+                        <h3 class="fw-bold" th:text="${totalPatient != null ? totalPatient : 0}">0</h3>
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card p-3 shadow-sm h-100">
                         <h6 class="text-muted">Departments</h6>
-                        <h3 class="fw-bold" th:text="${departmentCount ?: 0}">0</h3>
+                        <!-- use controller attribute totalDepartment -->
+                        <h3 class="fw-bold" th:text="${totalDepartment != null ? totalDepartment : 0}">0</h3>
                     </div>
                 </div>
 
