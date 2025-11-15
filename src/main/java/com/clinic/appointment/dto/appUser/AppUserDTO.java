@@ -1,6 +1,7 @@
 package com.clinic.appointment.dto.appUser;
 
 import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.model.Role;
 import com.clinic.appointment.model.constant.StatusType;
 import lombok.*;
@@ -22,7 +23,7 @@ public class AppUserDTO {
     private LocalDateTime updatedAt;
     private AppUser createdBy;
     private AppUser updatedBy;
-
+    private Patient patient;
     private String profileUrl;
     private String contentType;
 }

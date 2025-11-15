@@ -52,13 +52,10 @@ public class FileService {
     private final AmazonS3 amazonS3;
 
     public String getFileName(FileType fileType, Long fileId) {
-        List<FileStorage> fileStorageList = fileStorageRepository.findByFileTypeAndFileId(fileType,fileId);
-
-        if (fileStorageList.isEmpty()) {
-            return null;
-        }
-        FileStorage fileStorage = fileStorageList.get(0);
-        return getFileUrl(fileStorageList.get(0).getKey(), fileStorage.getServiceName());
+        return fileStorageRepository
+                .findTopByFileTypeAndFileIdOrderByCreatedAtDesc(fileType, fileId)
+                .map(fs -> getFileUrl(fs.getKey(), fs.getServiceName()))
+                .orElse("/images/default-profile.png");
     }
 
     public String getFileUrl(String fileKey,String serviceName){

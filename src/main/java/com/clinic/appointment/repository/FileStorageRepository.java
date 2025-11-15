@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FileStorageRepository extends JpaRepository<FileStorage, Long> {
@@ -16,4 +18,6 @@ public interface FileStorageRepository extends JpaRepository<FileStorage, Long> 
     FileStorage findTopByFileIdAndFileTypeOrderByCreatedAtDesc(Long id, FileType fileType);
 
     List<FileStorage> findAllByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
+
+    Optional<FileStorage> findTopByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
 }

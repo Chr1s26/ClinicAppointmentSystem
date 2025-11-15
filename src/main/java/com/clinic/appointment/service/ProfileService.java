@@ -1,14 +1,13 @@
 package com.clinic.appointment.service;
 
-import com.clinic.appointment.dto.patient.PatientCreateDTO;
+import com.clinic.appointment.dto.appUser.AppUserDTO;
+import com.clinic.appointment.dto.profile.InfoDTO;
 import com.clinic.appointment.exception.DuplicateException;
-import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.model.constant.StatusType;
-import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.PatientRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +19,9 @@ public class ProfileService {
 
     private final PatientRepository patientRepository;
     private final AuthService authService;
-    private final AppUserRepository appUserRepository;
+    private final FileService fileService;
 
-    public void addInfo(PatientCreateDTO dto) {
+    public void addInfo(InfoDTO dto) {
         patientRepository.findByPhoneIgnoreCase(dto.getPhone())
                 .ifPresent(p -> {throw new DuplicateException("patient", dto, "phone", "patients/create", "A patient with this phone already exists");});
 
@@ -30,7 +29,7 @@ public class ProfileService {
         Patient saved = patientRepository.save(patient);
     }
 
-    private Patient createDTOtoEntity(PatientCreateDTO dto) {
+    private Patient createDTOtoEntity(InfoDTO dto) {
         Patient p = new Patient();
         p.setName(dto.getName());
         p.setPhone(dto.getPhone());
@@ -46,5 +45,28 @@ public class ProfileService {
             p.setAppUser(appUser);
         }
         return p;
+    }
+
+    public AppUserDTO getUserInfo() {
+
+        AppUser appUser = authService.getCurrentUser();
+
+        String url = fileService.getFileName(FileType.APP_USER, appUser.getId());
+        String profileUrl = (url != null && !url.isBlank()) ? url : "/images/default-profile.png";
+
+        AppUserDTO dto = new AppUserDTO();
+        dto.setId(appUser.getId());
+        dto.setUsername(appUser.getUsername());
+        dto.setEmail(appUser.getEmail());
+        dto.setConfirmedAt(appUser.getConfirmedAt());
+        dto.setRoles(appUser.getRoles());
+        dto.setProfileUrl(profileUrl);
+        dto.setCreatedAt(appUser.getCreatedAt());
+        dto.setCreatedBy(appUser.getCreatedBy());
+        dto.setUpdatedAt(appUser.getUpdatedAt());
+        dto.setUpdatedBy(appUser.getUpdatedBy());
+        dto.setPatient(appUser.getPatient());
+        dto.setStatus(appUser.getStatus());
+        return dto;
     }
 }
