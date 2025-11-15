@@ -38,7 +38,7 @@ public class DoctorService {
         if(d.isEmpty()) {
             throw new ResourceNotFoundException("doctor",d,"id","doctors","A doctor with this id not found");
         }
-        return modelMapper.map(d, DoctorDTO.class);
+        return entitytoDTO(d.get());
     }
 
     public DoctorUpdateDTO findDoctorById(Long id) {
@@ -136,6 +136,20 @@ public class DoctorService {
         return dtos;
     }
 
+    private DoctorDTO entitytoDTO(Doctor doctor) {
+        DoctorDTO dto = new DoctorDTO();
+        dto.setId(doctor.getId());
+        dto.setName(doctor.getName());
+        dto.setPhone(doctor.getPhone());
+        dto.setAddress(doctor.getAddress());
+        dto.setDateOfBirth(doctor.getDateOfBirth());
+        dto.setGenderType(doctor.getGenderType());
+        dto.setStatus(doctor.getStatus());
+        dto.setDepartments(doctor.getDepartments());
+        dto.setAppUser(doctor.getAppUser());
+        return dto;
+    }
+
     private DoctorCreateDTO entityToCreateDTO(Doctor saved) {
         DoctorCreateDTO dto = new DoctorCreateDTO();
         dto.setId(saved.getId());
@@ -162,4 +176,6 @@ public class DoctorService {
         );
         return dto;
     }
+
+
 }
