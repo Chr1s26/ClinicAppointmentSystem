@@ -13,18 +13,16 @@
 <body class="royal-form-page">
 
 <div class="container mt-4">
-
-    <h2 class="mb-4">Doctor Details</h2>
-
+    <h2 class="mb-4 text-center">Doctor Details</h2>
     <div class="card shadow-sm royal-form-card p-4">
 
-        <!-- TOP ROW: PHOTO + BASIC INFO -->
+
         <div class="row">
 
             <!-- BASIC INFO -->
             <div class="col-md-9 mb-3">
-                <h4 class="fw-bold" th:text="${doctor.name}">Doctor Name</h4>
-
+<!--                <h4 class="fw-bold" th:text="${doctor.name}">Doctor Name</h4>-->
+                <p class="mb-1"><strong>Name:</strong> <span th:text="${doctor.name}">---</span></p>
                 <p class="mb-1"><strong>Phone:</strong> <span th:text="${doctor.phone}">---</span></p>
                 <p class="mb-1"><strong>Address:</strong> <span th:text="${doctor.address}">---</span></p>
                 <p class="mb-1"><strong>Gender:</strong> <span th:text="${doctor.genderType}">---</span></p>
