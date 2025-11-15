@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exported Files</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+</head>
+
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR (same width as doctor/admin pages) -->
+        <div class="col-12 col-md-3 col-lg-2 p-0"
+             th:insert="fragments/sidebar :: sidebar"></div>
+
+        <!-- MAIN CONTENT -->
+        <main class="col p-4">
+
+            <h2 class="fw-bold mb-4">Exported Lists</h2>
+
+            <!-- ==================== SEARCH FORM ==================== -->
+            <form th:action="@{/exports}" th:object="${query}" method="post"
+                  class="row g-3 align-items-end mb-4">
+
+                <div class="col-md-3">
+                    <label class="form-label">File Name</label>
+                    <input type="hidden" th:name="*{filterList[0].field}" th:value="'FILE_NAME'">
+                    <input type="hidden" th:name="*{filterList[0].matchType}" th:value="'CONTAINS'">
+                    <input type="text" class="form-control"
+                           th:field="*{filterList[0].value}"
+                           placeholder="Search by name">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">File Type</label>
+                    <input type="hidden" th:name="*{filterList[1].field}" th:value="'FILE_TYPE'">
+                    <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'EXACT'">
+                    <select class="form-select" th:field="*{filterList[1].value}">
+                        <option value="">All</option>
+                        <option value="Doctor_Listing">Doctor_Listing</option>
+                        <option value="Patient_Listing">Patient_Listing</option>
+                        <option value="Department_Listing">Department_Listing</option>
+                        <option value="Appointment_Listing">Appointment_Listing</option>
+                        <option value="Admin_Listing">Admin_Listing</option>
+                        <option value="User_Listing">User_Listing</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <input type="hidden" th:name="*{filterList[2].field}" th:value="'STATUS'">
+                    <input type="hidden" th:name="*{filterList[2].matchType}" th:value="'EXACT'">
+                    <select class="form-select" th:field="*{filterList[2].value}">
+                        <option value="">All</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="PROCESSING">Processing</option>
+                        <option value="FAIL">Fail</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-select" th:field="*{sortBy}">
+                        <option value="fileName">File Name</option>
+                        <option value="createdAt">Created Date</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Order</label>
+                    <select class="form-select" th:field="*{sortDirection}">
+                        <option value="ASC">Ascending</option>
+                        <option value="DESC">Descending</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary me-2">Search</button>
+                    <a class="btn btn-secondary" th:href="@{/exports}">Reset</a>
+                </div>
+
+            </form>
+
+            <!-- HEADER -->
+            <div class="mb-3">
+                Page <span th:text="${query.pageNumber + 1}"></span> of
+                <span th:text="${totalPages}"></span> —
+                Total: <span th:text="${totalElements}"></span> files
+            </div>
+
+            <!-- ==================== TABLE ==================== -->
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>File Name</th>
+                    <th>File Type</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="e : ${exports}">
+                    <td th:text="${e.id}"></td>
+                    <td th:text="${e.fileName}"></td>
+                    <td th:text="${e.fileType}"></td>
+                    <td th:text="${e.status}"></td>
+                    <td th:text="${e.createdBy != null ? e.createdBy.username : '—'}"></td>
+                    <td th:text="${#temporals.format(e.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <form th:action="@{'/exports/download-zip/' + ${e.id}}" method="get">
+                                <button class="btn btn-success btn-sm">Download</button>
+                            </form>
+
+                            <form th:action="@{'/exports/delete/' + ${e.id}}" method="post"
+                                  onsubmit="return confirm('Delete this file?');">
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- ==================== PAGINATION ==================== -->
+            <form th:action="@{/exports}" method="get"
+                  class="row align-items-center justify-content-between mt-4">
+
+                <div class="col-md-4">
+                    <label class="form-label">Show</label>
+                    <select class="form-select d-inline w-auto" name="pageSize" onchange="this.form.submit()">
+                        <option th:value="3" th:selected="${query.pageSize == 3}">3</option>
+                        <option th:value="6" th:selected="${query.pageSize == 6}">6</option>
+                        <option th:value="9" th:selected="${query.pageSize == 9}">9</option>
+                    </select>
+                    <span>per page</span>
+
+                    <input type="hidden" name="pageNumber" th:value="${query.pageNumber}">
+                    <input type="hidden" name="sortBy" th:value="${query.sortBy}">
+                    <input type="hidden" name="sortDirection" th:value="${query.sortDirection}">
+                </div>
+
+                <div class="col-md-8 text-end">
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item" th:classappend="${query.pageNumber == 0} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/exports(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize})}">
+                                Previous
+                            </a>
+                        </li>
+
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${i == query.pageNumber} ? 'active'">
+
+                            <a class="page-link"
+                               th:text="${i + 1}"
+                               th:href="@{/exports(pageNumber=${i}, pageSize=${query.pageSize})}">
+                            </a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${query.pageNumber + 1 >= totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/exports(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize})}">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>
