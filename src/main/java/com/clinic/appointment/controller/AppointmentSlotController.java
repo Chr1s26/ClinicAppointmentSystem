@@ -1,6 +1,5 @@
 //package com.clinic.appointment.controller;
 //
-//import com.clinic.appointment.annotation.ActiveUser;
 //import com.clinic.appointment.dto.appointmentSlot.*;
 //import com.clinic.appointment.dto.searchFilter.*;
 //import com.clinic.appointment.dto.searchFilter.appointmentSlot.*;
