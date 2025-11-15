@@ -8,11 +8,14 @@ import com.clinic.appointment.dto.profile.ProfileRequest;
 import com.clinic.appointment.exception.DuplicateException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.Role;
 import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.PatientRepository;
 
+import com.clinic.appointment.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,7 @@ public class PatientService {
     private final AuthService authService;
     private final AppUserService appUserService;
     private final AppUserRepository appUserRepository;
+    private final RoleRepository roleRepository;
 
     @Transactional
     public PatientCreateDTO create(PatientCreateDTO dto) {
@@ -42,12 +46,15 @@ public class PatientService {
                             "A patient with this phone already exists");
                 });
 
-        patientRepository.findByEmailIgnoreCase(dto.getEmail())
-                .ifPresent(p -> {
-                    throw new DuplicateException(
-                            "patient", dto, "email", "patients/create",
-                            "A patient with this email already exists");
-                });
+        AppUser user = appUserRepository.findById(dto.getAppUserId()).orElseThrow(()->new ResourceNotFoundException( "user", dto, "appUserId", "patients/create",
+                "AppUser not found"));
+
+        Role patientRole = roleRepository.findByRoleName("PATIENT").orElseThrow(() -> new ResourceNotFoundException(
+                "role", null, "roleName", "patients/create",
+                "PATIENT role not found"));
+
+        user.getRoles().add(patientRole);
+        appUserRepository.save(user);
 
         Patient patient = createDTOtoEntity(dto);
         Patient saved = patientRepository.save(patient);
@@ -65,12 +72,6 @@ public class PatientService {
                             "This phone number is already used by another patient");
                 });
 
-        patientRepository.findByEmailIgnoreCaseAndIdNot(dto.getEmail(), id)
-                .ifPresent(p -> {
-                    throw new DuplicateException(
-                            "patient", dto, "email", "patients/edit",
-                            "This email is already used by another patient");
-                });
 
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() ->
@@ -80,7 +81,6 @@ public class PatientService {
 
         patient.setName(dto.getName());
         patient.setPhone(dto.getPhone());
-        patient.setEmail(dto.getEmail());
         patient.setAddress(dto.getAddress());
         patient.setDateOfBirth(dto.getDateOfBirth());
         patient.setGenderType(dto.getGenderType());
@@ -95,11 +95,17 @@ public class PatientService {
     }
 
     public void delete(Long id) {
-        Optional<Patient> optionalPatient = patientRepository.findById(id);
-        if(optionalPatient.isEmpty()) {
-            throw new ResourceNotFoundException("patient",optionalPatient.get(),"id","patients","An account with this id cannot be found");
-        }
-        patientRepository.delete(optionalPatient.get());
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("patient",id,"id","patients","A patient with this id not found"));
+
+        AppUser appUser = patient.getAppUser();
+        appUser.setPatient(null);
+        appUser.getRoles().removeIf(role -> role.getRoleName().equalsIgnoreCase("PATIENT"));
+
+        patient.setAppUser(null);
+
+        patientRepository.delete(patient);
+        appUserRepository.save(appUser);
     }
 
 //    @Transactional
@@ -144,7 +150,6 @@ public class PatientService {
         Patient p = new Patient();
         p.setName(dto.getName());
         p.setPhone(dto.getPhone());
-        p.setEmail(dto.getEmail());
         p.setAddress(dto.getAddress());
         p.setDateOfBirth(dto.getDateOfBirth());
         p.setGenderType(dto.getGenderType());
@@ -165,11 +170,11 @@ public class PatientService {
         dto.setId(p.getId());
         dto.setName(p.getName());
         dto.setPhone(p.getPhone());
-        dto.setEmail(p.getEmail());
         dto.setAddress(p.getAddress());
         dto.setDateOfBirth(p.getDateOfBirth());
         dto.setGenderType(p.getGenderType());
         dto.setPatientType(p.getPatientType());
+        dto.setAppUser(p.getAppUser());
         dto.setStatus(p.getStatus());
         dto.setCreatedAt(p.getCreatedAt());
         dto.setUpdatedAt(p.getUpdatedAt());
@@ -182,8 +187,12 @@ public class PatientService {
         PatientCreateDTO dto = new PatientCreateDTO();
         dto.setId(saved.getId());
         dto.setName(saved.getName());
-        dto.setEmail(saved.getEmail());
         dto.setPhone(saved.getPhone());
+        dto.setAddress(saved.getAddress());
+        dto.setDateOfBirth(saved.getDateOfBirth());
+        dto.setGenderType(saved.getGenderType());
+        dto.setPatientType(saved.getPatientType());
+        dto.setAppUserId(saved.getAppUser().getId());
         return dto;
     }
 
@@ -191,7 +200,6 @@ public class PatientService {
         PatientUpdateDTO dto = new PatientUpdateDTO();
         dto.setId(p.getId());
         dto.setName(p.getName());
-        dto.setEmail(p.getEmail());
         dto.setPhone(p.getPhone());
         dto.setAddress(p.getAddress());
         dto.setDateOfBirth(p.getDateOfBirth());

@@ -10,6 +10,8 @@ import com.clinic.appointment.dto.searchFilter.patient.PatientSearchFilter;
 import com.clinic.appointment.dto.searchFilter.patient.PatientSearchField;
 import com.clinic.appointment.dto.searchFilter.patient.PatientSearchQuery;
 import com.clinic.appointment.model.Patient;
+import com.clinic.appointment.model.constant.GenderType;
+import com.clinic.appointment.model.constant.PatientType;
 import com.clinic.appointment.service.AppUserService;
 import com.clinic.appointment.service.PatientService;
 import com.clinic.appointment.service.search.PatientSearchService;
@@ -46,7 +48,6 @@ public class PatientController {
         query.setFilterList(List.of(
                 new PatientSearchFilter(PatientSearchField.NAME, MatchType.CONTAINS, ""),
                 new PatientSearchFilter(PatientSearchField.PHONE, MatchType.CONTAINS, ""),
-                new PatientSearchFilter(PatientSearchField.EMAIL, MatchType.CONTAINS, ""),
                 new PatientSearchFilter(PatientSearchField.GENDER, MatchType.EXACT, ""),
                 new PatientSearchFilter(PatientSearchField.PATIENT_TYPE, MatchType.EXACT, ""),
                 new PatientSearchFilter(PatientSearchField.STATUS, MatchType.EXACT, "")
@@ -76,6 +77,8 @@ public class PatientController {
     public String showCreate(Model model) {
         model.addAttribute("patient", new PatientCreateDTO());
         model.addAttribute("appUsers", appUserService.findAllUsers());
+        model.addAttribute("genderType", GenderType.values());
+        model.addAttribute("patientType", PatientType.values());
         return "patients/create";
     }
 
@@ -84,6 +87,8 @@ public class PatientController {
                          BindingResult br, Model model) {
         if (br.hasErrors()) {
             model.addAttribute("appUsers", appUserService.findAllUsers());
+            model.addAttribute("genderType", GenderType.values());
+            model.addAttribute("patientType", PatientType.values());
             return "patients/create";
         }
         patientService.create(dto);
@@ -94,14 +99,20 @@ public class PatientController {
     public String edit(@PathVariable Long id, Model model) {
         PatientDTO patient = patientService.findPatientById(id);
         model.addAttribute("patient", patient);
+        model.addAttribute("genderType", GenderType.values());
+        model.addAttribute("patientType", PatientType.values());
         return "patients/edit";
     }
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("patient") PatientUpdateDTO dto,
-                         BindingResult br) {
-        if (br.hasErrors()) return "patients/edit";
+                         BindingResult br, Model model) {
+        if (br.hasErrors()) {
+            model.addAttribute("genderType", GenderType.values());
+            model.addAttribute("patientType", PatientType.values());
+            return "patients/edit";
+        }
         patientService.update(id, dto);
         return "redirect:/patients";
     }

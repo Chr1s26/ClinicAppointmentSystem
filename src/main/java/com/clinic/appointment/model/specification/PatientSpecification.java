@@ -16,7 +16,6 @@ public class PatientSpecification {
         return switch (filter.getField()) {
             case NAME -> stringSpec("name",filter);
             case PHONE -> stringSpec("phone",filter);
-            case EMAIL -> stringSpec("email",filter);
             case GENDER -> genderSpec(filter);
             case PATIENT_TYPE -> patientTypeSpec(filter);
             case STATUS -> statusSpec(filter);

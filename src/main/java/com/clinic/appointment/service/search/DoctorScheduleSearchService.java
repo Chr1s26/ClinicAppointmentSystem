@@ -1,9 +1,10 @@
 //package com.clinic.appointment.service;
 //
 //import com.clinic.appointment.dto.searchFilter.doctorSchedule.DoctorScheduleSearchQuery;
-//import com.clinic.appointment.entity.specification.DoctorScheduleSpecification;
+//import com.clinic.appointment.model.specification.DoctorScheduleSpecification;
 //import com.clinic.appointment.model.DoctorSchedule;
 //import com.clinic.appointment.repository.DoctorScheduleRepository;
+//import com.clinic.appointment.service.search.CommonSearchService;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.data.domain.Page;
 //import org.springframework.stereotype.Service;
