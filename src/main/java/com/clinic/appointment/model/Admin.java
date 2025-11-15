@@ -25,8 +25,7 @@ public class Admin extends UserMasterData {
     private GenderType genderType;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
 
     private String address;
-    private String email;
 }

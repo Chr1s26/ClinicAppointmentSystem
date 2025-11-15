@@ -35,9 +35,6 @@ public class AdminUpdateDTO {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of birth required")
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
 
-    @NotBlank(message = "Email cannot be empty.")
-    @Email(message = "Invalid email format.")
-    private String email;
 }

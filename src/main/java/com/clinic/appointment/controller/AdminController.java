@@ -9,7 +9,9 @@ import com.clinic.appointment.dto.searchFilter.admin.AdminSearchField;
 import com.clinic.appointment.dto.searchFilter.admin.AdminSearchFilter;
 import com.clinic.appointment.dto.searchFilter.admin.AdminSearchQuery;
 import com.clinic.appointment.model.Admin;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.AdminService;
+import com.clinic.appointment.service.AppUserService;
 import com.clinic.appointment.service.AuthService;
 import com.clinic.appointment.service.excelExport.AdminExportProcess;
 import com.clinic.appointment.service.search.AdminSearchService;
@@ -33,7 +35,7 @@ public class AdminController {
     private final AdminService adminService;
     private final AdminSearchService searchService;
     private final AdminExportProcess exportProcess;
-    private final AuthService authService;
+    private final AppUserService userService;
 
     @ModelAttribute("query")
     public AdminSearchQuery initQuery() {
@@ -44,7 +46,6 @@ public class AdminController {
         query.setSortDirection(SortDirection.DESC);
         query.setFilterList(List.of(
                 new AdminSearchFilter(AdminSearchField.NAME, MatchType.CONTAINS, ""),
-                new AdminSearchFilter(AdminSearchField.EMAIL, MatchType.CONTAINS, ""),
                 new AdminSearchFilter(AdminSearchField.PHONE, MatchType.CONTAINS, ""),
                 new AdminSearchFilter(AdminSearchField.STATUS,MatchType.EXACT,"")
         ));
@@ -76,6 +77,8 @@ public class AdminController {
     @GetMapping("/new")
     public String showCreate(Model model) {
         model.addAttribute("admin", new AdminCreateDTO());
+        model.addAttribute("genderType", GenderType.values());
+        model.addAttribute("appUsers", userService.findAllUsers());
         return "admins/create";
     }
 
@@ -93,6 +96,8 @@ public class AdminController {
     public String edit(@PathVariable Long id, Model model) {
         AdminUpdateDTO dto = adminService.findById(id);
         model.addAttribute("admin", dto);
+        model.addAttribute("genderType", GenderType.values());
+        model.addAttribute("appUsers", userService.findAllUsers());
         return "admins/edit";
     }
 
@@ -126,8 +131,4 @@ public class AdminController {
         return "admins/view";
     }
 
-    @GetMapping("/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard/index";
-    }
 }

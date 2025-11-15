@@ -8,19 +8,18 @@ import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.Role;
 import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.repository.DepartmentRepository;
 import com.clinic.appointment.repository.DoctorRepository;
+import com.clinic.appointment.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +31,7 @@ public class DoctorService {
     private final ModelMapper modelMapper;
     private final AppUserRepository appUserRepository;
     private final AuthService authService;
+    private final RoleRepository roleRepository;
 
     public DoctorDTO findById(Long id) {
         Optional<Doctor> d = doctorRepository.findById(id);
@@ -67,9 +67,12 @@ public class DoctorService {
         doc.setAppUser(appUser);
         Set<Department> depts = departmentRepository.findAllById(dto.getDepartmentIds()).stream().collect(Collectors.toSet());
         doc.setDepartments(depts);
-
         doc.setStatus(StatusType.ACTIVE);
-
+        Role role = roleRepository.findByRoleName("DOCTOR").orElseThrow(() -> new ResourceNotFoundException("doctor",dto,"name","doctors/create","A doctor with the same phone number already exists"));
+        if(appUser.getRoles() == null){
+            appUser.setRoles(new HashSet<>());
+        }
+        appUser.getRoles().add(role);
         Doctor saved = doctorRepository.save(doc);
         return entityToCreateDTO(saved);
     }
@@ -99,11 +102,9 @@ public class DoctorService {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("doctor",id,"id","doctors","A doctor with this id not found"));
 
-        // unlink from departments
         doctor.getDepartments().forEach(dept -> dept.getDoctors().remove(doctor));
         doctor.getDepartments().clear();
 
-        // unlink appUser
         AppUser appUser = doctor.getAppUser();
         if (appUser != null) {
             appUser.setDoctor(null);
@@ -111,7 +112,6 @@ public class DoctorService {
 
         doctor.setAppUser(null);
 
-        // now delete doctor
         doctorRepository.delete(doctor);
     }
 

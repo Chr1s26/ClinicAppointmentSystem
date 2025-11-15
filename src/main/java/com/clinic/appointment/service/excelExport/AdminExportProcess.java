@@ -45,7 +45,6 @@ public class AdminExportProcess extends CommonExportProcess<Admin, AdminSearchQu
         return List.of(
                 new ColumnSpec<>("ID", a -> String.valueOf(a.getId()), null),
                 new ColumnSpec<>("Name", Admin::getName, null),
-                new ColumnSpec<>("Email", Admin::getEmail, null),
                 new ColumnSpec<>("Phone", Admin::getPhone, null),
                 new ColumnSpec<>("Date of Birth", a -> String.valueOf(a.getDateOfBirth()),null),
                 new ColumnSpec<>("Gender",a -> a.getGenderType() != null ? a.getGenderType().toString() : "-", null),

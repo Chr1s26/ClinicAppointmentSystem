@@ -49,7 +49,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/confirm-account/otp**","/confirm-account/verify-otp", "/static/assets/**").permitAll()
                         .requestMatchers("/select-role", "/set-active-role").authenticated()
-                        .requestMatchers("/appUsers/**","/admins/**","/doctors/**","/departments/**").hasRole("ADMIN")
+                        .requestMatchers("/admins/**").hasRole("ADMIN")
+                        .requestMatchers("/appUsers/**","/doctors/**","/departments/**").hasRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("DOCTOR","ADMIN")
                         .anyRequest().authenticated()
                 )

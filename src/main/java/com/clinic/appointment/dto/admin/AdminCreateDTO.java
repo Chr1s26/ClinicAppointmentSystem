@@ -38,10 +38,6 @@ public class AdminCreateDTO {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of birth required")
-    private LocalDateTime dateOfBirth;
-
-    @NotBlank(message = "Email cannot be empty.")
-    @Email(message = "Invalid email format.")
-    private String email;
+    private LocalDate dateOfBirth;
 
 }

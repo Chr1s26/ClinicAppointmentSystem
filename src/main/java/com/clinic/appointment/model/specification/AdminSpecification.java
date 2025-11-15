@@ -14,7 +14,6 @@ public class AdminSpecification {
         return switch (filter.getField()) {
             case NAME -> stringSpec("name",filter);
             case PHONE -> stringSpec("phone",filter);
-            case EMAIL -> stringSpec("email",filter);
             case STATUS -> statusSpec(filter);
         };
     }

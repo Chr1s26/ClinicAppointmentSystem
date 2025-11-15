@@ -18,9 +18,6 @@ public interface AdminRepository extends JpaRepository<Admin,Long>, JpaSpecifica
 
     Optional<Admin> findByPhoneAndIdNot(@NotBlank(message = "Phone cannot be empty.") @Pattern(regexp = "^[0-9\\-\\s()+]{7,20}$", message = "Invalid phone number format.") String phone, Long id);
 
-    Optional<Admin> findByEmailIgnoreCaseAndIdNot(@NotBlank(message = "Email cannot be empty.") @Email(message = "Invalid email format.") String email, Long id);
-
     Optional<Admin> findByPhone(@NotBlank(message = "Phone cannot be empty.") @Pattern(regexp = "^[0-9\\-\\s()+]{7,20}$", message = "Invalid phone number format.") String phone);
 
-    Optional<Admin> findByEmailIgnoreCase(@NotBlank(message = "Email cannot be empty.") @Email(message = "Invalid email format.") String email);
 }

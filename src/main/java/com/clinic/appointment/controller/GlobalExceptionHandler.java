@@ -4,6 +4,7 @@ import com.clinic.appointment.exception.DuplicateException;
 import com.clinic.appointment.exception.ExportFailedException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.exception.UserNotFoundException;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanWrapperImpl;
@@ -110,6 +111,7 @@ public class GlobalExceptionHandler {
     public void addAttributes(String object, Model model) {
         if(object.equalsIgnoreCase("admin") || object.equalsIgnoreCase("doctor") || object.equalsIgnoreCase("patient")) {
             model.addAttribute("users", appUserService.findAllUsers());
+            model.addAttribute("genderType", GenderType.values());
         }else if(object.equalsIgnoreCase("appointment")) {
             model.addAttribute("doctors", this.doctorService.findAll());
             model.addAttribute("patients", this.patientService.findAllPatients());

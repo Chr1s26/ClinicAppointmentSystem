@@ -37,29 +37,21 @@
                     <input th:field="*{filterList[0].value}" class="form-control" placeholder="Search name">
                 </div>
 
-                <!-- EMAIL -->
-                <div class="col-md-3">
-                    <label class="form-label">Email</label>
-                    <input type="hidden" th:name="*{filterList[1].field}" value="EMAIL">
-                    <input type="hidden" th:name="*{filterList[1].matchType}" value="CONTAINS">
-                    <input th:field="*{filterList[1].value}" class="form-control" placeholder="Search email">
-                </div>
-
                 <!-- PHONE -->
                 <div class="col-md-3">
                     <label class="form-label">Phone</label>
-                    <input type="hidden" th:name="*{filterList[2].field}" value="PHONE">
-                    <input type="hidden" th:name="*{filterList[2].matchType}" value="CONTAINS">
-                    <input th:field="*{filterList[2].value}" class="form-control" placeholder="Search phone">
+                    <input type="hidden" th:name="*{filterList[1].field}" value="PHONE">
+                    <input type="hidden" th:name="*{filterList[1].matchType}" value="CONTAINS">
+                    <input th:field="*{filterList[1].value}" class="form-control" placeholder="Search phone">
                 </div>
 
                 <!-- STATUS -->
                 <div class="col-md-3">
                     <label class="form-label">Status</label>
-                    <input type="hidden" th:name="*{filterList[3].field}" value="STATUS">
-                    <input type="hidden" th:name="*{filterList[3].matchType}" value="EXACT">
+                    <input type="hidden" th:name="*{filterList[2].field}" value="STATUS">
+                    <input type="hidden" th:name="*{filterList[2].matchType}" value="EXACT">
 
-                    <select th:field="*{filterList[3].value}" class="form-select">
+                    <select th:field="*{filterList[2].value}" class="form-select">
                         <option value="">All</option>
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="DELETED">DELETED</option>
