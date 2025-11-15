@@ -4,22 +4,21 @@ package com.clinic.appointment.model;
 import com.clinic.appointment.model.constant.StatusType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
-@Data
 @MappedSuperclass
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class MasterData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private StatusType status;
     private LocalDateTime updatedAt;

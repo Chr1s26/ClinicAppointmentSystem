@@ -1,0 +1,60 @@
+/* ================================
+   GLOBAL CENTERING FOR ALL PAGES
+   ================================ */
+body {
+    background: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;        /* vertical center */
+    justify-content: center;    /* horizontal center */
+    padding: 30px 0;            /* spacing for small screens */
+}
+
+/* ================================
+   UNIVERSAL CARD STYLE (LOGIN/REGISTER/OTP)
+   ================================ */
+.auth-card,
+.register-card,
+.otp-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 35px 32px;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* ================================
+    FORM INPUTS
+   ================================ */
+.form-control {
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+/* ================================
+    BUTTONS
+   ================================ */
+.btn-success {
+    padding: 12px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* OTP Specific */
+.otp-input {
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+}
+
+.resend-link {
+    font-weight: 600;
+    cursor: pointer;
+}

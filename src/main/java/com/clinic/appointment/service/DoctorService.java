@@ -6,6 +6,7 @@ import com.clinic.appointment.dto.doctor.DoctorUpdateDTO;
 import com.clinic.appointment.exception.DuplicateException;
 import com.clinic.appointment.exception.ResourceNotFoundException;
 import com.clinic.appointment.model.AppUser;
+import com.clinic.appointment.model.Department;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.constant.StatusType;
 import com.clinic.appointment.repository.AppUserRepository;
@@ -19,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,14 @@ public class DoctorService {
         return modelMapper.map(d, DoctorDTO.class);
     }
 
+    public DoctorUpdateDTO findDoctorById(Long id) {
+        Optional<Doctor> d = doctorRepository.findById(id);
+        if(d.isEmpty()) {
+            throw new ResourceNotFoundException("doctor",d,"id","doctors","A doctor with this id not found");
+        }
+        return entityToUpdateDTO(d.get());
+    }
+
     public DoctorCreateDTO create(DoctorCreateDTO dto) {
         doctorRepository.findByPhoneIgnoreCase(dto.getPhone())
                 .ifPresent(d -> { throw new DuplicateException("doctor",dto,"phone","doctors/create","A doctor with the same phone number already exists"); });
@@ -52,10 +63,11 @@ public class DoctorService {
         doc.setDateOfBirth(dto.getDateOfBirth());
         doc.setGenderType(dto.getGenderType());
         doc.setCreatedAt(LocalDateTime.now());
-        doc.setUpdatedAt(LocalDateTime.now());
         doc.setCreatedBy(currentUser);
         doc.setAppUser(appUser);
-        doc.setEmail(dto.getEmail());
+        Set<Department> depts = departmentRepository.findAllById(dto.getDepartmentIds()).stream().collect(Collectors.toSet());
+        doc.setDepartments(depts);
+
         doc.setStatus(StatusType.ACTIVE);
 
         Doctor saved = doctorRepository.save(doc);
@@ -72,8 +84,9 @@ public class DoctorService {
         doc.setName(dto.getName());
         doc.setPhone(dto.getPhone());
         doc.setAddress(dto.getAddress());
-        doc.setEmail(dto.getEmail());
         doc.setDateOfBirth(dto.getDateOfBirth());
+        Set<Department> depts = departmentRepository.findAllById(dto.getDepartmentIds()).stream().collect(Collectors.toSet());
+        doc.setDepartments(depts);
         doc.setGenderType(dto.getGenderType());
         doc.setUpdatedAt(LocalDateTime.now());
         doc.setUpdatedBy(currentUser);
@@ -83,11 +96,23 @@ public class DoctorService {
     }
 
     public void softDelete(Long id) {
-        Optional<Doctor> doctorOptional = doctorRepository.findById(id);
-        if(doctorOptional.isEmpty()) {
-            throw new ResourceNotFoundException("doctor",doctorOptional,"id","doctors","A doctor with this id not found");
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("doctor",id,"id","doctors","A doctor with this id not found"));
+
+        // unlink from departments
+        doctor.getDepartments().forEach(dept -> dept.getDoctors().remove(doctor));
+        doctor.getDepartments().clear();
+
+        // unlink appUser
+        AppUser appUser = doctor.getAppUser();
+        if (appUser != null) {
+            appUser.setDoctor(null);
         }
-        doctorRepository.deleteById(id);
+
+        doctor.setAppUser(null);
+
+        // now delete doctor
+        doctorRepository.delete(doctor);
     }
 
     public List<DoctorDTO> findAll() {
@@ -105,7 +130,6 @@ public class DoctorService {
             dto.setAddress(doc.getAddress());
             dto.setDateOfBirth(doc.getDateOfBirth());
             dto.setGenderType(doc.getGenderType());
-            dto.setEmail(doc.getEmail());
             dto.setStatus(doc.getStatus());
             dtos.add(dto);
         }
@@ -120,7 +144,6 @@ public class DoctorService {
         dto.setAddress(saved.getAddress());
         dto.setDateOfBirth(saved.getDateOfBirth());
         dto.setGenderType(saved.getGenderType());
-        dto.setEmail(saved.getEmail());
         return dto;
     }
 
@@ -132,7 +155,11 @@ public class DoctorService {
         dto.setAddress(saved.getAddress());
         dto.setDateOfBirth(saved.getDateOfBirth());
         dto.setGenderType(saved.getGenderType());
-        dto.setEmail(saved.getEmail());
+        dto.setDepartmentIds(
+                saved.getDepartments().stream()
+                        .map(Department::getId)
+                        .collect(Collectors.toSet())
+        );
         return dto;
     }
 }

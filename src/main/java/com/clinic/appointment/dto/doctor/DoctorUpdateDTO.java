@@ -25,10 +25,8 @@ public class DoctorUpdateDTO {
     @Pattern(regexp = "^[0-9\\-\\s()+]{7,20}$", message = "Invalid phone number format.")
     private String phone;
 
-    @NotBlank(message = "Email cannot be empty.")
-    @Email(message = "Invalid email format")
-    private String email;
-
+    @NotBlank(message = "Address cannot be empty. ")
+    @Size(min = 5, message = "Address must be at least 5 characters.")
     private String address;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -41,6 +39,4 @@ public class DoctorUpdateDTO {
     @Size(min = 1, message = "Select at least one department")
     private Set<@NotNull(message = "Department id cannot be null") Long> departmentIds;
 
-    @NotNull(message = "App user id required")
-    private Long appUserId;
 }

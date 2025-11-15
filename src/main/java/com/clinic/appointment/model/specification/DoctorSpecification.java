@@ -16,8 +16,6 @@ public class DoctorSpecification {
         return switch (f.getField()) {
             case NAME -> stringSpec("name", f);
             case PHONE -> stringSpec("phone", f);
-            case EMAIL -> stringSpec("name", f);
-            case ADDRESS -> stringSpec("address", f);
             case DATE_OF_BIRTH -> (root, q, cb) -> {
                 if(f.getValue() == null || f.getValue().isBlank()) return null;
                 String dobString;

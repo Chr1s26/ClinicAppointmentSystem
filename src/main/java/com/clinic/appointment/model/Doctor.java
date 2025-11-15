@@ -13,11 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "doctors")
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Doctor extends UserMasterData {
 

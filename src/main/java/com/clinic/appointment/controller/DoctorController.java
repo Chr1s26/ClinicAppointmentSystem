@@ -10,7 +10,9 @@ import com.clinic.appointment.dto.searchFilter.MatchType;
 import com.clinic.appointment.dto.searchFilter.SortDirection;
 import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
+import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.AppUserService;
+import com.clinic.appointment.service.DepartmentService;
 import com.clinic.appointment.service.DoctorService;
 import com.clinic.appointment.service.excelExport.DoctorExportProcess;
 import com.clinic.appointment.service.search.DoctorSearchService;
@@ -33,6 +35,7 @@ public class DoctorController {
     private final DoctorSearchService doctorSearchService;
     private final DoctorExportProcess doctorExportProcess;
     private final AppUserService appUserService;
+    private final DepartmentService departmentService;
 
     @ModelAttribute("query")
     public DoctorSearchQuery initQuery() {
@@ -44,8 +47,6 @@ public class DoctorController {
         q.setFilterList(List.of(
                 new DoctorSearchFilter(DoctorSearchField.NAME, MatchType.CONTAINS, ""),
                 new DoctorSearchFilter(DoctorSearchField.PHONE, MatchType.CONTAINS, ""),
-                new DoctorSearchFilter(DoctorSearchField.EMAIL, MatchType.CONTAINS, ""),
-                new DoctorSearchFilter(DoctorSearchField.ADDRESS, MatchType.CONTAINS, ""),
                 new DoctorSearchFilter(DoctorSearchField.GENDER, MatchType.EXACT, ""),
                 new DoctorSearchFilter(DoctorSearchField.STATUS, MatchType.EXACT, ""),
                 new DoctorSearchFilter(DoctorSearchField.GENDER, MatchType.EXACT, "")
@@ -74,7 +75,9 @@ public class DoctorController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("doctor", new DoctorCreateDTO());
+        model.addAttribute("genderType", GenderType.values());
         model.addAttribute("appUsers", appUserService.findAllUsers());
+        model.addAttribute("departments", departmentService.findAllDepartments());
         return "doctors/create";
     }
 
@@ -84,7 +87,9 @@ public class DoctorController {
                          Model model) {
 
         if (result.hasErrors()) {
+            model.addAttribute("genderType", GenderType.values());
             model.addAttribute("appUsers", appUserService.findAllUsers());
+            model.addAttribute("departments", departmentService.findAllDepartments());
             return "doctors/create";
         }
 
@@ -94,9 +99,11 @@ public class DoctorController {
 
     @GetMapping("/edit/{id}")
     public String showEdit(@PathVariable Long id, Model model) {
-        DoctorDTO dto = doctorService.findById(id);
+        DoctorUpdateDTO dto = doctorService.findDoctorById(id);
         model.addAttribute("doctor", dto);
+        model.addAttribute("genderType", GenderType.values());
         model.addAttribute("appUsers", appUserService.findAllUsers());
+        model.addAttribute("departments", departmentService.findAllDepartments());
         return "doctors/edit";
     }
 
@@ -107,7 +114,9 @@ public class DoctorController {
                          Model model) {
 
         if (result.hasErrors()) {
+            model.addAttribute("genderType", GenderType.values());
             model.addAttribute("appUsers", appUserService.findAllUsers());
+            model.addAttribute("departments", departmentService.findAllDepartments());
             return "doctors/edit";
         }
 

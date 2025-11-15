@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Doctors - Clinic System</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Doctors</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/assets/css/styles.css}">
 </head>
 
@@ -18,97 +15,226 @@
         <div class="col-12 col-md-3 col-lg-2 p-0"
              th:insert="fragments/sidebar :: sidebar"></div>
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN CONTENT (fixed layout) -->
         <main class="col p-4">
 
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold">Doctors</h2>
-                <a th:href="@{/doctors/new}" class="btn btn-success">
-                    + Add New Doctor
-                </a>
-            </div>
+            <h2 class="fw-bold mb-4">Doctors</h2>
 
-            <!-- DOCTORS TABLE -->
-            <div class="card shadow-sm">
-                <div class="card-body">
+            <!-- ========================= SEARCH FORM ========================= -->
+            <form th:action="@{/doctors}" th:object="${query}" method="post"
+                  class="row g-3 align-items-end mb-4 no-card">
 
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Address</th>
-                            <th>Gender</th>
-                            <th>Age</th>
-                            <th>DOB</th>
-                            <th>AppUser ID</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr th:each="d : ${doctors}">
-                            <td th:text="${d.id}">1</td>
-                            <td th:text="${d.name}">Doctor Name</td>
-                            <td th:text="${d.phone}">0912345678</td>
-                            <td th:text="${d.address}">Yangon</td>
-                            <td th:text="${d.genderType}">MALE</td>
-                            <td th:text="${d.age}">35</td>
-                            <td th:text="${d.dateOfBirth}">1995-01-01</td>
-                            <td th:text="${d.appUserId}">10</td>
-
-                            <!-- ACTION BUTTONS -->
-                            <td class="text-center">
-                                <a th:href="@{'/doctors/edit/' + ${d.id}}"
-                                   class="btn btn-sm btn-primary me-1">Edit</a>
-
-                                <a th:href="@{'/doctors/delete/' + ${d.id}}"
-                                   onclick="return confirm('Are you sure you want to delete this doctor?')"
-                                   class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                        </tbody>
-
-                    </table>
-
+                <div class="col-md-3">
+                    <label class="form-label">Name</label>
+                    <input type="hidden" th:name="*{filterList[0].field}" th:value="'NAME'">
+                    <input type="hidden" th:name="*{filterList[0].matchType}" th:value="'CONTAINS'">
+                    <input th:field="*{filterList[0].value}" class="form-control" placeholder="Search by name">
                 </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Phone</label>
+                    <input type="hidden" th:name="*{filterList[1].field}" th:value="'PHONE'">
+                    <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'CONTAINS'">
+                    <input th:field="*{filterList[1].value}" class="form-control" placeholder="Search by phone">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <input type="hidden" th:name="*{filterList[2].field}" th:value="'DATE_OF_BIRTH'">
+                    <input type="hidden" th:name="*{filterList[2].matchType}" th:value="'EXACT'">
+                    <input type="date" th:field="*{filterList[2].value}" id="dob" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <input type="hidden" th:name="*{filterList[3].field}" th:value="'STATUS'">
+                    <input type="hidden" th:name="*{filterList[3].matchType}" th:value="'EXACT'">
+                    <select th:field="*{filterList[3].value}" class="form-select">
+                        <option value="">All</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="DELETED">DELETED</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Gender</label>
+                    <input type="hidden" th:name="*{filterList[4].field}" th:value="'GENDER'">
+                    <input type="hidden" th:name="*{filterList[4].matchType}" th:value="'EXACT'">
+                    <select th:field="*{filterList[4].value}" class="form-select">
+                        <option value="">All</option>
+                        <option value="MALE">MALE</option>
+                        <option value="FEMALE">FEMALE</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Sort By</label>
+                    <select th:field="*{sortBy}" class="form-select">
+                        <option value="name">Name</option>
+                        <option value="phone">Phone</option>
+                        <option value="genderType">Gender</option>
+                        <option value="dateOfBirth">Date of Birth</option>
+                        <option value="createdAt">Created At</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Order</label>
+                    <select th:field="*{sortDirection}" class="form-select">
+                        <option value="ASC">Ascending</option>
+                        <option value="DESC">Descending</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary me-2">Search</button>
+                    <a th:href="@{/doctors}" class="btn btn-secondary">Reset</a>
+                </div>
+
+            </form>
+
+            <!-- ========================= EXPORT ========================= -->
+            <div th:if="${exportError}" class="alert alert-danger mt-2">
+                <span th:text="${exportError}"></span>
             </div>
 
-            <!-- PAGINATION -->
-            <div class="d-flex justify-content-center mt-4" th:if="${response.totalPages > 1}">
-                <nav>
-                    <ul class="pagination">
+            <form th:action="@{/doctors/export/excel}" th:object="${query}" method="post"
+                  style="all: unset; display: inline;">
+                <input type="hidden" th:each="f,iStat : ${query.filterList}"
+                       th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
+                <input type="hidden" th:each="f,iStat : ${query.filterList}"
+                       th:name="|filterList[${iStat.index}].matchType|" th:value="${f.matchType}">
+                <input type="hidden" th:each="f,iStat : ${query.filterList}"
+                       th:name="|filterList[${iStat.index}].value|" th:value="${f.value}">
 
-                        <!-- Previous -->
-                        <li class="page-item" th:classappend="${response.pageNumber == 0} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{'/doctors?pageNumber=' + ${response.pageNumber - 1}}">Previous</a>
-                        </li>
+                <input type="hidden" th:field="*{sortBy}">
+                <input type="hidden" th:field="*{sortDirection}">
 
-                        <!-- Page Numbers -->
-                        <li class="page-item"
-                            th:each="i : ${#numbers.sequence(0, response.totalPages - 1)}"
-                            th:classappend="${i == response.pageNumber} ? 'active'">
-                            <a class="page-link"
-                               th:text="${i + 1}"
-                               th:href="@{'/doctors?pageNumber=' + ${i}}"></a>
-                        </li>
+                <button type="submit" class="btn btn-success mb-3">
+                    <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                </button>
+            </form>
 
-                        <!-- Next -->
-                        <li class="page-item"
-                            th:classappend="${response.pageNumber == response.totalPages - 1} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{'/doctors?pageNumber=' + ${response.pageNumber + 1}}">Next</a>
-                        </li>
+            <!-- ========================= HEADER + ADD BUTTON ========================= -->
+            <div class="d-flex justify-content-between align-items-center my-3">
+                <div>
+                    Page <span th:text="${query.pageNumber + 1}">1</span> of
+                    <span th:text="${totalPages}">X</span> —
+                    Total: <span th:text="${totalElements}">Y</span> doctors
+                </div>
 
-                    </ul>
-                </nav>
+                <a class="btn btn-primary btn-lg" th:href="@{/doctors/new}">Add Doctor</a>
             </div>
+
+            <!-- ========================= TABLE ========================= -->
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>PHONE</th>
+                    <th>GENDER</th>
+                    <th>DATE OF BIRTH</th>
+                    <th>ADDRESS</th>
+                    <th>APP USER</th>
+                    <th>DEPARTMENTS</th>
+                    <th>CREATED AT</th>
+                    <th>UPDATED AT</th>
+                    <th>ACTIONS</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="d : ${doctors}">
+                    <td th:text="${d.id}"></td>
+                    <td th:text="${d.name}"></td>
+                    <td th:text="${d.phone}"></td>
+                    <td th:text="${d.genderType}"></td>
+                    <td th:text="${d.dateOfBirth != null ? #temporals.format(d.dateOfBirth,'yyyy-MM-dd') : '—'}"></td>
+                    <td th:text="${d.address}"></td>
+                    <td th:text="${d.appUser != null ? d.appUser.email : '—'}"></td>
+
+                    <td>
+                        <div th:if="${d.departments != null and !d.departments.isEmpty()}">
+                            <span th:each="dept : ${d.departments}"
+                                  class="badge bg-info text-dark me-1">
+                                <span th:text="${dept.departmentName}"></span>
+                            </span>
+                        </div>
+                        <div th:if="${d.departments == null or d.departments.isEmpty()}">—</div>
+                    </td>
+
+                    <td th:text="${d.createdAt != null ? #temporals.format(d.createdAt,'yyyy-MM-dd HH:mm') : '—'}"></td>
+                    <td th:text="${d.updatedAt != null ? #temporals.format(d.updatedAt,'yyyy-MM-dd HH:mm') : '—'}"></td>
+
+                    <td>
+                        <a class="btn btn-sm btn-primary me-1"
+                           th:href="@{'/doctors/view/' + ${d.id}}">View</a>
+                        <a class="btn btn-sm btn-warning me-1"
+                           th:href="@{'/doctors/edit/' + ${d.id}}">Edit</a>
+                        <a class="btn btn-sm btn-danger"
+                           th:href="@{'/doctors/delete/' + ${d.id}}">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- ========================= PAGE SIZE + PAGINATION ========================= -->
+            <form th:action="@{/doctors}" method="get"
+                  class="row align-items-center justify-content-between mt-4 mb-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Show</label>
+                    <select id="pageSize" class="form-select d-inline w-auto"
+                            name="pageSize" onchange="this.form.submit()">
+                        <option th:value="3" th:selected="${query.pageSize == 3}">3</option>
+                        <option th:value="6" th:selected="${query.pageSize == 6}">6</option>
+                        <option th:value="9" th:selected="${query.pageSize == 9}">9</option>
+                    </select>
+                    <span>per page</span>
+
+                    <input type="hidden" name="pageNumber" th:value="${query.pageNumber}">
+                    <input type="hidden" name="sortBy" th:value="${query.sortBy}">
+                    <input type="hidden" name="sortDirection" th:value="${query.sortDirection}">
+                </div>
+
+                <div class="col-md-8 text-end">
+                    <nav class="d-flex justify-content-end mt-2">
+                        <ul class="pagination">
+
+                            <li class="page-item" th:classappend="${query.pageNumber == 0} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/doctors(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${i == query.pageNumber} ? 'active'">
+
+                                <a class="page-link"
+                                   th:text="${i + 1}"
+                                   th:href="@{/doctors(pageNumber=${i}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">
+                                </a>
+                            </li>
+
+                            <li class="page-item"
+                                th:classappend="${query.pageNumber + 1 >= totalPages} ? 'disabled'">
+
+                                <a class="page-link"
+                                   th:href="@{/doctors(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+
+            </form>
 
         </main>
-
     </div>
 </div>
 
