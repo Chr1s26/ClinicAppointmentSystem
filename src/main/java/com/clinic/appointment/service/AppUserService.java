@@ -101,6 +101,11 @@ public class AppUserService {
     public void uploadPicture(ProfileRequest profileRequest, Long id) {
         MultipartFile file = profileRequest.getFile();
         fileService.handleFileUpload(file,FileType.APP_USER, id,"S3");
+
+        AppUser user = appUserRepository.findById(id).orElseThrow();
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedBy(authService.getCurrentUser());
+        appUserRepository.save(user);
     }
 
     private List<AppUserDTO> toListDTO(List<AppUser> users) {

@@ -63,7 +63,7 @@ public class ExportListingService {
 
         if (file != null) {
             try {
-                amazonS3.deleteObject(new DeleteObjectRequest("hotel-export-report-bucket", file.getKey()));
+                amazonS3.deleteObject(new DeleteObjectRequest("clinic-export-report-bucket", file.getKey()));
                 log.info("Deleted file from S3: {}", file.getKey());
                 fileStorageRepository.delete(file);
             } catch (Exception e) {

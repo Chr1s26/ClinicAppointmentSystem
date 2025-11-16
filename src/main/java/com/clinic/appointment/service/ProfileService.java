@@ -52,7 +52,6 @@ public class ProfileService {
         AppUser appUser = authService.getCurrentUser();
 
         String url = fileService.getFileName(FileType.APP_USER, appUser.getId());
-        String profileUrl = (url != null && !url.isBlank()) ? url : "/images/default-profile.png";
 
         AppUserDTO dto = new AppUserDTO();
         dto.setId(appUser.getId());
@@ -60,7 +59,7 @@ public class ProfileService {
         dto.setEmail(appUser.getEmail());
         dto.setConfirmedAt(appUser.getConfirmedAt());
         dto.setRoles(appUser.getRoles());
-        dto.setProfileUrl(profileUrl);
+        dto.setProfileUrl(url);
         dto.setCreatedAt(appUser.getCreatedAt());
         dto.setCreatedBy(appUser.getCreatedBy());
         dto.setUpdatedAt(appUser.getUpdatedAt());

@@ -100,6 +100,9 @@ public class FileService {
             fileStorage.setServiceName(serviceName);
             fileStorage.setFileType(fileType);
             fileStorage.setFileId(id);
+            fileStorage.setCreatedAt(LocalDateTime.now());
+            fileStorage.setCreatedBy(authService.getCurrentUser());
+            fileStorage.setStatus(StatusType.ACTIVE);
             fileStorage.setContentType(file.getContentType());
 
             fileStorageRepository.save(fileStorage);
@@ -140,7 +143,7 @@ public class FileService {
         metadata.setContentLength(bytes.length);
         metadata.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-        amazonS3.putObject("hotel-export-report-bucket", s3Key, uploadStream, metadata);
+        amazonS3.putObject("clinic-export-report-bucket", s3Key, uploadStream, metadata);
         log.info("Export file uploaded successfully to S3: {}", s3Key);
 
         return fileStorage;
@@ -152,7 +155,7 @@ public class FileService {
         if (file == null) {
             throw new ResourceNotFoundException("FileStorage", file, "fileId", "/exports","File not found");
         }
-        S3Object s3Object = amazonS3.getObject("hotel-export-report-bucket", file.getKey());
+        S3Object s3Object = amazonS3.getObject("clinic-export-report-bucket", file.getKey());
         S3ObjectInputStream s3is = s3Object.getObjectContent();
 
         if (asZip) {
