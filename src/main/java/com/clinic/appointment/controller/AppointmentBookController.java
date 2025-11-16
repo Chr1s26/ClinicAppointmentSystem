@@ -61,6 +61,6 @@ public class AppointmentBookController {
 
         appointmentService.bookSlot(slotId, patientId, authService.getCurrentUser());
 
-        return "redirect:/patients/dashboard";
+        return "redirect:/patient/dashboard";
     }
 }
