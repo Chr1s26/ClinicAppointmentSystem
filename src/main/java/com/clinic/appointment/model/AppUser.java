@@ -55,8 +55,6 @@ public class AppUser extends MasterData {
     @JsonIgnore
     private Patient patient;
 
-
-    // ---------- BUSINESS LOGIC ----------
     public boolean isAccountConfirmed() {
         return confirmedAt != null;
     }

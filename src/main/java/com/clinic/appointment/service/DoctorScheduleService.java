@@ -32,22 +32,18 @@ public class DoctorScheduleService {
     public void saveSchedule(Long doctorId, List<DoctorScheduleCreateDTO> scheduleList) {
 
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "doctorSchedule", scheduleList, "doctorId",
-                        "doctorSchedule/create", "Doctor not found"
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("doctorSchedule", scheduleList, "doctorId", "doctorSchedule/create", "Doctor not found"));
 
         scheduleRepository.deleteByDoctorId(doctorId);
 
         List<DoctorSchedule> saved = new ArrayList<>();
         for (DoctorScheduleCreateDTO dto : scheduleList) {
-            DoctorSchedule schedule = DoctorSchedule.builder()
-                    .doctor(doctor)
-                    .dayOfWeek(dto.getDayOfWeek())
-                    .startTime(dto.getStartTime())
-                    .endTime(dto.getEndTime())
-                    .available(dto.isAvailable())
-                    .build();
+            DoctorSchedule schedule = new DoctorSchedule();
+            schedule.setDoctor(doctor);
+            schedule.setAvailable(dto.isAvailable());
+            schedule.setDayOfWeek(dto.getDayOfWeek());
+            schedule.setStartTime(dto.getStartTime());
+            schedule.setEndTime(dto.getEndTime());
             saved.add(scheduleRepository.save(schedule));
         }
 
@@ -64,9 +60,9 @@ public class DoctorScheduleService {
 
         for (LocalDate date = today; !date.isAfter(end); date = date.plusDays(1)) {
 
-            String day = date.getDayOfWeek().name(); // MONDAY, TUESDAY, …
-
+            String day = date.getDayOfWeek().name();
             LocalDate finalDate = date;
+
             schedules.stream()
                     .filter(s -> s.isAvailable() && s.getDayOfWeek().equalsIgnoreCase(day))
                     .forEach(s -> generateDaySlots(doctor, finalDate, s));
@@ -85,14 +81,11 @@ public class DoctorScheduleService {
         while (time.plusMinutes(SLOT_MINUTES).compareTo(end) <= 0) {
 
             String slotString = time.format(f) + "-" + time.plusMinutes(SLOT_MINUTES).format(f);
-
-            AppointmentSlot slot = AppointmentSlot.builder()
-                    .doctor(doctor)
-                    .date(date)
-                    .timeSlot(slotString)
-                    .booked(false)
-                    .build();
-
+            AppointmentSlot slot = new AppointmentSlot();
+            slot.setDoctor(doctor);
+            slot.setDate(date);
+            slot.setTimeSlot(slotString);
+            slot.setBooked(false);
             slotRepository.save(slot);
 
             time = time.plusMinutes(SLOT_MINUTES);
