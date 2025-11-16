@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Doctor Schedule</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-12 col-md-3 col-lg-2 p-0"
+             th:insert="fragments/sidebar :: sidebar"></div>
+
+        <main class="col p-4">
+
+            <h2 class="fw-bold mb-4">Schedule for <span th:text="${doctor.name}"></span></h2>
+
+            <form th:object="${wrapper}"
+                  th:action="@{'/doctor-schedule/' + ${doctor.id} + '/save'}"
+                  method="post">
+
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Day</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Available</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="s,i : ${wrapper.schedules}">
+                        <td>
+                            <input type="hidden"
+                                   th:field="*{schedules[__${i.index}__].dayOfWeek}">
+                            <span th:text="${s.dayOfWeek}"></span>
+                        </td>
+
+                        <td>
+                            <input type="time" class="form-control"
+                                   th:field="*{schedules[__${i.index}__].startTime}">
+                        </td>
+
+                        <td>
+                            <input type="time" class="form-control"
+                                   th:field="*{schedules[__${i.index}__].endTime}">
+                        </td>
+
+                        <td class="text-center">
+                            <input type="checkbox"
+                                   th:field="*{schedules[__${i.index}__].available}">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn btn-primary">Save Schedule</button>
+            </form>
+
+
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

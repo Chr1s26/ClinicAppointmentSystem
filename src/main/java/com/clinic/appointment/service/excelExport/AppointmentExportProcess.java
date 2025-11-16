@@ -4,8 +4,7 @@ import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchQuer
 import com.clinic.appointment.model.Appointment;
 import com.clinic.appointment.model.constant.FileType;
 import com.clinic.appointment.service.*;
-import com.clinic.appointment.service.AppointmentSearchService;
-import lombok.RequiredArgsConstructor;
+import com.clinic.appointment.service.search.AppointmentSearchService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

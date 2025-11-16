@@ -52,4 +52,29 @@ public class GlobalModelAttribute {
         }
     }
 
+    @ModelAttribute("navbarDoctorId")
+    public Long addDoctorIdToSidebar() {
+        try {
+            AppUser user = authService.getCurrentUser();
+            if (user == null) return null;
+
+            if (user.getDoctor() != null) {
+                return user.getDoctor().getId();
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @ModelAttribute("user")
+    public AppUser addUserToModel() {
+        try {
+            return authService.getCurrentUser();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 }

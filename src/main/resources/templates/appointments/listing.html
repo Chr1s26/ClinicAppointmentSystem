@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Appointments</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div class="col-12 col-md-3 col-lg-2 p-0"
+             th:insert="fragments/sidebar :: sidebar"></div>
+
+        <!-- MAIN -->
+        <main class="col p-4">
+
+            <h2 class="fw-bold mb-4">Appointments</h2>
+
+            <!-- ========================= SEARCH FORM ========================= -->
+
+            <form th:action="@{/appointments}" th:object="${query}" method="post"
+                  class="row g-3 mb-4 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label">Patient</label>
+                    <input type="hidden" th:name="*{filterList[0].field}" th:value="'PATIENT_NAME'">
+                    <input type="hidden" th:name="*{filterList[0].matchType}" th:value="'CONTAINS'">
+                    <input th:field="*{filterList[0].value}" class="form-control"
+                           placeholder="Search patient">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Doctor</label>
+                    <input type="hidden" th:name="*{filterList[1].field}" th:value="'DOCTOR_NAME'">
+                    <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'CONTAINS'">
+                    <input th:field="*{filterList[1].value}" class="form-control"
+                           placeholder="Search doctor">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <input type="hidden" th:name="*{filterList[2].field}" th:value="'DEPARTMENT'">
+                    <input type="hidden" th:name="*{filterList[2].matchType}" th:value="'CONTAINS'">
+                    <input th:field="*{filterList[2].value}" class="form-control"
+                           placeholder="Search department">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Date</label>
+                    <input type="hidden" th:name="*{filterList[3].field}" th:value="'DATE'">
+                    <input type="hidden" th:name="*{filterList[3].matchType}" th:value="'EXACT'">
+                    <input type="date" th:field="*{filterList[3].value}" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <input type="hidden" th:name="*{filterList[4].field}" th:value="'STATUS'">
+                    <input type="hidden" th:name="*{filterList[4].matchType}" th:value="'EXACT'">
+                    <select th:field="*{filterList[4].value}" class="form-select">
+                        <option value="">All</option>
+                        <option value="SCHEDULED">SCHEDULED</option>
+                        <option value="CONFIRMED">CONFIRMED</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="NO_SHOW">NO_SHOW</option>
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Sort By</label>
+                    <select th:field="*{sortBy}" class="form-select">
+                        <option value="appointmentDate">Date</option>
+                        <option value="timeSlot">Time</option>
+                        <option value="patient.name">Patient</option>
+                        <option value="doctor.name">Doctor</option>
+                        <option value="createdAt">Created At</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Order</label>
+                    <select th:field="*{sortDirection}" class="form-select">
+                        <option value="ASC">ASC</option>
+                        <option value="DESC">DESC</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-primary me-2">Search</button>
+                    <a th:href="@{/appointments}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+
+            <!-- ========================= EXPORT BUTTON ========================= -->
+
+            <form th:action="@{/appointments/export/excel}" th:object="${query}" method="post"
+                  style="display:inline">
+                <button class="btn btn-success mb-3">Export Excel</button>
+            </form>
+
+            <!-- ========================= TABLE ========================= -->
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>PATIENT</th>
+                    <th>DOCTOR</th>
+                    <th>DEPARTMENT</th>
+                    <th>DATE</th>
+                    <th>TIME</th>
+                    <th>STATUS</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="a : ${appointments}">
+                    <td th:text="${a.id}"></td>
+                    <td th:text="${a.patient != null ? a.patient.name : '—'}"></td>
+                    <td th:text="${a.doctor != null ? a.doctor.name : '—'}"></td>
+                    <td th:text="${a.department != null ? a.department.departmentName : '—'}"></td>
+                    <td th:text="${a.appointmentDate}"></td>
+                    <td th:text="${a.timeSlot}"></td>
+                    <td th:text="${a.appointmentStatus}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

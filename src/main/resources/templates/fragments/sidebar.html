@@ -58,6 +58,20 @@
             <a th:href="@{/appointments}" class="nav-link text-white">📅 Appointments</a>
         </li>
 
+        <li class="nav-item mb-2" th:if="${navbarDoctorId != null}">
+            <a th:href="@{/doctor-schedule/{id}(id=${navbarDoctorId})}" class="nav-link text-white">📅 Create Schedule</a>
+        </li>
+
+        <hr class="border-light">
+
+        <li class="nav-item mb-2">
+            <a th:href="@{/doctor/dashboard}" class="nav-link text-white">🩺 Doctor Dashboard</a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a th:href="@{/patient/dashboard}" class="nav-link text-white">🩺 Patient Dashboard</a>
+        </li>
+
         <hr class="border-light">
 
         <li class="nav-item mb-2">

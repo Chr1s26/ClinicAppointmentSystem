@@ -107,7 +107,7 @@
                     <select class="form-select" th:field="*{appUserId}">
                         <option th:each="u : ${appUsers}"
                                 th:value="${u.id}"
-                                th:text="${u.email}">
+                                th:text="${u.username}">
                         </option>
                     </select>
                     <div class="text-danger mt-1" th:errors="*{appUserId}"></div>

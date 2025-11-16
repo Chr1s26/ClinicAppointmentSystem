@@ -27,4 +27,6 @@ public interface AppointmentSlotRepository
     List<LocalDate> findDistinctDatesByDoctor(Long doctorId, LocalDate start, LocalDate end);
 
     Optional<AppointmentSlot> findById(Long slotId);
+
+    List<AppointmentSlot> findByDoctorIdAndDateAfterOrderByDateAscTimeSlotAsc(Long doctorId, LocalDate localDate);
 }
