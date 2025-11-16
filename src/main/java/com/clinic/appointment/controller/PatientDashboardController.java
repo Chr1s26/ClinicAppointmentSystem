@@ -1,6 +1,5 @@
 package com.clinic.appointment.controller;
 
-
 import com.clinic.appointment.model.Patient;
 import com.clinic.appointment.service.PatientDashboardService;
 import lombok.RequiredArgsConstructor;

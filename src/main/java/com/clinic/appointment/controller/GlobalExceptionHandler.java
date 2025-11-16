@@ -67,25 +67,6 @@ public class GlobalExceptionHandler {
         return ex.getView();
     }
 
-//    @ExceptionHandler(InvalidRoleException.class)
-//    public String handleInvalidRoleField(InvalidRoleException ex, Model model) {
-//        BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());
-//        Object rejected = new BeanWrapperImpl(ex.getObjectValue()).getPropertyValue(ex.getField());
-//        br.addError(new FieldError(
-//                ex.getObjectName(),
-//                ex.getField(),
-//                rejected,
-//                false,
-//                new String[]{ex.getMessageKey()},
-//                null,
-//                ex.getDefaultMessage()
-//        ));
-//        model.addAttribute(ex.getObjectName(), ex.getObjectValue());
-//        model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
-//        model.addAttribute("requestURI", ex.getView());
-//        return ex.getView();
-//    }
-
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     public String handleInternalAuthError(InternalAuthenticationServiceException ex, RedirectAttributes redirectAttributes, Model model) {
 

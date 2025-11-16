@@ -34,17 +34,27 @@ public class AppointmentService {
         slot.setBooked(true);
         slotRepository.save(slot);
 
-        Appointment appt = Appointment.builder()
-                .patient(patient)
-                .doctor(slot.getDoctor())
-                .department(slot.getDoctor().getDepartments().stream().findFirst().orElse(null))
-                .appointmentDate(slot.getDate())
-                .timeSlot(slot.getTimeSlot())
-                .appointmentStatus(AppointmentStatus.SCHEDULED)
-                .createdBy(actor)
-                .build();
+        Appointment appt = new Appointment();
+        appt.setPatient(patient);
+        appt.setDoctor(slot.getDoctor());
+        appt.setDepartment(slot.getDoctor().getDepartments().stream().findFirst().get());
+        appt.setAppointmentDate(slot.getDate());
+        appt.setTimeSlot(slot.getTimeSlot());
+        appt.setAppointmentStatus(AppointmentStatus.SCHEDULED);
+        appt.setCreatedBy(actor);
 
         Appointment saved = appointmentRepository.save(appt);
         return modelMapper.map(saved, AppointmentDTO.class);
+    }
+
+    public void updateStatus(Long id, AppointmentStatus status) {
+
+        Appointment appt = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "appointment", id, "id", "appointments/listing", "Appointment not found"
+                ));
+
+        appt.setAppointmentStatus(status);
+        appointmentRepository.save(appt);
     }
 }

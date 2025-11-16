@@ -9,14 +9,6 @@ import org.springframework.web.servlet.config.annotation.*;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-//    @Autowired
-//    private RequestURIInterceptor requestURIInterceptor;
-//
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(requestURIInterceptor);
-//    }
-
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
@@ -27,8 +19,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/files/**").addResourceLocations("file:/Users/chr1skak/Documents/clinic_file_import/");
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("classpath:/static/assets/");
-
-// Optional: serve standard Spring Boot static folders
         registry.addResourceHandler("/**")
                 .addResourceLocations(
                         "classpath:/static/",

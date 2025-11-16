@@ -37,6 +37,28 @@
                 </a>
             </div>
 
+            <!-- TODAY APPOINTMENTS -->
+            <div class="card p-3 mb-4 shadow-sm">
+                <h4>Today's Appointments</h4>
+
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${todayAppointments}">
+                        <td th:text="${a.patient.name}"></td>
+                        <td th:text="${a.timeSlot}"></td>
+                        <td th:text="${a.appointmentStatus}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <!-- WEEKLY SCHEDULE -->
             <div class="card p-3 mb-4 shadow-sm">
                 <h4 class="mb-3">Weekly Schedule</h4>
@@ -80,28 +102,6 @@
                         <td th:text="${slot.booked ? 'Booked' : 'Available'}"
                             th:classappend="${slot.booked} ? 'text-danger' : 'text-success'">
                         </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TODAY APPOINTMENTS -->
-            <div class="card p-3 mb-4 shadow-sm">
-                <h4>Today's Appointments</h4>
-
-                <table class="table table-sm">
-                    <thead>
-                    <tr>
-                        <th>Patient</th>
-                        <th>Time Slot</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="a : ${todayAppointments}">
-                        <td th:text="${a.patient.name}"></td>
-                        <td th:text="${a.timeSlot}"></td>
-                        <td th:text="${a.appointmentStatus}"></td>
                     </tr>
                     </tbody>
                 </table>
