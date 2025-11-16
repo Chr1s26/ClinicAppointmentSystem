@@ -1,5 +1,6 @@
 package com.clinic.appointment.controller;
 
+import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.AppointmentSlot;
 import com.clinic.appointment.repository.DoctorRepository;
 import com.clinic.appointment.service.AppointmentService;
@@ -28,6 +29,12 @@ public class AppointmentBookController {
 
     @GetMapping
     public String chooseDoctor(Model model) {
+
+        AppUser appUser = authService.getCurrentUser();
+        if(appUser.getPatient() == null) {
+            return "redirect:/profile/new";
+        }
+
         model.addAttribute("doctors", doctorRepository.findAll());
         return "appointments/select-doctor";
     }
