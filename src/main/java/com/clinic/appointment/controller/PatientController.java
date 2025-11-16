@@ -3,7 +3,6 @@ package com.clinic.appointment.controller;
 import com.clinic.appointment.dto.patient.PatientCreateDTO;
 import com.clinic.appointment.dto.patient.PatientDTO;
 import com.clinic.appointment.dto.patient.PatientUpdateDTO;
-import com.clinic.appointment.dto.profile.ProfileRequest;
 import com.clinic.appointment.dto.searchFilter.MatchType;
 import com.clinic.appointment.dto.searchFilter.SortDirection;
 import com.clinic.appointment.dto.searchFilter.patient.PatientSearchFilter;

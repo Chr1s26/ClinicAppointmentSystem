@@ -1,14 +1,12 @@
 package com.clinic.appointment.controller;
 
 import com.clinic.appointment.dto.doctor.DoctorCreateDTO;
-import com.clinic.appointment.dto.doctor.DoctorDTO;
 import com.clinic.appointment.dto.doctor.DoctorUpdateDTO;
 import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchFilter;
 import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchField;
 import com.clinic.appointment.dto.searchFilter.doctor.DoctorSearchQuery;
 import com.clinic.appointment.dto.searchFilter.MatchType;
 import com.clinic.appointment.dto.searchFilter.SortDirection;
-import com.clinic.appointment.model.AppUser;
 import com.clinic.appointment.model.Doctor;
 import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.AppUserService;

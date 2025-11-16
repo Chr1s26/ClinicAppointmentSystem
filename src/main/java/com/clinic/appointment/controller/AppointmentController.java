@@ -6,16 +6,15 @@ import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchFiel
 import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchFilter;
 import com.clinic.appointment.dto.searchFilter.appointment.AppointmentSearchQuery;
 import com.clinic.appointment.model.Appointment;
+import com.clinic.appointment.model.constant.AppointmentStatus;
+import com.clinic.appointment.service.AppointmentService;
 import com.clinic.appointment.service.excelExport.AppointmentExportProcess;
 import com.clinic.appointment.service.search.AppointmentSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,6 +25,7 @@ public class AppointmentController {
 
     private final AppointmentSearchService searchService;
     private final AppointmentExportProcess exportProcess;
+    private final AppointmentService appointmentService;
 
     @ModelAttribute("query")
     public AppointmentSearchQuery initQuery() {
@@ -71,6 +71,18 @@ public class AppointmentController {
     @PostMapping("/export/excel")
     public String export(@ModelAttribute("query") AppointmentSearchQuery query) {
         exportProcess.generateExportFile(query);
+        return "redirect:/appointments";
+    }
+
+    @PostMapping("/{id}/book")
+    public String markAsBooked(@PathVariable Long id) {
+        appointmentService.updateStatus(id, AppointmentStatus.COMPLETED);
+        return "redirect:/appointments";
+    }
+
+    @PostMapping("/{id}/cancel")
+    public String markAsCancelled(@PathVariable Long id) {
+        appointmentService.updateStatus(id, AppointmentStatus.CANCELLED);
         return "redirect:/appointments";
     }
 }

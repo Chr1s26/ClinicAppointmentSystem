@@ -12,7 +12,6 @@ import com.clinic.appointment.model.Admin;
 import com.clinic.appointment.model.constant.GenderType;
 import com.clinic.appointment.service.AdminService;
 import com.clinic.appointment.service.AppUserService;
-import com.clinic.appointment.service.AuthService;
 import com.clinic.appointment.service.excelExport.AdminExportProcess;
 import com.clinic.appointment.service.search.AdminSearchService;
 

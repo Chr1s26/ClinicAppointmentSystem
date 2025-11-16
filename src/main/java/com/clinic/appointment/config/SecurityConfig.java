@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/select-role", "/set-active-role").authenticated()
                         .requestMatchers("/admins/**").hasRole("ADMIN")
                         .requestMatchers("/appointments/book/**").hasRole("PATIENT")
-                        .requestMatchers("/appointments/**").hasRole("ADMIN")
+                        .requestMatchers("/appointments/**").hasAnyRole("ADMIN","DOCTOR")
                         .requestMatchers("/doctor-schedule/**").hasRole("DOCTOR")
                         .requestMatchers("/doctor/dashboard").hasRole("DOCTOR")
                         .requestMatchers("/patient/dashboard").hasRole("PATIENT")

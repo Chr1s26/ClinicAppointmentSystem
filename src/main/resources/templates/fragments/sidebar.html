@@ -12,9 +12,11 @@
         z-index: 1000;
      ">
 
-    <h4 class="text-white text-center fs-6 mb-3">
+    <h1 class="text-white text-center fs-6 mb-3">
         Clinic Management System
-    </h4>
+    </h1>
+
+    <hr class="border-light">
 
     <div class="d-flex align-items-center gap-3 mb-4 mt-3 text-center">
 
@@ -50,26 +52,29 @@
             <a th:href="@{/home}" class="nav-link text-white">🏠 Home</a>
         </li>
 
+        <hr class="border-light">
+
+        <li class="nav-item mb-2">
+            <a th:href="@{/patient/dashboard}" class="nav-link text-white">📊 Patient Dashboard</a>
+        </li>
+
         <li class="nav-item mb-2">
             <a th:href="@{/appointments/book}" class="nav-link text-white">📬 Book Appointment</a>
-        </li>
-
-        <li class="nav-item mb-2">
-            <a th:href="@{/appointments}" class="nav-link text-white">📅 Appointments</a>
-        </li>
-
-        <li class="nav-item mb-2" th:if="${navbarDoctorId != null}">
-            <a th:href="@{/doctor-schedule/{id}(id=${navbarDoctorId})}" class="nav-link text-white">📅 Create Schedule</a>
         </li>
 
         <hr class="border-light">
 
         <li class="nav-item mb-2">
-            <a th:href="@{/doctor/dashboard}" class="nav-link text-white">🩺 Doctor Dashboard</a>
+            <a th:href="@{/doctor/dashboard}" class="nav-link text-white">📊 Doctor Dashboard</a>
+        </li>
+
+<!--        <li class="nav-item mb-2" th:if="${navbarDoctorId != null}">-->
+        <li class="nav-item mb-2">
+            <a th:href="@{/doctor-schedule/{id}(id=${navbarDoctorId})}" class="nav-link text-white">📅 Create Schedule</a>
         </li>
 
         <li class="nav-item mb-2">
-            <a th:href="@{/patient/dashboard}" class="nav-link text-white">🩺 Patient Dashboard</a>
+            <a th:href="@{/appointments}" class="nav-link text-white">👁️ View Appointments</a>
         </li>
 
         <hr class="border-light">
