@@ -53,9 +53,9 @@
 
         <!-- ======================= PROFILE HEADER ======================= -->
         <div class="text-center mb-4">
-            <img th:src="@{${user.profileUrl}}" class="profile-img" alt="Profile Picture">
+            <img th:src="@{${AppUser.profileUrl}}" class="profile-img" alt="Profile Picture">
 
-            <form th:action="@{/users/{id}/updatePicture(id=${user.id})}"
+            <form th:action="@{/users/{id}/updatePicture(id=${AppUser.id})}"
                   th:object="${request}"
                   method="post"
                   enctype="multipart/form-data"
@@ -78,42 +78,42 @@
 
             <div class="info-box">
                 <span class="label">Username:</span>
-                <span th:text="${user.username}"></span>
+                <span th:text="${AppUser.username}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Email:</span>
-                <span th:text="${user.email}"></span>
+                <span th:text="${AppUser.email}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Status:</span>
-                <span th:text="${user.status}"></span>
+                <span th:text="${AppUser.status}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Confirmed At:</span>
-                <span th:text="${user.confirmedAt}">—</span>
+                <span th:text="${AppUser.confirmedAt}">—</span>
             </div>
 
             <div class="info-box">
                 <span class="label">Created At:</span>
-                <span th:text="${user.createdAt}"></span>
+                <span th:text="${AppUser.createdAt}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Updated At:</span>
-                <span th:text="${user.updatedAt}"></span>
+                <span th:text="${AppUser.updatedAt}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Created By:</span>
-                <span th:text="${user.createdBy != null ? user.createdBy.username : '—'}"></span>
+                <span th:text="${AppUser.createdBy != null ? AppUser.createdBy.username : '—'}"></span>
             </div>
 
             <div class="info-box">
                 <span class="label">Updated By:</span>
-                <span th:text="${user.updatedBy != null ? user.updatedBy.username : '—'}"></span>
+                <span th:text="${AppUser.updatedBy != null ? AppUser.updatedBy.username : '—'}"></span>
             </div>
 
         </div>
@@ -124,8 +124,8 @@
         <div>
             <h5 class="mb-2">Roles</h5>
 
-            <div th:if="${user.roles != null}">
-                <span th:each="r : ${user.roles}"
+            <div th:if="${AppUser.roles != null}">
+                <span th:each="r : ${AppUser.roles}"
                       class="badge bg-info text-dark me-1"
                       th:text="${r.roleName}">
                 </span>
@@ -135,7 +135,7 @@
         <!-- ======================= BUTTONS ======================= -->
         <div class="mt-4">
             <a th:href="@{/users}" class="btn btn-secondary">Back</a>
-            <a th:href="@{'/users/edit/' + ${user.id}}"
+            <a th:href="@{'/users/edit/' + ${AppUser.id}}"
                class="btn btn-primary ms-2">
                 Edit User
             </a>

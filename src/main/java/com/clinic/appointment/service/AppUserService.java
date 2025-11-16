@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,18 @@ public class AppUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
     private final FileService fileService;
+    private final RoleRepository roleRepository;
 
     public AppUserCreateDTO create(AppUserCreateDTO dto) {
-        if(appUserRepository.existsByUsernameIgnoreCaseAndEmail(dto.getUsername(),dto.getEmail())) throw new DuplicateException("user",dto,"name","users/create","An account with this name and email already exists");
+//        if(appUserRepository.existsByUsernameIgnoreCaseAndEmail(dto.getUsername(),dto.getEmail())) throw new DuplicateException("user",dto,"name","users/create","An account with this name and email already exists");
+        if (appUserRepository.existsByUsernameIgnoreCase(dto.getUsername())) {
+            throw new DuplicateException("user", dto, "username", "users/create", "Username already exists");
+        }
+
+        if (appUserRepository.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new DuplicateException("user", dto, "email", "users/create", "Email already exists");
+        }
+
         AppUser user = CreateDTOtoEntity(dto);
         AppUser saved = appUserRepository.save(user);
         return entityToCreateDTO(saved);
@@ -35,15 +45,32 @@ public class AppUserService {
 
     public AppUserUpdateDTO update(Long id, AppUserUpdateDTO dto) {
 
-        appUserRepository.findByUsernameIgnoreCaseAndEmailAndIdNot(dto.getUsername(), dto.getEmail(),id)
-                .ifPresent(u -> { throw new DuplicateException("user",dto,"name","users/edit","An account with this name and email already exists");});
-
+        // ensure DTO contains username/email (binding)
+        // fetch existing user
         AppUser user = appUserRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("user",dto,"id","users/edit","An account with this id cannot be found"));
+                .orElseThrow(() -> new ResourceNotFoundException("user", dto, "id", "users/edit", "An account with this id cannot be found"));
 
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        // if username changed, check uniqueness excluding this id
+        if (dto.getUsername() != null && !dto.getUsername().equalsIgnoreCase(user.getUsername())) {
+            if (appUserRepository.existsByUsernameIgnoreCaseAndIdNot(dto.getUsername(), id)) {
+                throw new DuplicateException("user", dto, "username", "users/edit", "Username already exists");
+            }
+            user.setUsername(dto.getUsername());
+        }
+
+        // if email changed, check uniqueness excluding this id
+        if (dto.getEmail() != null && !dto.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (appUserRepository.existsByEmailIgnoreCaseAndIdNot(dto.getEmail(), id)) {
+                throw new DuplicateException("user", dto, "email", "users/edit", "Email already exists");
+            }
+            user.setEmail(dto.getEmail());
+        }
+
+        // update password only if provided (or leave null to keep existing)
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
         user.setUpdatedBy(authService.getCurrentUser());
         user.setUpdatedAt(LocalDateTime.now());
         user.setStatus(StatusType.ACTIVE);
@@ -51,6 +78,26 @@ public class AppUserService {
         AppUser saved = appUserRepository.save(user);
         return entityToUpdateDTO(saved);
     }
+
+
+//    public AppUserUpdateDTO update(Long id, AppUserUpdateDTO dto) {
+//
+//        appUserRepository.findByUsernameIgnoreCaseAndEmailAndIdNot(dto.getUsername(), dto.getEmail(),id)
+//                .ifPresent(u -> { throw new DuplicateException("user",dto,"name","users/edit","An account with this name and email already exists");});
+//
+//        AppUser user = appUserRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("user",dto,"id","users/edit","An account with this id cannot be found"));
+//
+//        user.setUsername(dto.getUsername());
+//        user.setEmail(dto.getEmail());
+//        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+//        user.setUpdatedBy(authService.getCurrentUser());
+//        user.setUpdatedAt(LocalDateTime.now());
+//        user.setStatus(StatusType.ACTIVE);
+//
+//        AppUser saved = appUserRepository.save(user);
+//        return entityToUpdateDTO(saved);
+//    }
 
     public void delete(Long id) {
         Optional<AppUser> optionalUser = appUserRepository.findById(id);
@@ -145,7 +192,9 @@ public class AppUserService {
         appUser.setCreatedAt(LocalDateTime.now());
         appUser.setCreatedBy(authService.getCurrentUser());
         appUser.setStatus(StatusType.ACTIVE);
-//        appUser.setRoles();
+        Role role = roleRepository.findByRoleName("PATIENT").orElseThrow(() -> new ResourceNotFoundException("role",dto,"roleName","appUsers","Role Name not found."));
+        appUser.setRoles(Set.of(role));
+
         return appUser;
     }
 

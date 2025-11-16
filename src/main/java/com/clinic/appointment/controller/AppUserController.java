@@ -63,12 +63,12 @@ public class AppUserController {
 
     @GetMapping("/new")
     public String showCreate(Model model) {
-        model.addAttribute("user", new AppUserCreateDTO());
+        model.addAttribute("AppUser", new AppUserCreateDTO());
         return "users/create";
     }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute("user") AppUserCreateDTO dto, BindingResult br) {
+    public String create(@Valid @ModelAttribute("AppUser") AppUserCreateDTO dto, BindingResult br) {
         if (br.hasErrors()) return "users/create";
         this.appUserService.create(dto);
         return "redirect:/users";
@@ -78,12 +78,12 @@ public class AppUserController {
     public String edit(@PathVariable Long id, Model model) {
         AppUserUpdateDTO user = this.appUserService.findById(id);
         user.setPassword(null);
-        model.addAttribute("user", user);
+        model.addAttribute("AppUser", user);
         return "users/edit";
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Long id, @Valid @ModelAttribute("user") AppUserUpdateDTO dto, BindingResult br) {
+    public String update(@PathVariable Long id, @Valid @ModelAttribute("AppUser") AppUserUpdateDTO dto, BindingResult br) {
         if (br.hasErrors()) return "users/edit";
         this.appUserService.update(id, dto);
         return "redirect:/users";
@@ -104,7 +104,7 @@ public class AppUserController {
     @GetMapping("/view/{id}")
     public String showView(@PathVariable("id") Long id, Model model) {
         AppUserDTO user = this.appUserService.findUserById(id);
-        model.addAttribute("user", user);
+        model.addAttribute("AppUser", user);
         model.addAttribute("request",new ProfileRequest());
         return "users/view";
     }

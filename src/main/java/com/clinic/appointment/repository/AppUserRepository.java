@@ -30,4 +30,10 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long>, JpaSpec
     boolean existsByEmail(String email);
 
     Optional<AppUser> findByUsernameIgnoreCaseAndEmailAndIdNot(String username,String email, Long id);
+
+    boolean existsByEmailIgnoreCase(@NotBlank(message = "Email cannot be empty.") @Email(message = "Invalid email format.") String email);
+
+    boolean existsByUsernameIgnoreCaseAndIdNot(@NotBlank(message = "Username cannot be empty.") @Size(min = 3, max = 50, message = "Username must be 3–50 characters.") @Pattern(regexp = "^[A-Za-z0-9_.-]+$", message = "Username can include letters, numbers, underscore, dash, dot.") String username, Long id);
+
+    boolean existsByEmailIgnoreCaseAndIdNot(@NotBlank(message = "Email cannot be empty.") @Email(message = "Invalid email format.") String email, Long id);
 }
