@@ -12,7 +12,7 @@ public class AppUserCreateDTO {
 
     @NotBlank(message = "Username cannot be empty.")
     @Size(min = 3, max = 50, message = "Username must be 3–50 characters.")
-    @Pattern(regexp = "^[A-Za-z0-9_.-]+$", message = "Username can include letters, numbers, underscore, dash, dot.")
+    @Pattern(regexp = "^[A-Za-z0-9_.-]+$", message = "Username can't include letters, numbers, underscore, dash, dot.")
     private String username;
 
     @NotBlank(message = "Email cannot be empty.")

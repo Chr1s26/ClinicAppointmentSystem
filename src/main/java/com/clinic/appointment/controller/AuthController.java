@@ -10,40 +10,45 @@ import com.clinic.appointment.repository.AppUserRepository;
 import com.clinic.appointment.service.AuthService;
 import com.clinic.appointment.service.OtpService;
 import com.clinic.appointment.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/register")
 public class AuthController {
     private final UserService userService;
     private final AppUserRepository appUserRepository;
     private final OtpService otpService;
     private final AuthService authService;
 
-    @GetMapping("/register")
+    @GetMapping
     public String showRegistrationForm(@RequestParam(value = "registration", required = false, defaultValue = "false") String registration, Model model) {
-        model.addAttribute("user", new AppUserCreateDTO());
+        model.addAttribute("appUserCreateDTO", new AppUserCreateDTO());
         if(registration.equalsIgnoreCase("true")) {
             model.addAttribute("registrationError", "Registration Error");
         }
         return "register";
     }
 
-    @PostMapping("/register")
-    public String showLoginForm(@Valid @ModelAttribute("user") AppUserCreateDTO appUserCreateDTO, BindingResult br, Model model) {
+    @PostMapping
+    public String registerUser(@Valid @ModelAttribute("appUserCreateDTO") AppUserCreateDTO appUserCreateDTO, BindingResult br, Model model) {
 
-        if (appUserRepository.existsByUsernameIgnoreCase(appUserCreateDTO.getUsername())) br.rejectValue("name", "duplicate", "This username is already taken");
+        if (appUserCreateDTO == null) {
+            model.addAttribute("registrationError", "Form binding failed. DTO is null.");
+            return "register";
+        }
+
+        if (appUserRepository.existsByUsernameIgnoreCase(appUserCreateDTO.getUsername())) br.rejectValue("username", "duplicate", "This username is already taken");
         if (appUserRepository.existsByEmail(appUserCreateDTO.getEmail())) br.rejectValue("email", "duplicate", "An account with this email already exists");
         if (br.hasErrors()) return "register";
         try{
